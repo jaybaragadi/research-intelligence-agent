@@ -4,7 +4,9 @@ from pydantic import BaseModel, Field
 
 
 class PaperMetadata(BaseModel):
-    """Structured metadata extracted from a research paper."""
+    """
+    Structured metadata extracted from a research paper.
+    """
 
     paper_id: str
 
@@ -44,7 +46,9 @@ class PaperMetadata(BaseModel):
 
 
 class PaperChunk(BaseModel):
-    """A searchable text segment extracted from a paper."""
+    """
+    Searchable research-paper text segment with provenance.
+    """
 
     chunk_id: str
 
@@ -52,12 +56,13 @@ class PaperChunk(BaseModel):
 
     text: str
 
-    page_number: int | None = None
+    page_number: int
 
     section: str | None = None
 
     chunk_index: int
 
+    character_count: int
 
 class SearchResult(BaseModel):
     """One result returned from semantic research search."""

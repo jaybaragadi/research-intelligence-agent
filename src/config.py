@@ -45,6 +45,11 @@ class Settings(BaseModel):
     "data/metadata",
     )
 
+    chunks_dir: Path = PROJECT_ROOT / os.getenv(
+    "CHUNKS_DIR",
+    "data/chunks",
+    )
+
     vector_store_dir: Path = PROJECT_ROOT / os.getenv(
         "VECTOR_STORE_DIR",
         "data/vector_store",
@@ -88,11 +93,12 @@ def ensure_directories() -> None:
     """Create runtime directories if they do not already exist."""
 
     directories = [
-        settings.papers_dir,
-        settings.processed_dir,
-        settings.metadata_dir,
-        settings.vector_store_dir,
-        settings.reports_dir,
+    settings.papers_dir,
+    settings.processed_dir,
+    settings.metadata_dir,
+    settings.chunks_dir,
+    settings.vector_store_dir,
+    settings.reports_dir,
     ]
 
     for directory in directories:

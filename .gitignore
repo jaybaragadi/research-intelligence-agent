@@ -36,6 +36,8 @@ reports/*
 !reports/.gitkeep
 data/metadata/*
 !data/metadata/.gitkeep
+data/chunks/*
+!data/chunks/.gitkeep
 
 # Research papers
 data/papers/*.pdf

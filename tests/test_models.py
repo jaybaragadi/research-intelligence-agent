@@ -18,13 +18,27 @@ def test_paper_metadata_creation():
 
 
 def test_paper_chunk_creation():
+
+    text = (
+        "This is an example "
+        "research-paper chunk."
+    )
+
     chunk = PaperChunk(
         chunk_id="testpilot_chunk_001",
         paper_id="testpilot",
-        text="This is an example research-paper chunk.",
+        text=text,
         page_number=1,
         chunk_index=0,
+        character_count=len(
+            text
+        ),
     )
 
     assert chunk.paper_id == "testpilot"
+
     assert chunk.page_number == 1
+
+    assert chunk.character_count == len(
+        text
+    )
