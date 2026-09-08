@@ -137,3 +137,55 @@ class ExtractedPaper(BaseModel):
     pages: list[ExtractedPage] = Field(
         default_factory=list
     )
+
+class SectionLocation(BaseModel):
+    """Location of a recognized research-paper section."""
+
+    canonical_name: str
+    matched_heading: str
+    page_number: int
+
+
+class ResearchSignal(BaseModel):
+    """
+    Candidate evidence found in a paper for a research category.
+
+    This is deliberately called a signal because Phase 3 does not
+    yet ask an LLM to interpret the passage.
+    """
+
+    category: str
+    page_number: int
+    snippet: str
+    matched_keyword: str
+
+
+class PaperProfile(BaseModel):
+    """
+    Structured Phase 3 representation of a research paper.
+    """
+
+    paper_id: str
+    filename: str
+
+    title: str = "Unknown Title"
+
+    authors: list[str] = Field(
+        default_factory=list
+    )
+
+    year: int | None = None
+
+    abstract: str | None = None
+
+    sections: list[SectionLocation] = Field(
+        default_factory=list
+    )
+
+    research_questions: list[str] = Field(
+        default_factory=list
+    )
+
+    research_signals: list[ResearchSignal] = Field(
+        default_factory=list
+    )

@@ -40,6 +40,11 @@ class Settings(BaseModel):
         "data/processed",
     )
 
+    metadata_dir: Path = PROJECT_ROOT / os.getenv(
+    "METADATA_DIR",
+    "data/metadata",
+    )
+
     vector_store_dir: Path = PROJECT_ROOT / os.getenv(
         "VECTOR_STORE_DIR",
         "data/vector_store",
@@ -85,6 +90,7 @@ def ensure_directories() -> None:
     directories = [
         settings.papers_dir,
         settings.processed_dir,
+        settings.metadata_dir,
         settings.vector_store_dir,
         settings.reports_dir,
     ]
