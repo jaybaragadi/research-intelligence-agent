@@ -1,0 +1,43 @@
+# Virtual environment
+.venv/
+venv/
+
+# Environment variables / secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest
+.pytest_cache/
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated project data
+data/processed/*
+data/vector_store/*
+reports/*
+
+# Keep directories in Git
+!data/processed/.gitkeep
+!data/vector_store/.gitkeep
+!reports/.gitkeep
+
+# Research papers
+data/papers/*.pdf
+
+# Logs
+*.log
+logs/
