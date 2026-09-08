@@ -113,3 +113,27 @@ class PaperComparison(BaseModel):
     limitations: list[str] = Field(
         default_factory=list
     )
+
+
+class ExtractedPage(BaseModel):
+    """Text extracted from one PDF page."""
+
+    page_number: int
+    text: str
+    character_count: int
+
+
+class ExtractedPaper(BaseModel):
+    """Structured raw extraction from one research paper."""
+
+    paper_id: str
+    filename: str
+    source_path: Path
+
+    total_pages: int
+    extracted_pages: int
+    empty_pages: int
+
+    pages: list[ExtractedPage] = Field(
+        default_factory=list
+    )

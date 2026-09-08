@@ -32,7 +32,7 @@ def main() -> None:
 
     print()
     print("Project setup successful.")
-    print("Research Intelligence Agent is ready for Phase 2.")
+    print("Research Intelligence Agent initialized successfully.")
 
 
 if __name__ == "__main__":
