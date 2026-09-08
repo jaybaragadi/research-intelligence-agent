@@ -10,59 +10,85 @@ SECTION_ALIASES: dict[str, list[str]] = {
     "abstract": [
         "abstract",
     ],
+
     "introduction": [
         "introduction",
     ],
+
     "background": [
         "background",
         "preliminaries",
+        "background and motivation",
     ],
+
     "related_work": [
         "related work",
         "related works",
+        "literature review",
     ],
+
     "methodology": [
         "methodology",
-        "method",
         "methods",
-        "approach",
-        "proposed approach",
+        "method",
         "our approach",
+        "proposed approach",
+        "approach",
+        "framework",
     ],
+
     "experimental_setup": [
         "experimental setup",
         "experiment setup",
         "evaluation setup",
         "study setup",
+        "experimental design",
+        "experiment design",
     ],
+
     "evaluation": [
         "evaluation",
-        "experiments",
         "empirical evaluation",
+        "experiments",
+        "empirical study",
     ],
+
     "results": [
         "results",
         "experimental results",
         "evaluation results",
+        "results and discussion",
     ],
+
     "discussion": [
         "discussion",
+        "results and discussion",
     ],
+
     "limitations": [
         "limitations",
+        "limitations and future work",
     ],
+
     "threats_to_validity": [
         "threats to validity",
         "threat to validity",
+        "validity threats",
     ],
+
     "future_work": [
         "future work",
         "future directions",
+        "limitations and future work",
+        "conclusion and future work",
     ],
+
     "conclusion": [
         "conclusion",
         "conclusions",
+        "conclusion and future work",
     ],
+
     "references": [
         "references",
         "bibliography",
@@ -70,18 +96,21 @@ SECTION_ALIASES: dict[str, list[str]] = {
 }
 
 
-def heading_pattern(
+def build_numbered_heading_pattern(
     heading: str,
 ) -> re.Pattern[str]:
     """
-    Create a reasonably conservative section-heading pattern.
+    Detect explicitly numbered section headings.
 
-    Handles headings such as:
+    Examples:
+        1 Introduction
+        1. Introduction
+        2.3 Experimental Setup
+        III. Evaluation
+        IV RESULTS
 
-    Introduction
-    1 Introduction
-    1. Introduction
-    III. RESULTS
+    Numbered headings are reliable even when PDF line breaks
+    have been flattened during text cleaning.
     """
 
     escaped = re.escape(
@@ -89,14 +118,62 @@ def heading_pattern(
     )
 
     return re.compile(
-        rf"(?:^|[\n.!?]\s+)"
-        rf"(?:"
-        rf"\d+(?:\.\d+)*\.?\s+"
-        rf"|[IVX]+\.?\s+"
-        rf")?"
+        rf"\b(?:"
+        rf"\d+(?:\.\d+)*\.?"
+        rf"|[IVXLC]+\.?"
+        rf")"
+        rf"\s+"
         rf"{escaped}"
         rf"\b",
         flags=re.IGNORECASE,
+    )
+
+
+def build_plain_heading_pattern(
+    heading: str,
+) -> re.Pattern[str]:
+    """
+    Conservative fallback for headings without numbering.
+    """
+
+    escaped = re.escape(
+        heading
+    )
+
+    return re.compile(
+        rf"(?:"
+        rf"^"
+        rf"|(?<=[.!?])\s+"
+        rf"|(?<=\n)"
+        rf")"
+        rf"{escaped}"
+        rf"(?=\s|:|$)",
+        flags=re.IGNORECASE,
+    )
+
+
+def find_heading(
+    text: str,
+    alias: str,
+) -> bool:
+    """
+    Search for a section heading using numbered-heading
+    detection first, then a conservative plain-heading fallback.
+    """
+
+    numbered = build_numbered_heading_pattern(
+        alias
+    )
+
+    if numbered.search(text):
+        return True
+
+    plain = build_plain_heading_pattern(
+        alias
+    )
+
+    return bool(
+        plain.search(text)
     )
 
 
@@ -104,7 +181,9 @@ def discover_sections(
     paper: ExtractedPaper,
 ) -> list[SectionLocation]:
     """
-    Find the first occurrence of common research sections.
+    Discover common academic-paper sections.
+
+    Only the first occurrence of each canonical section is kept.
     """
 
     discovered: list[SectionLocation] = []
@@ -117,12 +196,9 @@ def discover_sections(
 
             for alias in aliases:
 
-                pattern = heading_pattern(
-                    alias
-                )
-
-                if pattern.search(
-                    page.text
+                if find_heading(
+                    page.text,
+                    alias,
                 ):
                     discovered.append(
                         SectionLocation(

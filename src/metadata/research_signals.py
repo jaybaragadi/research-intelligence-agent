@@ -8,13 +8,20 @@ from src.models import (
 
 RESEARCH_QUESTION_PATTERN = re.compile(
     r"\bRQ\s*([0-9]+)"
-    r"\s*[:.\-–—]?\s*"
-    r"(.{10,350}?)"
-    r"(?="
+    r"\s*[:.\-–—]\s*"
+    r"(.{15,400}?[?])",
+    flags=re.IGNORECASE,
+)
+
+RQ_LABEL_PATTERN = re.compile(
+    r"\bRQ\s*([0-9]+)"
+    r"\s*[:.\-–—]\s*"
+    r"(.{15,220}?)(?="
     r"\bRQ\s*[0-9]+"
+    r"|(?:\.\s+[A-Z])"
     r"|$"
     r")",
-    flags=re.IGNORECASE | re.DOTALL,
+    flags=re.IGNORECASE,
 )
 
 
@@ -83,49 +90,75 @@ def extract_research_questions(
     paper: ExtractedPaper,
 ) -> list[str]:
     """
-    Extract explicitly labelled research questions such as
-    RQ1, RQ2, etc.
+    Extract unique explicit research-question definitions.
     """
 
-    questions: list[str] = []
+    questions_by_number: dict[
+        int,
+        str,
+    ] = {}
 
+    # Pass 1: strong matches ending in ?
     for page in paper.pages:
 
         for match in RESEARCH_QUESTION_PATTERN.finditer(
             page.text
         ):
-            number = match.group(1)
-
-            question_text = (
-                match.group(2)
-                .replace("\n", " ")
-                .strip()
+            number = int(
+                match.group(1)
             )
+
+            if number in questions_by_number:
+                continue
 
             question_text = re.sub(
                 r"\s+",
                 " ",
-                question_text,
-            )
+                match.group(2),
+            ).strip()
 
-            if len(question_text) > 300:
-                question_text = (
-                    question_text[:300]
-                    .rsplit(" ", 1)[0]
-                )
-
-            formatted = (
+            questions_by_number[number] = (
                 f"RQ{number}: "
                 f"{question_text}"
             )
 
-            if formatted not in questions:
-                questions.append(
-                    formatted
-                )
+    # Pass 2: labelled RQs without question marks.
+    for page in paper.pages:
 
-    return questions
+        for match in RQ_LABEL_PATTERN.finditer(
+            page.text
+        ):
+            number = int(
+                match.group(1)
+            )
 
+            if number in questions_by_number:
+                continue
+
+            question_text = re.sub(
+                r"\s+",
+                " ",
+                match.group(2),
+            ).strip()
+
+            if not (
+                15
+                <= len(question_text)
+                <= 220
+            ):
+                continue
+
+            questions_by_number[number] = (
+                f"RQ{number}: "
+                f"{question_text}"
+            )
+
+    return [
+        questions_by_number[number]
+        for number in sorted(
+            questions_by_number
+        )
+    ]
 
 def split_sentences(
     text: str,

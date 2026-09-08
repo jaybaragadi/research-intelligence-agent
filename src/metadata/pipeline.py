@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,6 +40,29 @@ class MetadataSummary:
     successful: int = 0
     failed: int = 0
 
+def clean_title(
+    title: str,
+) -> str:
+    """
+    Remove common PDF extraction noise from paper titles.
+    """
+
+    title = re.sub(
+        r"\s+",
+        " ",
+        title,
+    ).strip()
+
+    # Examples:
+    # "1 An Empirical Evaluation..."
+    # "1. An Empirical Evaluation..."
+    title = re.sub(
+        r"^\d+\s*[.:]?\s+(?=[A-Z])",
+        "",
+        title,
+    )
+
+    return title.strip()
 
 def fallback_title(
     first_page_text: str,
@@ -115,6 +139,7 @@ def build_profile(
             first_page_text,
             paper.filename,
         )
+        title = clean_title(title)
 
     # Fallback year search from opening page.
     if year is None:
