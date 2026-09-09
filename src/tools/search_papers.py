@@ -61,11 +61,12 @@ class SearchPapersTool:
             else SemanticRetriever()
         )
 
-
     def search(
         self,
         query: str,
         top_k: int | None = None,
+        allowed_paper_ids: set[str] | None = None,
+        max_per_paper: int | None = None,
     ) -> PaperSearchResponse:
         """
         Search the research-paper corpus.
@@ -79,6 +80,21 @@ class SearchPapersTool:
             Maximum number of evidence chunks
             to return.
 
+        allowed_paper_ids:
+            Optional paper scope.
+
+            When supplied, only chunks belonging
+            to these papers are eligible.
+
+        max_per_paper:
+            Optional maximum number of returned
+            chunks from one paper.
+
+            This is useful for paper-scoped
+            evidence acquisition where more than
+            the retriever's default diversity
+            limit may be required.
+
         Returns
         -------
         PaperSearchResponse
@@ -91,10 +107,26 @@ class SearchPapersTool:
                 "Query cannot be empty"
             )
 
+        search_kwargs = {
+            "query": query,
+            "top_k": top_k,
+        }
+
+        if allowed_paper_ids is not None:
+
+            search_kwargs[
+                "allowed_paper_ids"
+            ] = allowed_paper_ids
+
+        if max_per_paper is not None:
+
+            search_kwargs[
+                "max_per_paper"
+            ] = max_per_paper
+
         retrieved = (
             self.retriever.search(
-                query=query,
-                top_k=top_k,
+                **search_kwargs
             )
         )
 
@@ -110,7 +142,6 @@ class SearchPapersTool:
             result_count=len(results),
             results=results,
         )
-
 
     def _convert_result(
         self,

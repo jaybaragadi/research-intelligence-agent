@@ -118,3 +118,64 @@ def test_search_rejects_empty_query():
         raise AssertionError(
             "Expected ValueError"
         )
+
+class ScopedFakeRetriever:
+    """
+    Verify that tool-level paper scoping is
+    forwarded to the semantic retriever.
+    """
+
+    def __init__(self) -> None:
+        self.allowed_paper_ids = None
+        self.max_per_paper = None
+
+    def search(
+        self,
+        query: str,
+        top_k: int | None = None,
+        allowed_paper_ids: set[str] | None = None,
+        max_per_paper: int = 2,
+    ) -> list[RetrievedChunk]:
+
+        self.allowed_paper_ids = (
+            allowed_paper_ids
+        )
+
+        self.max_per_paper = (
+            max_per_paper
+        )
+
+        return []
+
+
+def test_search_forwards_paper_scope():
+
+    retriever = ScopedFakeRetriever()
+
+    tool = SearchPapersTool(
+        retriever=retriever
+    )
+
+    response = tool.search(
+        query="future work",
+        top_k=4,
+        allowed_paper_ids={
+            "paper_a"
+        },
+        max_per_paper=4,
+    )
+
+    assert (
+        response.result_count
+        == 0
+    )
+
+    assert (
+        retriever.allowed_paper_ids
+        == {"paper_a"}
+    )
+
+    assert (
+        retriever.max_per_paper
+        == 4
+    )
