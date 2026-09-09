@@ -1,97 +1,115 @@
-import argparse
+import json
 
-from src.retrieval.retriever import (
-    SemanticRetriever,
+from src.retrieval.chunk_loader import (
+    discover_chunk_files,
+    load_chunks_from_file,
 )
 
 
-def main() -> None:
+def test_discover_chunk_files(
+    tmp_path,
+):
+    first = (
+        tmp_path
+        / "paper_a.json"
+    )
 
-    parser = argparse.ArgumentParser(
-        description=(
-            "Semantic search across "
-            "research papers"
+    second = (
+        tmp_path
+        / "paper_b.json"
+    )
+
+    first.write_text(
+        "{}",
+        encoding="utf-8",
+    )
+
+    second.write_text(
+        "{}",
+        encoding="utf-8",
+    )
+
+    files = (
+        discover_chunk_files(
+            tmp_path
         )
     )
 
-    parser.add_argument(
-        "query",
-        type=str,
-        help="Research question",
+    assert len(files) == 2
+
+
+def test_load_chunks_from_file(
+    tmp_path,
+):
+    text = (
+        "Mutation testing evaluates "
+        "generated unit tests."
     )
 
-    parser.add_argument(
-        "--top-k",
-        type=int,
-        default=None,
-        help=(
-            "Number of evidence chunks "
-            "to retrieve"
+    payload = {
+        "paper_id": "paper_a",
+
+        "chunk_count": 1,
+
+        "chunks": [
+            {
+                "chunk_id": (
+                    "paper_a_chunk_0000"
+                ),
+
+                "paper_id": (
+                    "paper_a"
+                ),
+
+                "text": text,
+
+                "page_number": 3,
+
+                "section": (
+                    "methodology"
+                ),
+
+                "chunk_index": 0,
+
+                "character_count": (
+                    len(text)
+                ),
+            }
+        ],
+    }
+
+    path = (
+        tmp_path
+        / "paper_a.json"
+    )
+
+    path.write_text(
+        json.dumps(
+            payload
         ),
+
+        encoding="utf-8",
     )
 
-    args = parser.parse_args()
-
-    retriever = (
-        SemanticRetriever()
+    chunks = (
+        load_chunks_from_file(
+            path
+        )
     )
 
-    results = retriever.search(
-        query=args.query,
-        top_k=args.top_k,
+    assert len(chunks) == 1
+
+    assert (
+        chunks[0].paper_id
+        == "paper_a"
     )
 
-    print()
-    print("=" * 70)
-
-    print(
-        f"QUERY: {args.query}"
+    assert (
+        chunks[0].page_number
+        == 3
     )
 
-    print("=" * 70)
-
-    for result in results:
-
-        print()
-        print(
-            f"Rank     : "
-            f"{result.rank}"
-        )
-
-        print(
-            f"Score    : "
-            f"{result.score:.4f}"
-        )
-
-        print(
-            f"Paper    : "
-            f"{result.paper_id}"
-        )
-
-        print(
-            f"Page     : "
-            f"{result.page_number}"
-        )
-
-        print(
-            f"Section  : "
-            f"{result.section}"
-        )
-
-        print(
-            f"Chunk    : "
-            f"{result.chunk_id}"
-        )
-
-        print()
-
-        print(
-            result.text
-        )
-
-        print()
-        print("-" * 70)
-
-
-if __name__ == "__main__":
-    main()
+    assert (
+        chunks[0].section
+        == "methodology"
+    )

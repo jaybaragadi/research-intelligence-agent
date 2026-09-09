@@ -84,21 +84,13 @@ class RetrievedChunk:
     """
 
     rank: int
-
     score: float
-
     raw_score: float
-
     lexical_score: float
-
     chunk_id: str
-
     paper_id: str
-
     page_number: int
-
     section: str | None
-
     text: str
 
 
@@ -106,45 +98,32 @@ class SemanticRetriever:
     """
     Hybrid research-evidence retriever.
 
-    Retrieval pipeline:
+    Retrieval combines:
 
-        user question
-             ↓
-        query embedding
-             ↓
-        FAISS candidate retrieval
-             ↓
-        low-value content filtering
-             ↓
-        lexical normalization
-             ↓
-        lexical overlap scoring
-             ↓
-        concept-alignment bonus
-             ↓
-        section-aware scoring
-             ↓
-        paper diversity
-             ↓
-        final top-k evidence
+    - normalized semantic similarity
+    - normalized lexical overlap
+    - concept-alignment bonus
+    - section-aware ranking
+    - query-aware section preference
+    - bibliography/reference filtering
+    - paper diversity
+
+    The retriever can also optionally scope
+    results to one or more paper IDs. This is
+    particularly useful for paper-comparison
+    workflows where every requested paper must
+    have an independent opportunity to provide
+    evidence.
     """
 
-    def __init__(
-        self,
-    ) -> None:
-
-        self.embedding_model = (
-            EmbeddingModel(
-                settings.embedding_model
-            )
+    def __init__(self) -> None:
+        self.embedding_model = EmbeddingModel(
+            settings.embedding_model
         )
 
-        self.store = (
-            FaissStore(
-                settings.vector_store_dir
-            )
+        self.store = FaissStore(
+            settings.vector_store_dir
         )
-
 
     def _normalize_token(
         self,
@@ -153,57 +132,34 @@ class SemanticRetriever:
         """
         Apply lightweight lexical normalization.
 
-        This helps align common morphological
-        variants without requiring a full NLP
-        dependency.
-
-        Examples:
-
-            tests       -> test
-            generated   -> generate
-            generating  -> generate
-            improves    -> improve
-            limitations -> limitation
+        This intentionally avoids a heavyweight
+        NLP dependency while handling common
+        variants that occur in research queries.
         """
 
         irregular_forms = {
             "generated": "generate",
             "generating": "generate",
             "generation": "generate",
-
             "improved": "improve",
             "improves": "improve",
             "improving": "improve",
-
             "limitations": "limitation",
-
             "approaches": "approach",
-
             "methods": "method",
-
             "techniques": "technique",
-
             "strategies": "strategy",
-
             "tests": "test",
-
             "papers": "paper",
-
             "results": "result",
-
             "benchmarks": "benchmark",
-
             "metrics": "metric",
-
             "challenges": "challenge",
-
             "weaknesses": "weakness",
-
             "risks": "risk",
         }
 
         if token in irregular_forms:
-
             return irregular_forms[
                 token
             ]
@@ -212,7 +168,6 @@ class SemanticRetriever:
             token.endswith("ies")
             and len(token) > 4
         ):
-
             return (
                 token[:-3]
                 + "y"
@@ -223,21 +178,17 @@ class SemanticRetriever:
             and not token.endswith("ss")
             and len(token) > 4
         ):
-
             return token[:-1]
 
         return token
-
 
     def _tokenize(
         self,
         text: str,
     ) -> set[str]:
         """
-        Convert text into normalized lexical
-        concepts.
-
-        Stopwords and very short tokens are removed.
+        Convert text into normalized research
+        terms for lightweight lexical scoring.
         """
 
         raw_tokens = re.findall(
@@ -266,13 +217,11 @@ class SemanticRetriever:
                 and normalized
                 not in STOPWORDS
             ):
-
                 tokens.add(
                     normalized
                 )
 
         return tokens
-
 
     def _lexical_score(
         self,
@@ -280,12 +229,8 @@ class SemanticRetriever:
         text: str,
     ) -> float:
         """
-        Measure normalized lexical overlap
-        between the query and the chunk.
-
-        Returns a value between:
-
-            0.0 and 1.0
+        Measure how many normalized query terms
+        are represented in an evidence chunk.
         """
 
         query_terms = (
@@ -295,7 +240,6 @@ class SemanticRetriever:
         )
 
         if not query_terms:
-
             return 0.0
 
         text_terms = (
@@ -314,32 +258,18 @@ class SemanticRetriever:
             / len(query_terms)
         )
 
-
     def _concept_alignment_bonus(
         self,
         query: str,
         text: str,
     ) -> float:
         """
-        Reward chunks containing several
-        meaningful query concepts.
+        Reward chunks that explicitly contain
+        several concepts from the research
+        question.
 
-        This helps distinguish direct evidence
-        from passages that merely contain one
-        semantically related term.
-
-        Example:
-
-            Query:
-                iterative feedback improve
-                generated tests
-
-            Strong passage:
-                iterative feedback improves
-                generated tests
-
-            Weak passage:
-                feedback-directed testing
+        This complements semantic similarity
+        without hard-coding individual queries.
         """
 
         query_terms = (
@@ -355,7 +285,6 @@ class SemanticRetriever:
         )
 
         if not query_terms:
-
             return 0.0
 
         matched_terms = (
@@ -368,31 +297,27 @@ class SemanticRetriever:
         )
 
         if matched_count >= 5:
-
             return 0.040
 
         if matched_count >= 4:
-
             return 0.025
 
         if matched_count >= 3:
-
             return 0.010
 
         return 0.0
-
 
     def _looks_like_reference_text(
         self,
         text: str,
     ) -> bool:
         """
-        Detect bibliography-heavy chunks.
+        Detect bibliography/reference-list
+        chunks that may have been assigned an
+        incorrect section during PDF parsing.
 
-        This protects retrieval quality when
-        section metadata is imperfect and a
-        references chunk is accidentally labeled
-        as another section.
+        This supplements the explicit
+        `references` section filter.
         """
 
         normalized = (
@@ -432,42 +357,32 @@ class SemanticRetriever:
         )
 
         if marker_count >= 3:
-
             return True
 
         if (
-            citation_patterns >= 6
-            and year_patterns >= 4
+            citation_patterns >= 4
+            and year_patterns >= 3
+            and marker_count >= 1
         ):
-
             return True
 
         return False
-
 
     def _section_bonus(
         self,
         section: str | None,
     ) -> float:
         """
-        Apply a small general research-section
-        bonus.
-
-        The bonus is deliberately small because
-        section metadata is not always perfect.
+        Small global research-section prior.
         """
 
         if section is None:
-
             return 0.0
 
-        return (
-            SECTION_BONUSES.get(
-                section,
-                0.0,
-            )
+        return SECTION_BONUSES.get(
+            section,
+            0.0,
         )
-
 
     def _query_section_bonus(
         self,
@@ -475,22 +390,15 @@ class SemanticRetriever:
         section: str | None,
     ) -> float:
         """
-        Apply small query-intent-aware section
-        bonuses.
+        Apply a small query-dependent section
+        preference.
 
         Example:
-
-            limitation questions
-
-        should prefer:
-
-            limitations
-            threats_to_validity
-            future_work
+        limitation questions should slightly
+        prefer threats/limitations sections.
         """
 
         if section is None:
-
             return 0.0
 
         normalized_query = (
@@ -556,64 +464,62 @@ class SemanticRetriever:
         )
 
         if any(
-            term in normalized_query
-            for term in limitation_terms
+            term
+            in normalized_query
+            for term
+            in limitation_terms
         ):
-
             if section in {
                 "limitations",
                 "threats_to_validity",
                 "future_work",
             }:
-
                 bonus += 0.050
 
             elif section in {
                 "discussion",
                 "conclusion",
             }:
-
                 bonus += 0.020
 
         if any(
-            term in normalized_query
-            for term in methodology_terms
+            term
+            in normalized_query
+            for term
+            in methodology_terms
         ):
-
             if (
                 section
                 == "methodology"
             ):
-
                 bonus += 0.030
 
         if any(
-            term in normalized_query
-            for term in result_terms
+            term
+            in normalized_query
+            for term
+            in result_terms
         ):
-
             if section in {
                 "results",
                 "evaluation",
             }:
-
                 bonus += 0.025
 
         if any(
-            term in normalized_query
-            for term in evaluation_terms
+            term
+            in normalized_query
+            for term
+            in evaluation_terms
         ):
-
             if section in {
                 "evaluation",
                 "experimental_setup",
                 "results",
             }:
-
                 bonus += 0.020
 
         return bonus
-
 
     def _hybrid_score(
         self,
@@ -626,16 +532,11 @@ class SemanticRetriever:
         float,
     ]:
         """
-        Combine semantic similarity,
-        lexical relevance, concept alignment,
-        and section-aware scoring.
+        Build the final ranking score.
 
-        Current weighting:
-
-            85% semantic similarity
-            15% lexical overlap
-
-        Small bonuses are added afterward.
+        Semantic similarity remains dominant.
+        Lexical and structural features only
+        provide lightweight reranking.
         """
 
         lexical_score = (
@@ -688,76 +589,87 @@ class SemanticRetriever:
             lexical_score,
         )
 
-
     def search(
         self,
         query: str,
         top_k: int | None = None,
         candidate_multiplier: int = 6,
         max_per_paper: int = 2,
+        allowed_paper_ids: (
+            set[str] | None
+        ) = None,
     ) -> list[RetrievedChunk]:
         """
-        Search the research corpus and return
-        high-quality evidence.
+        Search the research-paper vector index.
 
-        Example:
+        Parameters
+        ----------
+        query:
+            Natural-language research question.
 
-            top_k = 5
-            candidate_multiplier = 6
+        top_k:
+            Number of final evidence chunks.
 
-        FAISS first retrieves up to 30 candidate
-        chunks.
+        candidate_multiplier:
+            Number of initial FAISS candidates
+            relative to top_k for normal global
+            retrieval.
 
-        Those candidates are then:
+        max_per_paper:
+            Maximum number of returned chunks
+            from one paper.
 
-            filtered
-            normalized
-            lexically scored
-            concept scored
-            section scored
-            diversified
+        allowed_paper_ids:
+            Optional paper scope.
 
-        before returning the final top-k results.
+            When supplied, only evidence from
+            these papers is eligible.
+
+            Because the current FAISS index is
+            global, scoped retrieval searches
+            the complete small index before
+            filtering. This prevents a requested
+            paper from being crowded out by
+            globally higher-ranking papers.
         """
 
         if not query.strip():
-
             raise ValueError(
                 "Query cannot be empty"
             )
 
         if top_k is None:
-
             top_k = (
                 settings.top_k
             )
 
         if top_k <= 0:
-
             raise ValueError(
                 "top_k must be positive"
             )
 
         if candidate_multiplier <= 0:
-
             raise ValueError(
-                "candidate_multiplier "
-                "must be positive"
+                "candidate_multiplier must be positive"
             )
 
         if max_per_paper <= 0:
-
             raise ValueError(
-                "max_per_paper "
-                "must be positive"
+                "max_per_paper must be positive"
             )
+
+        if (
+            allowed_paper_ids
+            is not None
+            and not allowed_paper_ids
+        ):
+            return []
 
         chunks = (
             self.store.load_chunks()
         )
 
         if not chunks:
-
             return []
 
         query_embedding = (
@@ -766,14 +678,29 @@ class SemanticRetriever:
             )
         )
 
-        candidate_k = min(
-            len(chunks),
-            max(
-                top_k,
-                top_k
-                * candidate_multiplier,
-            ),
-        )
+        if allowed_paper_ids is not None:
+            # The corpus currently contains only
+            # ~1K vectors and uses exact FAISS
+            # IndexFlatIP search.
+            #
+            # Search the complete index so scoped
+            # comparison retrieval cannot lose a
+            # requested paper simply because that
+            # paper was outside a global Top-N
+            # candidate cutoff.
+            candidate_k = len(
+                chunks
+            )
+
+        else:
+            candidate_k = min(
+                len(chunks),
+                max(
+                    top_k,
+                    top_k
+                    * candidate_multiplier,
+                ),
+            )
 
         scores, indexes = (
             self.store.search(
@@ -790,9 +717,7 @@ class SemanticRetriever:
             scores[0],
             indexes[0],
         ):
-
             if index < 0:
-
                 continue
 
             chunk = chunks[
@@ -800,10 +725,17 @@ class SemanticRetriever:
             ]
 
             if (
+                allowed_paper_ids
+                is not None
+                and chunk.paper_id
+                not in allowed_paper_ids
+            ):
+                continue
+
+            if (
                 chunk.section
                 in LOW_VALUE_SECTIONS
             ):
-
                 continue
 
             if (
@@ -811,7 +743,6 @@ class SemanticRetriever:
                     chunk.text
                 )
             ):
-
                 continue
 
             raw_score = float(
@@ -821,13 +752,11 @@ class SemanticRetriever:
             (
                 hybrid_score,
                 lexical_score,
-            ) = (
-                self._hybrid_score(
-                    query=query,
-                    text=chunk.text,
-                    raw_score=raw_score,
-                    section=chunk.section,
-                )
+            ) = self._hybrid_score(
+                query=query,
+                text=chunk.text,
+                raw_score=raw_score,
+                section=chunk.section,
             )
 
             candidates.append(
@@ -897,7 +826,6 @@ class SemanticRetriever:
                 current_count
                 >= max_per_paper
             ):
-
                 continue
 
             candidate.rank = (
@@ -920,7 +848,6 @@ class SemanticRetriever:
                 len(selected)
                 >= top_k
             ):
-
                 break
 
         return selected
