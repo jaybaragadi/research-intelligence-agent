@@ -28,12 +28,10 @@ Thumbs.db
 # Generated project data
 data/processed/*
 data/vector_store/*
-reports/*
 
 # Keep directories in Git
 !data/processed/.gitkeep
 !data/vector_store/.gitkeep
-!reports/.gitkeep
 data/metadata/*
 !data/metadata/.gitkeep
 data/chunks/*
@@ -45,3 +43,7 @@ data/papers/*.pdf
 # Logs
 *.log
 logs/
+
+reports/*
+!reports/.gitkeep
+!reports/phase13_evaluation_report.md
