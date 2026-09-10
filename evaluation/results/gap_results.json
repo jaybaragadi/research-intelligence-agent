@@ -1,0 +1,125 @@
+{
+  "metrics": {
+    "case_count": 3,
+    "structural_pass_rate": 1.0,
+    "mean_signal_paper_coverage": 1.0,
+    "backend_validation_pass_rate": 1.0,
+    "candidate_evidence_reference_integrity": 1.0,
+    "mean_dimension_population_rate": 0.9444444444444445,
+    "total_candidates": 14,
+    "total_explicit_candidates": 14,
+    "total_corpus_imbalance_candidates": 0,
+    "total_insufficient_evidence_candidates": 0
+  },
+  "results": [
+    {
+      "gap_id": "GAP1",
+      "query": "What limitations and future research opportunities are reported in LLM-based automated software test generation?",
+      "requested_papers": [
+        "03_mutap",
+        "05_coverup",
+        "06_chatunitest"
+      ],
+      "signal_papers": [
+        "03_mutap",
+        "05_coverup",
+        "06_chatunitest"
+      ],
+      "missing_signal_papers": [],
+      "signal_paper_coverage": 1.0,
+      "signal_count": 3,
+      "candidate_count": 2,
+      "explicit_candidate_count": 2,
+      "corpus_imbalance_candidate_count": 0,
+      "insufficient_evidence_candidate_count": 0,
+      "candidate_evidence_reference_count": 3,
+      "missing_candidate_evidence_references": [],
+      "candidate_evidence_reference_integrity": 1.0,
+      "invalid_candidate_paper_references": [],
+      "dimension_coverage_count": 6,
+      "populated_dimension_count": 6,
+      "dimension_population_rate": 1.0,
+      "backend_validation_valid": true,
+      "backend_validation_issue_count": 0,
+      "structural_valid": true
+    },
+    {
+      "gap_id": "GAP2",
+      "query": "What research gaps are visible across symbolic, search-based, and feedback-driven test generation approaches?",
+      "requested_papers": [
+        "03_mutap",
+        "04_symprompt",
+        "05_coverup",
+        "07_codamosa"
+      ],
+      "signal_papers": [
+        "03_mutap",
+        "04_symprompt",
+        "05_coverup",
+        "07_codamosa"
+      ],
+      "missing_signal_papers": [],
+      "signal_paper_coverage": 1.0,
+      "signal_count": 4,
+      "candidate_count": 3,
+      "explicit_candidate_count": 3,
+      "corpus_imbalance_candidate_count": 0,
+      "insufficient_evidence_candidate_count": 0,
+      "candidate_evidence_reference_count": 4,
+      "missing_candidate_evidence_references": [],
+      "candidate_evidence_reference_integrity": 1.0,
+      "invalid_candidate_paper_references": [],
+      "dimension_coverage_count": 6,
+      "populated_dimension_count": 5,
+      "dimension_population_rate": 0.8333333333333334,
+      "backend_validation_valid": true,
+      "backend_validation_issue_count": 0,
+      "structural_valid": true
+    },
+    {
+      "gap_id": "GAP3",
+      "query": "What limitations, unresolved problems, future directions, and corpus coverage imbalances appear across the indexed software test-generation research?",
+      "requested_papers": [
+        "01_testpilot",
+        "02_chattester",
+        "03_mutap",
+        "04_symprompt",
+        "05_coverup",
+        "06_chatunitest",
+        "07_codamosa",
+        "08_telpa",
+        "09_hits",
+        "10_coding_before_testing"
+      ],
+      "signal_papers": [
+        "01_testpilot",
+        "02_chattester",
+        "03_mutap",
+        "04_symprompt",
+        "05_coverup",
+        "06_chatunitest",
+        "07_codamosa",
+        "08_telpa",
+        "09_hits",
+        "10_coding_before_testing"
+      ],
+      "missing_signal_papers": [],
+      "signal_paper_coverage": 1.0,
+      "signal_count": 14,
+      "candidate_count": 9,
+      "explicit_candidate_count": 9,
+      "corpus_imbalance_candidate_count": 0,
+      "insufficient_evidence_candidate_count": 0,
+      "candidate_evidence_reference_count": 14,
+      "missing_candidate_evidence_references": [],
+      "candidate_evidence_reference_integrity": 1.0,
+      "invalid_candidate_paper_references": [],
+      "dimension_coverage_count": 6,
+      "populated_dimension_count": 6,
+      "dimension_population_rate": 1.0,
+      "backend_validation_valid": true,
+      "backend_validation_issue_count": 0,
+      "structural_valid": true
+    }
+  ]
+}

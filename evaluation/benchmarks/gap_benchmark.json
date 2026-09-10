@@ -1,0 +1,40 @@
+[
+  {
+    "gap_id": "GAP1",
+    "query": "What limitations and future research opportunities are reported in LLM-based automated software test generation?",
+    "paper_ids": [
+      "03_mutap",
+      "05_coverup",
+      "06_chatunitest"
+    ],
+    "description": "Focused gap analysis across three LLM-based test-generation papers."
+  },
+  {
+    "gap_id": "GAP2",
+    "query": "What research gaps are visible across symbolic, search-based, and feedback-driven test generation approaches?",
+    "paper_ids": [
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "07_codamosa"
+    ],
+    "description": "Cross-methodology gap analysis."
+  },
+  {
+    "gap_id": "GAP3",
+    "query": "What limitations, unresolved problems, future directions, and corpus coverage imbalances appear across the indexed software test-generation research?",
+    "paper_ids": [
+      "01_testpilot",
+      "02_chattester",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "06_chatunitest",
+      "07_codamosa",
+      "08_telpa",
+      "09_hits",
+      "10_coding_before_testing"
+    ],
+    "description": "Full-corpus research-gap analysis."
+  }
+]

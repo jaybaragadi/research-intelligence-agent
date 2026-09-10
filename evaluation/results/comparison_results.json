@@ -1,0 +1,169 @@
+{
+  "metrics": {
+    "case_count": 3,
+    "structural_pass_rate": 1.0,
+    "mean_profile_paper_coverage": 1.0,
+    "mean_matrix_paper_coverage": 1.0,
+    "mean_matrix_population_rate": 0.7407407407407408,
+    "cell_evidence_reference_integrity": 1.0,
+    "finding_evidence_reference_integrity": 1.0
+  },
+  "results": [
+    {
+      "comparison_id": "C1",
+      "query": "Compare how mutation testing and coverage-guided feedback are used to improve LLM-generated tests.",
+      "requested_papers": [
+        "03_mutap",
+        "05_coverup"
+      ],
+      "profile_papers": [
+        "03_mutap",
+        "05_coverup"
+      ],
+      "matrix_papers": [
+        "03_mutap",
+        "05_coverup"
+      ],
+      "missing_profile_papers": [],
+      "missing_matrix_papers": [],
+      "profile_paper_coverage": 1.0,
+      "matrix_paper_coverage": 1.0,
+      "dimension_count": 6,
+      "matrix_cell_count": 12,
+      "populated_cell_count": 10,
+      "empty_cell_count": 2,
+      "matrix_population_rate": 0.8333333333333334,
+      "profile_evidence_count": 12,
+      "profile_evidence_ids": [
+        "03_mutap_chunk_0001",
+        "03_mutap_chunk_0096",
+        "03_mutap_chunk_0007",
+        "03_mutap_chunk_0020",
+        "03_mutap_chunk_0030",
+        "03_mutap_chunk_0034",
+        "05_coverup_chunk_0018",
+        "05_coverup_chunk_0005",
+        "05_coverup_chunk_0009",
+        "05_coverup_chunk_0016",
+        "05_coverup_chunk_0088",
+        "05_coverup_chunk_0017"
+      ],
+      "populated_cell_evidence_reference_count": 10,
+      "missing_cell_evidence_references": [],
+      "cell_evidence_reference_integrity": 1.0,
+      "finding_count": 5,
+      "finding_evidence_reference_count": 10,
+      "missing_finding_evidence_references": [],
+      "finding_evidence_reference_integrity": 1.0,
+      "invalid_finding_paper_references": [],
+      "structural_valid": true
+    },
+    {
+      "comparison_id": "C2",
+      "query": "Compare how symbolic information and search-based techniques support automated test generation.",
+      "requested_papers": [
+        "04_symprompt",
+        "07_codamosa"
+      ],
+      "profile_papers": [
+        "04_symprompt",
+        "07_codamosa"
+      ],
+      "matrix_papers": [
+        "04_symprompt",
+        "07_codamosa"
+      ],
+      "missing_profile_papers": [],
+      "missing_matrix_papers": [],
+      "profile_paper_coverage": 1.0,
+      "matrix_paper_coverage": 1.0,
+      "dimension_count": 6,
+      "matrix_cell_count": 12,
+      "populated_cell_count": 8,
+      "empty_cell_count": 4,
+      "matrix_population_rate": 0.6666666666666666,
+      "profile_evidence_count": 12,
+      "profile_evidence_ids": [
+        "04_symprompt_chunk_0014",
+        "04_symprompt_chunk_0012",
+        "04_symprompt_chunk_0028",
+        "04_symprompt_chunk_0013",
+        "04_symprompt_chunk_0076",
+        "04_symprompt_chunk_0006",
+        "07_codamosa_chunk_0001",
+        "07_codamosa_chunk_0073",
+        "07_codamosa_chunk_0069",
+        "07_codamosa_chunk_0074",
+        "07_codamosa_chunk_0000",
+        "07_codamosa_chunk_0014"
+      ],
+      "populated_cell_evidence_reference_count": 8,
+      "missing_cell_evidence_references": [],
+      "cell_evidence_reference_integrity": 1.0,
+      "finding_count": 3,
+      "finding_evidence_reference_count": 6,
+      "missing_finding_evidence_references": [],
+      "finding_evidence_reference_integrity": 1.0,
+      "invalid_finding_paper_references": [],
+      "structural_valid": true
+    },
+    {
+      "comparison_id": "C3",
+      "query": "Compare test-generation strategies, feedback mechanisms, evaluation methods, and limitations.",
+      "requested_papers": [
+        "03_mutap",
+        "05_coverup",
+        "06_chatunitest"
+      ],
+      "profile_papers": [
+        "03_mutap",
+        "05_coverup",
+        "06_chatunitest"
+      ],
+      "matrix_papers": [
+        "03_mutap",
+        "05_coverup",
+        "06_chatunitest"
+      ],
+      "missing_profile_papers": [],
+      "missing_matrix_papers": [],
+      "profile_paper_coverage": 1.0,
+      "matrix_paper_coverage": 1.0,
+      "dimension_count": 6,
+      "matrix_cell_count": 18,
+      "populated_cell_count": 13,
+      "empty_cell_count": 5,
+      "matrix_population_rate": 0.7222222222222222,
+      "profile_evidence_count": 18,
+      "profile_evidence_ids": [
+        "03_mutap_chunk_0041",
+        "03_mutap_chunk_0087",
+        "03_mutap_chunk_0055",
+        "03_mutap_chunk_0002",
+        "03_mutap_chunk_0069",
+        "03_mutap_chunk_0004",
+        "05_coverup_chunk_0007",
+        "05_coverup_chunk_0005",
+        "05_coverup_chunk_0009",
+        "05_coverup_chunk_0046",
+        "05_coverup_chunk_0088",
+        "05_coverup_chunk_0071",
+        "06_chatunitest_chunk_0001",
+        "06_chatunitest_chunk_0009",
+        "06_chatunitest_chunk_0008",
+        "06_chatunitest_chunk_0017",
+        "06_chatunitest_chunk_0005",
+        "06_chatunitest_chunk_0032"
+      ],
+      "populated_cell_evidence_reference_count": 13,
+      "missing_cell_evidence_references": [],
+      "cell_evidence_reference_integrity": 1.0,
+      "finding_count": 5,
+      "finding_evidence_reference_count": 13,
+      "missing_finding_evidence_references": [],
+      "finding_evidence_reference_integrity": 1.0,
+      "invalid_finding_paper_references": [],
+      "structural_valid": true
+    }
+  ]
+}

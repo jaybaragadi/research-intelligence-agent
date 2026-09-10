@@ -1,0 +1,44 @@
+[
+  {
+    "workflow_id": "E2E1",
+    "query": "How do LLM-based test-generation approaches use feedback, iteration, and quality signals to improve generated tests?",
+    "paper_ids": [
+      "03_mutap",
+      "05_coverup",
+      "06_chatunitest"
+    ],
+    "title": "Feedback and Iterative Refinement in LLM-Based Test Generation",
+    "description": "Focused end-to-end workflow across feedback-oriented test-generation approaches."
+  },
+  {
+    "workflow_id": "E2E2",
+    "query": "How do symbolic, search-based, and LLM-assisted approaches differ in automated software test generation?",
+    "paper_ids": [
+      "01_testpilot",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "07_codamosa"
+    ],
+    "title": "Comparative Review of Automated Test Generation Approaches",
+    "description": "Cross-methodology end-to-end workflow."
+  },
+  {
+    "workflow_id": "E2E3",
+    "query": "How are Large Language Models being used for automated software test generation, how are these approaches evaluated, and what limitations and research opportunities are reported?",
+    "paper_ids": [
+      "01_testpilot",
+      "02_chattester",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "06_chatunitest",
+      "07_codamosa",
+      "08_telpa",
+      "09_hits",
+      "10_coding_before_testing"
+    ],
+    "title": "Evidence-Grounded Analysis of LLM-Assisted Software Test Generation",
+    "description": "Full indexed-corpus end-to-end workflow."
+  }
+]

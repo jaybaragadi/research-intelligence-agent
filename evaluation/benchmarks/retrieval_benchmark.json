@@ -1,0 +1,52 @@
+[
+  {
+    "question_id": "R1",
+    "query": "How does mutation testing improve LLM-based unit test generation?",
+    "expected_papers": [
+      "03_mutap"
+    ],
+    "description": "MuTAP should be retrieved because it explicitly combines mutation testing with LLM-based test generation."
+  },
+  {
+    "question_id": "R2",
+    "query": "How does coverage-guided feedback improve generated tests?",
+    "expected_papers": [
+      "05_coverup"
+    ],
+    "description": "CoverUp should be retrieved for coverage-guided test generation."
+  },
+  {
+    "question_id": "R3",
+    "query": "How are symbolic execution or symbolic information used to improve generated tests?",
+    "expected_papers": [
+      "04_symprompt"
+    ],
+    "description": "SymPrompt should be retrieved for symbolic information used during test generation."
+  },
+  {
+    "question_id": "R4",
+    "query": "How can LLM-generated tests be improved through iterative feedback?",
+    "expected_papers": [
+      "03_mutap",
+      "05_coverup",
+      "06_chatunitest"
+    ],
+    "description": "Several papers use iterative or feedback-driven refinement."
+  },
+  {
+    "question_id": "R5",
+    "query": "What approaches use large language models to automatically generate software tests?",
+    "expected_papers": [
+      "01_testpilot",
+      "02_chattester",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "06_chatunitest",
+      "07_codamosa",
+      "08_telpa",
+      "09_hits"
+    ],
+    "description": "Broad query expected to retrieve multiple LLM-assisted test-generation papers."
+  }
+]

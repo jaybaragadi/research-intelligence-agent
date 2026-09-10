@@ -1,0 +1,47 @@
+[
+  {
+    "question_id": "G1",
+    "query": "How does mutation testing improve LLM-based unit test generation?",
+    "expected_papers": [
+      "03_mutap"
+    ]
+  },
+  {
+    "question_id": "G2",
+    "query": "How does coverage-guided feedback improve generated software tests?",
+    "expected_papers": [
+      "05_coverup"
+    ]
+  },
+  {
+    "question_id": "G3",
+    "query": "How is symbolic information used to improve LLM-generated tests?",
+    "expected_papers": [
+      "04_symprompt"
+    ]
+  },
+  {
+    "question_id": "G4",
+    "query": "How are iterative feedback techniques used in LLM-based test generation?",
+    "expected_papers": [
+      "03_mutap",
+      "05_coverup",
+      "06_chatunitest"
+    ]
+  },
+  {
+    "question_id": "G5",
+    "query": "What approaches use large language models to automatically generate software tests?",
+    "expected_papers": [
+      "01_testpilot",
+      "02_chattester",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "06_chatunitest",
+      "07_codamosa",
+      "08_telpa",
+      "09_hits"
+    ]
+  }
+]

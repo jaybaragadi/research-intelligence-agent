@@ -1,0 +1,30 @@
+[
+  {
+    "comparison_id": "C1",
+    "query": "Compare how mutation testing and coverage-guided feedback are used to improve LLM-generated tests.",
+    "paper_ids": [
+      "03_mutap",
+      "05_coverup"
+    ],
+    "description": "Focused comparison between MuTAP and CoverUp."
+  },
+  {
+    "comparison_id": "C2",
+    "query": "Compare how symbolic information and search-based techniques support automated test generation.",
+    "paper_ids": [
+      "04_symprompt",
+      "07_codamosa"
+    ],
+    "description": "Comparison between SymPrompt and CodaMOSA."
+  },
+  {
+    "comparison_id": "C3",
+    "query": "Compare test-generation strategies, feedback mechanisms, evaluation methods, and limitations.",
+    "paper_ids": [
+      "03_mutap",
+      "05_coverup",
+      "06_chatunitest"
+    ],
+    "description": "Multi-paper comparison of three LLM-based test-generation approaches."
+  }
+]

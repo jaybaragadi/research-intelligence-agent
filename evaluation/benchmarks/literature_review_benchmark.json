@@ -1,0 +1,44 @@
+[
+  {
+    "review_id": "LR1",
+    "title": "Focused Review of Feedback-Driven LLM Test Generation",
+    "query": "How do LLM-based software test generation approaches use feedback and iterative refinement, and what limitations are reported?",
+    "paper_ids": [
+      "03_mutap",
+      "05_coverup",
+      "06_chatunitest"
+    ],
+    "description": "Focused literature review across feedback-oriented LLM test-generation approaches."
+  },
+  {
+    "review_id": "LR2",
+    "title": "Review of Automated Test Generation Strategies",
+    "query": "How do symbolic, search-based, and LLM-assisted approaches support automated software test generation, and how are they evaluated?",
+    "paper_ids": [
+      "01_testpilot",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "07_codamosa"
+    ],
+    "description": "Cross-methodology literature review."
+  },
+  {
+    "review_id": "LR3",
+    "title": "Evidence-Grounded Review of LLM-Assisted Software Test Generation",
+    "query": "How are Large Language Models being used for automated software test generation, how are these approaches evaluated, and what limitations and future research directions are reported?",
+    "paper_ids": [
+      "01_testpilot",
+      "02_chattester",
+      "03_mutap",
+      "04_symprompt",
+      "05_coverup",
+      "06_chatunitest",
+      "07_codamosa",
+      "08_telpa",
+      "09_hits",
+      "10_coding_before_testing"
+    ],
+    "description": "Full indexed-corpus literature review."
+  }
+]
