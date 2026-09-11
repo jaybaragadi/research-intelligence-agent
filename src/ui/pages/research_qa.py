@@ -40,6 +40,24 @@ def _render_grounding_status(answer) -> None:
         )
 
 
+def _render_answer_summary(answer) -> None:
+    """Render validated grounded claims as a readable answer summary."""
+
+    st.subheader("Evidence-Grounded Answer")
+
+    if not answer.claims:
+        with st.container(border=True):
+            st.write(answer.answer_text)
+        return
+
+    with st.container(border=True):
+        for claim in answer.claims:
+            st.markdown(f"- {claim.text}")
+
+            if claim.evidence_ids:
+                st.caption("Supporting evidence: " + ", ".join(claim.evidence_ids))
+
+
 def _render_claims(answer) -> None:
 
     st.subheader("Grounded Claims")
@@ -168,16 +186,13 @@ def render_research_qa_page() -> None:
     except Exception as exc:
 
         st.error("The research question could not be processed.")
-
         st.exception(exc)
 
         return
 
     st.divider()
 
-    st.subheader("Evidence-Grounded Answer")
-
-    st.write(answer.answer_text)
+    _render_answer_summary(answer)
 
     _render_grounding_status(answer)
 

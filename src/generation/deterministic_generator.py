@@ -222,6 +222,9 @@ class DeterministicGroundedGenerator:
 
         for sentence in sentences:
 
+            if self._is_front_matter_contaminated(sentence):
+                continue
+
             sentence_tokens = set(self._tokens(sentence))
 
             score = sum(
@@ -342,3 +345,31 @@ class DeterministicGroundedGenerator:
             answer_text=" ".join(rendered),
             claims=claims,
         )
+
+    def _is_front_matter_contaminated(
+        self,
+        sentence: str,
+    ) -> bool:
+        """
+        Detect sentences contaminated by PDF title/author
+        front matter before an abstract marker.
+
+        These are extraction artifacts rather than clean
+        research claims and should not be synthesized as
+        grounded answer statements.
+        """
+
+        normalized = self._normalize(sentence)
+
+        abstract_match = re.search(
+            r"\babstract\b\s*[—–:-]",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+
+        if not abstract_match:
+            return False
+
+        prefix = normalized[: abstract_match.start()].strip()
+
+        return len(prefix.split()) >= 4

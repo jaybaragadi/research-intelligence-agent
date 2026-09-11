@@ -172,3 +172,39 @@ def test_generator_rejects_generic_domain_language():
     assert len(draft.claims) == 1
 
     assert draft.claims[0].evidence_ids == ["paper_a_chunk_0002"]
+
+
+def test_generator_ignores_front_matter_contaminated_sentence():
+
+    package = EvidencePackage(
+        query=(
+            "How are Large Language Models being used "
+            "to improve automated software test generation?"
+        ),
+        evidence=[
+            make_evidence(
+                "paper_a_chunk_0001",
+                "E1",
+                (
+                    "An Empirical Evaluation of Using Large Language Models "
+                    "for Automated Unit Test Generation Max Author, Jane Author "
+                    "Abstract—Unit tests play a key role in ensuring the "
+                    "correctness of software."
+                ),
+            ),
+            make_evidence(
+                "paper_a_chunk_0002",
+                "E2",
+                (
+                    "Large language models are used with iterative feedback "
+                    "to improve generated tests and correct invalid outputs."
+                ),
+            ),
+        ],
+    )
+
+    draft = DeterministicGroundedGenerator().generate(package)
+
+    assert len(draft.claims) == 1
+    assert draft.claims[0].evidence_ids == ["paper_a_chunk_0002"]
+    assert "Abstract" not in draft.claims[0].text
