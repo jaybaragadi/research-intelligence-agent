@@ -2,38 +2,17 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 RESULTS_DIR = Path("evaluation/results")
-REPORT_PATH = Path(
-    "reports/phase13_evaluation_report.md"
-)
+REPORT_PATH = Path("reports/phase13_evaluation_report.md")
 
 
 RESULT_FILES = {
-    "retrieval": (
-        RESULTS_DIR
-        / "retrieval_results.json"
-    ),
-    "grounding": (
-        RESULTS_DIR
-        / "grounding_results.json"
-    ),
-    "comparison": (
-        RESULTS_DIR
-        / "comparison_results.json"
-    ),
-    "gaps": (
-        RESULTS_DIR
-        / "gap_results.json"
-    ),
-    "literature_review": (
-        RESULTS_DIR
-        / "literature_review_results.json"
-    ),
-    "end_to_end": (
-        RESULTS_DIR
-        / "end_to_end_results.json"
-    ),
+    "retrieval": (RESULTS_DIR / "retrieval_results.json"),
+    "grounding": (RESULTS_DIR / "grounding_results.json"),
+    "comparison": (RESULTS_DIR / "comparison_results.json"),
+    "gaps": (RESULTS_DIR / "gap_results.json"),
+    "literature_review": (RESULTS_DIR / "literature_review_results.json"),
+    "end_to_end": (RESULTS_DIR / "end_to_end_results.json"),
 }
 
 
@@ -43,9 +22,7 @@ def load_json(
 
     if not path.exists():
 
-        raise FileNotFoundError(
-            f"Missing evaluation result: {path}"
-        )
+        raise FileNotFoundError(f"Missing evaluation result: {path}")
 
     with path.open(
         "r",
@@ -73,29 +50,17 @@ def build_report(
     data: dict[str, dict[str, Any]],
 ) -> str:
 
-    retrieval = data[
-        "retrieval"
-    ]["metrics"]
+    retrieval = data["retrieval"]["metrics"]
 
-    grounding = data[
-        "grounding"
-    ]["metrics"]
+    grounding = data["grounding"]["metrics"]
 
-    comparison = data[
-        "comparison"
-    ]["metrics"]
+    comparison = data["comparison"]["metrics"]
 
-    gaps = data[
-        "gaps"
-    ]["metrics"]
+    gaps = data["gaps"]["metrics"]
 
-    review = data[
-        "literature_review"
-    ]["metrics"]
+    review = data["literature_review"]["metrics"]
 
-    end_to_end = data[
-        "end_to_end"
-    ]["metrics"]
+    end_to_end = data["end_to_end"]["metrics"]
 
     lines = [
         "# Phase 13 Evaluation Report",
@@ -148,18 +113,9 @@ def build_report(
         "",
         "| Evaluation | Metric | Result |",
         "|---|---|---:|",
-        (
-            "| Retrieval | Hit@1 | "
-            f"{percent(retrieval['hit_at_1'])} |"
-        ),
-        (
-            "| Retrieval | Hit@5 | "
-            f"{percent(retrieval['hit_at_5'])} |"
-        ),
-        (
-            "| Retrieval | MRR | "
-            f"{decimal(retrieval['mean_reciprocal_rank'])} |"
-        ),
+        ("| Retrieval | Hit@1 | " f"{percent(retrieval['hit_at_1'])} |"),
+        ("| Retrieval | Hit@5 | " f"{percent(retrieval['hit_at_5'])} |"),
+        ("| Retrieval | MRR | " f"{decimal(retrieval['mean_reciprocal_rank'])} |"),
         (
             "| Retrieval | Mean Recall@10 | "
             f"{percent(retrieval['mean_recall_at_10'])} |"
@@ -215,39 +171,15 @@ def build_report(
         "",
         "## 3. Retrieval Evaluation",
         "",
-        (
-            f"The retrieval benchmark contained "
-            f"{retrieval['case_count']} cases."
-        ),
+        (f"The retrieval benchmark contained " f"{retrieval['case_count']} cases."),
         "",
-        (
-            f"- Hit@1: "
-            f"{percent(retrieval['hit_at_1'])}"
-        ),
-        (
-            f"- Hit@3: "
-            f"{percent(retrieval['hit_at_3'])}"
-        ),
-        (
-            f"- Hit@5: "
-            f"{percent(retrieval['hit_at_5'])}"
-        ),
-        (
-            f"- Mean Reciprocal Rank: "
-            f"{decimal(retrieval['mean_reciprocal_rank'])}"
-        ),
-        (
-            f"- Mean Recall@3: "
-            f"{percent(retrieval['mean_recall_at_3'])}"
-        ),
-        (
-            f"- Mean Recall@5: "
-            f"{percent(retrieval['mean_recall_at_5'])}"
-        ),
-        (
-            f"- Mean Recall@10: "
-            f"{percent(retrieval['mean_recall_at_10'])}"
-        ),
+        (f"- Hit@1: " f"{percent(retrieval['hit_at_1'])}"),
+        (f"- Hit@3: " f"{percent(retrieval['hit_at_3'])}"),
+        (f"- Hit@5: " f"{percent(retrieval['hit_at_5'])}"),
+        (f"- Mean Reciprocal Rank: " f"{decimal(retrieval['mean_reciprocal_rank'])}"),
+        (f"- Mean Recall@3: " f"{percent(retrieval['mean_recall_at_3'])}"),
+        (f"- Mean Recall@5: " f"{percent(retrieval['mean_recall_at_5'])}"),
+        (f"- Mean Recall@10: " f"{percent(retrieval['mean_recall_at_10'])}"),
         "",
         (
             "Interpretation: the current hybrid "
@@ -268,10 +200,7 @@ def build_report(
         "",
         "## 4. Grounding Evaluation",
         "",
-        (
-            f"The grounding benchmark contained "
-            f"{grounding['case_count']} cases."
-        ),
+        (f"The grounding benchmark contained " f"{grounding['case_count']} cases."),
         "",
         (
             f"- Backend validation pass rate: "
@@ -313,14 +242,8 @@ def build_report(
         "",
         "## 5. Comparative-Analysis Evaluation",
         "",
-        (
-            f"- Cases: "
-            f"{comparison['case_count']}"
-        ),
-        (
-            f"- Structural pass rate: "
-            f"{percent(comparison['structural_pass_rate'])}"
-        ),
+        (f"- Cases: " f"{comparison['case_count']}"),
+        (f"- Structural pass rate: " f"{percent(comparison['structural_pass_rate'])}"),
         (
             f"- Mean profile paper coverage: "
             f"{percent(comparison['mean_profile_paper_coverage'])}"
@@ -358,18 +281,9 @@ def build_report(
         "",
         "## 6. Research-Gap Evaluation",
         "",
-        (
-            f"- Cases: "
-            f"{gaps['case_count']}"
-        ),
-        (
-            f"- Structural pass rate: "
-            f"{percent(gaps['structural_pass_rate'])}"
-        ),
-        (
-            f"- Signal paper coverage: "
-            f"{percent(gaps['mean_signal_paper_coverage'])}"
-        ),
+        (f"- Cases: " f"{gaps['case_count']}"),
+        (f"- Structural pass rate: " f"{percent(gaps['structural_pass_rate'])}"),
+        (f"- Signal paper coverage: " f"{percent(gaps['mean_signal_paper_coverage'])}"),
         (
             f"- Backend validation pass rate: "
             f"{percent(gaps['backend_validation_pass_rate'])}"
@@ -382,14 +296,8 @@ def build_report(
             f"- Mean dimension population rate: "
             f"{percent(gaps['mean_dimension_population_rate'])}"
         ),
-        (
-            f"- Total candidates: "
-            f"{gaps['total_candidates']}"
-        ),
-        (
-            f"- Explicit candidates: "
-            f"{gaps['total_explicit_candidates']}"
-        ),
+        (f"- Total candidates: " f"{gaps['total_candidates']}"),
+        (f"- Explicit candidates: " f"{gaps['total_explicit_candidates']}"),
         (
             f"- Corpus-imbalance candidates: "
             f"{gaps['total_corpus_imbalance_candidates']}"
@@ -415,14 +323,8 @@ def build_report(
         "",
         "## 7. Literature-Review Evaluation",
         "",
-        (
-            f"- Cases: "
-            f"{review['case_count']}"
-        ),
-        (
-            f"- Structural pass rate: "
-            f"{percent(review['structural_pass_rate'])}"
-        ),
+        (f"- Cases: " f"{review['case_count']}"),
+        (f"- Structural pass rate: " f"{percent(review['structural_pass_rate'])}"),
         (
             f"- Backend validation pass rate: "
             f"{percent(review['backend_validation_pass_rate'])}"
@@ -451,18 +353,9 @@ def build_report(
             f"- Corpus-scope note pass rate: "
             f"{percent(review['corpus_scope_note_pass_rate'])}"
         ),
-        (
-            f"- Total findings: "
-            f"{review['total_findings']}"
-        ),
-        (
-            f"- Total evidence placements: "
-            f"{review['total_evidence_placements']}"
-        ),
-        (
-            f"- Total citations: "
-            f"{review['total_citations']}"
-        ),
+        (f"- Total findings: " f"{review['total_findings']}"),
+        (f"- Total evidence placements: " f"{review['total_evidence_placements']}"),
+        (f"- Total citations: " f"{review['total_citations']}"),
         "",
         (
             "Interpretation: literature reviews "
@@ -474,22 +367,13 @@ def build_report(
         "",
         "## 8. End-to-End Evaluation",
         "",
-        (
-            f"- Cases: "
-            f"{end_to_end['case_count']}"
-        ),
-        (
-            f"- Structural pass rate: "
-            f"{percent(end_to_end['structural_pass_rate'])}"
-        ),
+        (f"- Cases: " f"{end_to_end['case_count']}"),
+        (f"- Structural pass rate: " f"{percent(end_to_end['structural_pass_rate'])}"),
         (
             f"- Mean stage success rate: "
             f"{percent(end_to_end['mean_stage_success_rate'])}"
         ),
-        (
-            f"- Answer success rate: "
-            f"{percent(end_to_end['answer_success_rate'])}"
-        ),
+        (f"- Answer success rate: " f"{percent(end_to_end['answer_success_rate'])}"),
         (
             f"- Comparison success rate: "
             f"{percent(end_to_end['comparison_success_rate'])}"
@@ -506,38 +390,17 @@ def build_report(
             f"- Comparison paper coverage: "
             f"{percent(end_to_end['mean_comparison_paper_coverage'])}"
         ),
-        (
-            f"- Gap paper coverage: "
-            f"{percent(end_to_end['mean_gap_paper_coverage'])}"
-        ),
+        (f"- Gap paper coverage: " f"{percent(end_to_end['mean_gap_paper_coverage'])}"),
         (
             f"- Literature-review paper coverage: "
             f"{percent(end_to_end['mean_literature_review_paper_coverage'])}"
         ),
-        (
-            f"- Total answer claims: "
-            f"{end_to_end['total_answer_claims']}"
-        ),
-        (
-            f"- Total comparison findings: "
-            f"{end_to_end['total_comparison_findings']}"
-        ),
-        (
-            f"- Total gap candidates: "
-            f"{end_to_end['total_gap_candidates']}"
-        ),
-        (
-            f"- Total review findings: "
-            f"{end_to_end['total_review_findings']}"
-        ),
-        (
-            f"- Total review citations: "
-            f"{end_to_end['total_review_citations']}"
-        ),
-        (
-            f"- Shared evidence IDs: "
-            f"{end_to_end['total_shared_evidence_ids']}"
-        ),
+        (f"- Total answer claims: " f"{end_to_end['total_answer_claims']}"),
+        (f"- Total comparison findings: " f"{end_to_end['total_comparison_findings']}"),
+        (f"- Total gap candidates: " f"{end_to_end['total_gap_candidates']}"),
+        (f"- Total review findings: " f"{end_to_end['total_review_findings']}"),
+        (f"- Total review citations: " f"{end_to_end['total_review_citations']}"),
+        (f"- Shared evidence IDs: " f"{end_to_end['total_shared_evidence_ids']}"),
         "",
         (
             "Interpretation: all benchmark workflows "
@@ -648,22 +511,14 @@ def build_report(
         "",
     ]
 
-    return "\n".join(
-        lines
-    )
+    return "\n".join(lines)
 
 
 def main() -> None:
 
-    data = {
-        name: load_json(path)
-        for name, path
-        in RESULT_FILES.items()
-    }
+    data = {name: load_json(path) for name, path in RESULT_FILES.items()}
 
-    report = build_report(
-        data
-    )
+    report = build_report(data)
 
     REPORT_PATH.parent.mkdir(
         parents=True,
@@ -675,13 +530,9 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    print(
-        "Phase 13 evaluation report generated:"
-    )
+    print("Phase 13 evaluation report generated:")
 
-    print(
-        REPORT_PATH
-    )
+    print(REPORT_PATH)
 
 
 if __name__ == "__main__":

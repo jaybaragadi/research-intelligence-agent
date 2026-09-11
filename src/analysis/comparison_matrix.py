@@ -1,13 +1,11 @@
 from src.analysis.comparison_dimensions import (
     COMPARISON_DIMENSIONS,
 )
-
 from src.analysis.comparison_models import (
     ComparisonCell,
     ComparisonRow,
     PaperAnalysisProfile,
 )
-
 from src.analysis.dimension_summary import (
     DimensionSummarySelector,
 )
@@ -22,25 +20,14 @@ class ComparisonMatrixBuilder:
     def __init__(
         self,
         max_evidence_per_cell: int = 2,
-        summary_selector: (
-            DimensionSummarySelector
-            | None
-        ) = None,
+        summary_selector: DimensionSummarySelector | None = None,
     ) -> None:
 
-        if (
-            max_evidence_per_cell
-            <= 0
-        ):
+        if max_evidence_per_cell <= 0:
 
-            raise ValueError(
-                "max_evidence_per_cell "
-                "must be positive"
-            )
+            raise ValueError("max_evidence_per_cell " "must be positive")
 
-        self.max_evidence_per_cell = (
-            max_evidence_per_cell
-        )
+        self.max_evidence_per_cell = max_evidence_per_cell
 
         self.summary_selector = (
             summary_selector
@@ -51,37 +38,20 @@ class ComparisonMatrixBuilder:
     def build(
         self,
         requested_papers: list[str],
-        profiles: list[
-            PaperAnalysisProfile
-        ],
+        profiles: list[PaperAnalysisProfile],
     ) -> list[ComparisonRow]:
 
-        profile_map = {
-            profile.paper_id: profile
-            for profile in profiles
-        }
+        profile_map = {profile.paper_id: profile for profile in profiles}
 
-        rows: list[
-            ComparisonRow
-        ] = []
+        rows: list[ComparisonRow] = []
 
-        for definition in (
-            COMPARISON_DIMENSIONS
-        ):
+        for definition in COMPARISON_DIMENSIONS:
 
-            cells: list[
-                ComparisonCell
-            ] = []
+            cells: list[ComparisonCell] = []
 
-            for paper_id in (
-                requested_papers
-            ):
+            for paper_id in requested_papers:
 
-                profile = (
-                    profile_map.get(
-                        paper_id
-                    )
-                )
+                profile = profile_map.get(paper_id)
 
                 evidence = []
 
@@ -90,56 +60,33 @@ class ComparisonMatrixBuilder:
                     dimension = next(
                         (
                             item
-                            for item
-                            in profile.dimensions
-                            if (
-                                item.dimension
-                                == definition.name
-                            )
+                            for item in profile.dimensions
+                            if (item.dimension == definition.name)
                         ),
                         None,
                     )
 
                     if dimension is not None:
 
-                        evidence = (
-                            dimension.evidence[
-                                :self.max_evidence_per_cell
-                            ]
-                        )
+                        evidence = dimension.evidence[: self.max_evidence_per_cell]
 
-                summary, evidence_ids = (
-                    self.summary_selector.select(
-                        dimension=(
-                            definition.name
-                        ),
-
-                        evidence=evidence,
-                    )
+                summary, evidence_ids = self.summary_selector.select(
+                    dimension=(definition.name),
+                    evidence=evidence,
                 )
 
                 cells.append(
                     ComparisonCell(
                         paper_id=paper_id,
-
-                        dimension=(
-                            definition.name
-                        ),
-
+                        dimension=(definition.name),
                         summary=summary,
-
-                        evidence_ids=(
-                            evidence_ids
-                        ),
+                        evidence_ids=(evidence_ids),
                     )
                 )
 
             rows.append(
                 ComparisonRow(
-                    dimension=(
-                        definition.name
-                    ),
-
+                    dimension=(definition.name),
                     cells=cells,
                 )
             )

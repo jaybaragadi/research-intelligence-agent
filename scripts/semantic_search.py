@@ -8,10 +8,7 @@ from src.retrieval.retriever import (
 def main() -> None:
 
     parser = argparse.ArgumentParser(
-        description=(
-            "Semantic search across "
-            "research papers"
-        )
+        description=("Semantic search across " "research papers")
     )
 
     parser.add_argument(
@@ -24,17 +21,12 @@ def main() -> None:
         "--top-k",
         type=int,
         default=None,
-        help=(
-            "Number of evidence chunks "
-            "to retrieve"
-        ),
+        help=("Number of evidence chunks " "to retrieve"),
     )
 
     args = parser.parse_args()
 
-    retriever = (
-        SemanticRetriever()
-    )
+    retriever = SemanticRetriever()
 
     results = retriever.search(
         query=args.query,
@@ -44,60 +36,32 @@ def main() -> None:
     print()
     print("=" * 70)
 
-    print(
-        f"QUERY: {args.query}"
-    )
+    print(f"QUERY: {args.query}")
 
     print("=" * 70)
 
     for result in results:
 
         print()
-        print(
-            f"Rank     : "
-            f"{result.rank}"
-        )
+        print(f"Rank     : " f"{result.rank}")
 
-        print(
-            f"Score    : "
-            f"{result.score:.4f}"
-        )
+        print(f"Score    : " f"{result.score:.4f}")
 
-        print(
-            f"Raw score: "
-            f"{result.raw_score:.4f}"
-        )
+        print(f"Raw score: " f"{result.raw_score:.4f}")
 
-        print(
-            f"Lexical score: "
-            f"{result.lexical_score:.4f}"
-        )
+        print(f"Lexical score: " f"{result.lexical_score:.4f}")
 
-        print(
-            f"Paper    : "
-            f"{result.paper_id}"
-        )
+        print(f"Paper    : " f"{result.paper_id}")
 
-        print(
-            f"Page     : "
-            f"{result.page_number}"
-        )
+        print(f"Page     : " f"{result.page_number}")
 
-        print(
-            f"Section  : "
-            f"{result.section}"
-        )
+        print(f"Section  : " f"{result.section}")
 
-        print(
-            f"Chunk    : "
-            f"{result.chunk_id}"
-        )
+        print(f"Chunk    : " f"{result.chunk_id}")
 
         print()
 
-        print(
-            result.text
-        )
+        print(result.text)
 
         print()
         print("-" * 70)

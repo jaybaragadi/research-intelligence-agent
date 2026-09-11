@@ -41,11 +41,7 @@ class EvidencePackage:
 
     query: str
 
-    evidence: list[
-        GroundingEvidence
-    ] = field(
-        default_factory=list
-    )
+    evidence: list[GroundingEvidence] = field(default_factory=list)
 
 
 @dataclass
@@ -59,11 +55,7 @@ class GeneratedClaim:
 
     text: str
 
-    evidence_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -77,11 +69,7 @@ class GeneratedDraft:
 
     answer_text: str
 
-    claims: list[
-        GeneratedClaim
-    ] = field(
-        default_factory=list
-    )
+    claims: list[GeneratedClaim] = field(default_factory=list)
 
 
 @dataclass
@@ -112,11 +100,7 @@ class GroundingValidationResult:
 
     issue_count: int
 
-    issues: list[
-        GroundingIssue
-    ] = field(
-        default_factory=list
-    )
+    issues: list[GroundingIssue] = field(default_factory=list)
 
 
 @dataclass
@@ -133,12 +117,8 @@ class GroundedAnswer:
 
     answer_text: str
 
-    claims: list[
-        GeneratedClaim
-    ]
+    claims: list[GeneratedClaim]
 
-    evidence: list[
-        GroundingEvidence
-    ]
+    evidence: list[GroundingEvidence]
 
     validation: GroundingValidationResult

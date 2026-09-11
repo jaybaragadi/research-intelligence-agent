@@ -10,32 +10,16 @@ from src.analysis.literature_review_models import (
     LiteratureReviewSectionType,
 )
 
-
 DIMENSION_TO_REVIEW_SECTIONS = {
     "generation_strategy": (
         LiteratureReviewSectionType.RESEARCH_LANDSCAPE,
         LiteratureReviewSectionType.GENERATION_STRATEGIES,
     ),
-
-    "feedback_signal": (
-        LiteratureReviewSectionType.FEEDBACK_AND_ITERATION,
-    ),
-
-    "iteration_strategy": (
-        LiteratureReviewSectionType.FEEDBACK_AND_ITERATION,
-    ),
-
-    "quality_objective": (
-        LiteratureReviewSectionType.QUALITY_AND_EVALUATION,
-    ),
-
-    "evaluation_method": (
-        LiteratureReviewSectionType.QUALITY_AND_EVALUATION,
-    ),
-
-    "limitations": (
-        LiteratureReviewSectionType.LIMITATIONS_AND_GAPS,
-    ),
+    "feedback_signal": (LiteratureReviewSectionType.FEEDBACK_AND_ITERATION,),
+    "iteration_strategy": (LiteratureReviewSectionType.FEEDBACK_AND_ITERATION,),
+    "quality_objective": (LiteratureReviewSectionType.QUALITY_AND_EVALUATION,),
+    "evaluation_method": (LiteratureReviewSectionType.QUALITY_AND_EVALUATION,),
+    "limitations": (LiteratureReviewSectionType.LIMITATIONS_AND_GAPS,),
 }
 
 
@@ -59,24 +43,14 @@ class LiteratureReviewEvidenceAggregator:
         cleaned_query = query.strip()
 
         if not cleaned_query:
-            raise ValueError(
-                "query must not be empty"
-            )
+            raise ValueError("query must not be empty")
 
-        cleaned_paper_ids = (
-            self._clean_paper_ids(
-                paper_ids
-            )
-        )
+        cleaned_paper_ids = self._clean_paper_ids(paper_ids)
 
         if not cleaned_paper_ids:
-            raise ValueError(
-                "paper_ids must not be empty"
-            )
+            raise ValueError("paper_ids must not be empty")
 
-        allowed_paper_ids = set(
-            cleaned_paper_ids
-        )
+        allowed_paper_ids = set(cleaned_paper_ids)
 
         section_evidence: dict[
             LiteratureReviewSectionType,
@@ -104,9 +78,7 @@ class LiteratureReviewEvidenceAggregator:
 
         bundles = []
 
-        for section_type in (
-            LiteratureReviewSectionType
-        ):
+        for section_type in LiteratureReviewSectionType:
             evidence = section_evidence.get(
                 section_type,
                 [],
@@ -156,29 +128,20 @@ class LiteratureReviewEvidenceAggregator:
                 else str(dimension)
             )
 
-            target_sections = (
-                DIMENSION_TO_REVIEW_SECTIONS.get(
-                    dimension_value,
-                    (),
-                )
+            target_sections = DIMENSION_TO_REVIEW_SECTIONS.get(
+                dimension_value,
+                (),
             )
 
             if not target_sections:
                 continue
 
-            normalized = (
-                self._normalize_evidence(
-                    item
-                )
-            )
+            normalized = self._normalize_evidence(item)
 
             if normalized is None:
                 continue
 
-            if (
-                normalized.paper_id
-                not in allowed_paper_ids
-            ):
+            if normalized.paper_id not in allowed_paper_ids:
                 continue
 
             for section_type in target_sections:
@@ -218,28 +181,17 @@ class LiteratureReviewEvidenceAggregator:
                 else str(signal_type)
             )
 
-            target_sections = (
-                self._gap_sections(
-                    signal_value
-                )
-            )
+            target_sections = self._gap_sections(signal_value)
 
             if not target_sections:
                 continue
 
-            normalized = (
-                self._normalize_evidence(
-                    item
-                )
-            )
+            normalized = self._normalize_evidence(item)
 
             if normalized is None:
                 continue
 
-            if (
-                normalized.paper_id
-                not in allowed_paper_ids
-            ):
+            if normalized.paper_id not in allowed_paper_ids:
                 continue
 
             for section_type in target_sections:
@@ -260,14 +212,10 @@ class LiteratureReviewEvidenceAggregator:
     ]:
 
         if signal_type == "limitation":
-            return (
-                LiteratureReviewSectionType.LIMITATIONS_AND_GAPS,
-            )
+            return (LiteratureReviewSectionType.LIMITATIONS_AND_GAPS,)
 
         if signal_type == "future_work":
-            return (
-                LiteratureReviewSectionType.FUTURE_DIRECTIONS,
-            )
+            return (LiteratureReviewSectionType.FUTURE_DIRECTIONS,)
 
         if signal_type == "unresolved_problem":
             return (
@@ -328,26 +276,16 @@ class LiteratureReviewEvidenceAggregator:
             return None
 
         return LiteratureReviewEvidence(
-            evidence_id=str(
-                evidence_id
-            ),
-            paper_id=str(
-                paper_id
-            ),
-            page_number=int(
-                page_number
-            ),
+            evidence_id=str(evidence_id),
+            paper_id=str(paper_id),
+            page_number=int(page_number),
             section=getattr(
                 item,
                 "section",
                 None,
             ),
-            text=str(
-                text
-            ),
-            citation_text=str(
-                citation_text
-            ),
+            text=str(text),
+            citation_text=str(citation_text),
         )
 
     def _append_unique(
@@ -358,25 +296,12 @@ class LiteratureReviewEvidenceAggregator:
         section_seen_ids: dict,
     ) -> None:
 
-        if (
-            evidence.evidence_id
-            in section_seen_ids[
-                section_type
-            ]
-        ):
+        if evidence.evidence_id in section_seen_ids[section_type]:
             return
 
-        section_seen_ids[
-            section_type
-        ].add(
-            evidence.evidence_id
-        )
+        section_seen_ids[section_type].add(evidence.evidence_id)
 
-        section_evidence[
-            section_type
-        ].append(
-            evidence
-        )
+        section_evidence[section_type].append(evidence)
 
     def _clean_paper_ids(
         self,
@@ -396,12 +321,8 @@ class LiteratureReviewEvidenceAggregator:
             if value in seen:
                 continue
 
-            seen.add(
-                value
-            )
+            seen.add(value)
 
-            cleaned.append(
-                value
-            )
+            cleaned.append(value)
 
         return cleaned

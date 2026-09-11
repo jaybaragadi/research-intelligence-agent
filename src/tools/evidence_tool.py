@@ -51,17 +51,16 @@ class EvidenceTool:
     ) -> None:
 
         self.store = (
-            store
-            if store is not None
-            else FaissStore(
-                settings.vector_store_dir
-            )
+            store if store is not None else FaissStore(settings.vector_store_dir)
         )
 
-        self._evidence_index: dict[
-            str,
-            EvidenceRecord,
-        ] | None = None
+        self._evidence_index: (
+            dict[
+                str,
+                EvidenceRecord,
+            ]
+            | None
+        ) = None
 
     def _build_evidence_index(
         self,
@@ -77,9 +76,7 @@ class EvidenceTool:
         for the lifetime of this tool instance.
         """
 
-        chunks = (
-            self.store.load_chunks()
-        )
+        chunks = self.store.load_chunks()
 
         evidence_index: dict[
             str,
@@ -89,34 +86,15 @@ class EvidenceTool:
         for chunk in chunks:
 
             record = EvidenceRecord(
-                evidence_id=(
-                    chunk.chunk_id
-                ),
-
-                chunk_id=(
-                    chunk.chunk_id
-                ),
-
-                paper_id=(
-                    chunk.paper_id
-                ),
-
-                page_number=(
-                    chunk.page_number
-                ),
-
-                section=(
-                    chunk.section
-                ),
-
-                text=(
-                    chunk.text
-                ),
+                evidence_id=(chunk.chunk_id),
+                chunk_id=(chunk.chunk_id),
+                paper_id=(chunk.paper_id),
+                page_number=(chunk.page_number),
+                section=(chunk.section),
+                text=(chunk.text),
             )
 
-            evidence_index[
-                chunk.chunk_id
-            ] = record
+            evidence_index[chunk.chunk_id] = record
 
         return evidence_index
 
@@ -131,13 +109,8 @@ class EvidenceTool:
         Lazily load evidence metadata.
         """
 
-        if (
-            self._evidence_index
-            is None
-        ):
-            self._evidence_index = (
-                self._build_evidence_index()
-            )
+        if self._evidence_index is None:
+            self._evidence_index = self._build_evidence_index()
 
         return self._evidence_index
 
@@ -158,37 +131,21 @@ class EvidenceTool:
             in the indexed corpus.
         """
 
-        evidence_id = (
-            evidence_id.strip()
-        )
+        evidence_id = evidence_id.strip()
 
         if not evidence_id:
 
-            raise ValueError(
-                "evidence_id cannot be empty"
-            )
+            raise ValueError("evidence_id cannot be empty")
 
-        if (
-            evidence_id
-            not in self.evidence_index
-        ):
-            raise KeyError(
-                "Evidence not found: "
-                f"{evidence_id}"
-            )
+        if evidence_id not in self.evidence_index:
+            raise KeyError("Evidence not found: " f"{evidence_id}")
 
-        return (
-            self.evidence_index[
-                evidence_id
-            ]
-        )
+        return self.evidence_index[evidence_id]
 
     def get_many(
         self,
         evidence_ids: list[str],
-    ) -> list[
-        EvidenceRecord
-    ]:
+    ) -> list[EvidenceRecord]:
         """
         Resolve multiple evidence IDs while
         preserving caller order.
@@ -197,34 +154,16 @@ class EvidenceTool:
         """
 
         cleaned_ids = [
-            evidence_id.strip()
-
-            for evidence_id
-            in evidence_ids
-
-            if evidence_id.strip()
+            evidence_id.strip() for evidence_id in evidence_ids if evidence_id.strip()
         ]
 
         if not cleaned_ids:
 
-            raise ValueError(
-                "At least one evidence ID is required"
-            )
+            raise ValueError("At least one evidence ID is required")
 
-        unique_ids = list(
-            dict.fromkeys(
-                cleaned_ids
-            )
-        )
+        unique_ids = list(dict.fromkeys(cleaned_ids))
 
-        return [
-            self.get(
-                evidence_id
-            )
-
-            for evidence_id
-            in unique_ids
-        ]
+        return [self.get(evidence_id) for evidence_id in unique_ids]
 
     def validate(
         self,
@@ -242,29 +181,15 @@ class EvidenceTool:
         belongs to the claimed source.
         """
 
-        record = self.get(
-            evidence_id
-        )
+        record = self.get(evidence_id)
 
-        if (
-            paper_id is not None
-            and record.paper_id
-            != paper_id
-        ):
+        if paper_id is not None and record.paper_id != paper_id:
             return False
 
-        if (
-            page_number is not None
-            and record.page_number
-            != page_number
-        ):
+        if page_number is not None and record.page_number != page_number:
             return False
 
-        if (
-            section is not None
-            and record.section
-            != section
-        ):
+        if section is not None and record.section != section:
             return False
 
         return True
@@ -279,6 +204,4 @@ def get_evidence(
 
     tool = EvidenceTool()
 
-    return tool.get(
-        evidence_id
-    )
+    return tool.get(evidence_id)

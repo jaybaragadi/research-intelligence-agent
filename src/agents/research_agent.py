@@ -3,18 +3,15 @@ from typing import Any
 from src.agents.intents import (
     ResearchIntent,
 )
-
 from src.agents.models import (
     ResearchAgentRequest,
     ResearchAgentResponse,
     RoutedResearchRequest,
     ToolExecutionTrace,
 )
-
 from src.agents.router import (
     ResearchIntentRouter,
 )
-
 from src.tools.research_tools import (
     ResearchTools,
 )
@@ -45,17 +42,9 @@ class ResearchAgent:
         tools: ResearchTools | None = None,
     ) -> None:
 
-        self.router = (
-            router
-            if router is not None
-            else ResearchIntentRouter()
-        )
+        self.router = router if router is not None else ResearchIntentRouter()
 
-        self.tools = (
-            tools
-            if tools is not None
-            else ResearchTools()
-        )
+        self.tools = tools if tools is not None else ResearchTools()
 
     def _clarification_response(
         self,
@@ -68,44 +57,24 @@ class ResearchAgent:
         """
 
         missing = (
-            ", ".join(
-                routed.missing_fields
-            )
+            ", ".join(routed.missing_fields)
             if routed.missing_fields
             else "additional information"
         )
 
         return ResearchAgentResponse(
-            query=(
-                routed.original_query
-            ),
-
-            intent=(
-                routed.intent
-            ),
-
+            query=(routed.original_query),
+            intent=(routed.intent),
             status="needs_clarification",
-
             message=(
                 "The request cannot be executed "
                 "yet because required information "
                 f"is missing: {missing}."
             ),
-
-            paper_ids=(
-                routed.paper_ids
-            ),
-
-            evidence_id=(
-                routed.evidence_id
-            ),
-
+            paper_ids=(routed.paper_ids),
+            evidence_id=(routed.evidence_id),
             needs_clarification=True,
-
-            missing_fields=(
-                routed.missing_fields
-            ),
-
+            missing_fields=(routed.missing_fields),
             trace=[],
         )
 
@@ -122,28 +91,13 @@ class ResearchAgent:
         """
 
         return ResearchAgentResponse(
-            query=(
-                routed.original_query
-            ),
-
-            intent=(
-                routed.intent
-            ),
-
+            query=(routed.original_query),
+            intent=(routed.intent),
             status="success",
-
             message=message,
-
             data=data,
-
-            paper_ids=(
-                routed.paper_ids
-            ),
-
-            evidence_id=(
-                routed.evidence_id
-            ),
-
+            paper_ids=(routed.paper_ids),
+            evidence_id=(routed.evidence_id),
             trace=trace,
         )
 
@@ -160,29 +114,12 @@ class ResearchAgent:
         """
 
         return ResearchAgentResponse(
-            query=(
-                routed.original_query
-            ),
-
-            intent=(
-                routed.intent
-            ),
-
+            query=(routed.original_query),
+            intent=(routed.intent),
             status="error",
-
-            message=(
-                "Research tool execution failed: "
-                f"{error}"
-            ),
-
-            paper_ids=(
-                routed.paper_ids
-            ),
-
-            evidence_id=(
-                routed.evidence_id
-            ),
-
+            message=("Research tool execution failed: " f"{error}"),
+            paper_ids=(routed.paper_ids),
+            evidence_id=(routed.evidence_id),
             trace=trace,
         )
 
@@ -194,43 +131,25 @@ class ResearchAgent:
 
         step = ToolExecutionTrace(
             step=1,
-
             tool_name="search",
-
             status="started",
-
             inputs={
-                "query": (
-                    routed.original_query
-                ),
+                "query": (routed.original_query),
             },
         )
 
-        trace.append(
-            step
-        )
+        trace.append(step)
 
         try:
 
-            result = (
-                self.tools.search(
-                    query=(
-                        routed.original_query
-                    )
-                )
-            )
+            result = self.tools.search(query=(routed.original_query))
 
             step.status = "success"
 
             return self._success_response(
                 routed=routed,
-
                 data=result,
-
-                message=(
-                    "Research search completed."
-                ),
-
+                message=("Research search completed."),
                 trace=trace,
             )
 
@@ -238,9 +157,7 @@ class ResearchAgent:
 
             step.status = "error"
 
-            step.error = str(
-                error
-            )
+            step.error = str(error)
 
             return self._error_response(
                 routed=routed,
@@ -265,29 +182,16 @@ class ResearchAgent:
 
                 step = ToolExecutionTrace(
                     step=index,
-
                     tool_name="summarize",
-
                     status="started",
-
-                    inputs={
-                        "paper_id": paper_id
-                    },
+                    inputs={"paper_id": paper_id},
                 )
 
-                trace.append(
-                    step
-                )
+                trace.append(step)
 
-                summary = (
-                    self.tools.summarize(
-                        paper_id=paper_id
-                    )
-                )
+                summary = self.tools.summarize(paper_id=paper_id)
 
-                summaries.append(
-                    summary
-                )
+                summaries.append(summary)
 
                 step.status = "success"
 
@@ -301,17 +205,12 @@ class ResearchAgent:
 
             return self._success_response(
                 routed=routed,
-
                 data=data,
-
                 message=(
                     "Paper summary completed."
                     if len(summaries) == 1
-                    else (
-                        "Paper summaries completed."
-                    )
+                    else ("Paper summaries completed.")
                 ),
-
                 trace=trace,
             )
 
@@ -319,9 +218,7 @@ class ResearchAgent:
 
             if trace:
                 trace[-1].status = "error"
-                trace[-1].error = str(
-                    error
-                )
+                trace[-1].error = str(error)
 
             return self._error_response(
                 routed=routed,
@@ -337,55 +234,31 @@ class ResearchAgent:
 
         step = ToolExecutionTrace(
             step=1,
-
             tool_name="compare",
-
             status="started",
-
             inputs={
-                "paper_ids": (
-                    routed.paper_ids
-                ),
-
-                "query": (
-                    routed.original_query
-                ),
-
+                "paper_ids": (routed.paper_ids),
+                "query": (routed.original_query),
                 "evidence_per_paper": 3,
             },
         )
 
-        trace.append(
-            step
-        )
+        trace.append(step)
 
         try:
 
-            result = (
-                self.tools.compare(
-                    paper_ids=(
-                        routed.paper_ids
-                    ),
-
-                    query=(
-                        routed.original_query
-                    ),
-
-                    evidence_per_paper=3,
-                )
+            result = self.tools.compare(
+                paper_ids=(routed.paper_ids),
+                query=(routed.original_query),
+                evidence_per_paper=3,
             )
 
             step.status = "success"
 
             return self._success_response(
                 routed=routed,
-
                 data=result,
-
-                message=(
-                    "Paper comparison completed."
-                ),
-
+                message=("Paper comparison completed."),
                 trace=trace,
             )
 
@@ -393,9 +266,7 @@ class ResearchAgent:
 
             step.status = "error"
 
-            step.error = str(
-                error
-            )
+            step.error = str(error)
 
             return self._error_response(
                 routed=routed,
@@ -409,56 +280,31 @@ class ResearchAgent:
         trace: list[ToolExecutionTrace],
     ) -> ResearchAgentResponse:
 
-        evidence_id = (
-            routed.evidence_id
-        )
+        evidence_id = routed.evidence_id
 
         if evidence_id is None:
 
-            raise ValueError(
-                "Evidence intent requires "
-                "an evidence ID."
-            )
+            raise ValueError("Evidence intent requires " "an evidence ID.")
 
         step = ToolExecutionTrace(
             step=1,
-
             tool_name="evidence",
-
             status="started",
-
-            inputs={
-                "evidence_id": (
-                    evidence_id
-                )
-            },
+            inputs={"evidence_id": (evidence_id)},
         )
 
-        trace.append(
-            step
-        )
+        trace.append(step)
 
         try:
 
-            result = (
-                self.tools.evidence(
-                    evidence_id=(
-                        evidence_id
-                    )
-                )
-            )
+            result = self.tools.evidence(evidence_id=(evidence_id))
 
             step.status = "success"
 
             return self._success_response(
                 routed=routed,
-
                 data=result,
-
-                message=(
-                    "Evidence validation completed."
-                ),
-
+                message=("Evidence validation completed."),
                 trace=trace,
             )
 
@@ -466,9 +312,7 @@ class ResearchAgent:
 
             step.status = "error"
 
-            step.error = str(
-                error
-            )
+            step.error = str(error)
 
             return self._error_response(
                 routed=routed,
@@ -482,56 +326,31 @@ class ResearchAgent:
         trace: list[ToolExecutionTrace],
     ) -> ResearchAgentResponse:
 
-        evidence_id = (
-            routed.evidence_id
-        )
+        evidence_id = routed.evidence_id
 
         if evidence_id is None:
 
-            raise ValueError(
-                "Citation intent requires "
-                "an evidence ID."
-            )
+            raise ValueError("Citation intent requires " "an evidence ID.")
 
         step = ToolExecutionTrace(
             step=1,
-
             tool_name="citation",
-
             status="started",
-
-            inputs={
-                "evidence_id": (
-                    evidence_id
-                )
-            },
+            inputs={"evidence_id": (evidence_id)},
         )
 
-        trace.append(
-            step
-        )
+        trace.append(step)
 
         try:
 
-            result = (
-                self.tools.citation(
-                    evidence_id=(
-                        evidence_id
-                    )
-                )
-            )
+            result = self.tools.citation(evidence_id=(evidence_id))
 
             step.status = "success"
 
             return self._success_response(
                 routed=routed,
-
                 data=result,
-
-                message=(
-                    "Citation generation completed."
-                ),
-
+                message=("Citation generation completed."),
                 trace=trace,
             )
 
@@ -539,9 +358,7 @@ class ResearchAgent:
 
             step.status = "error"
 
-            step.error = str(
-                error
-            )
+            step.error = str(error)
 
             return self._error_response(
                 routed=routed,
@@ -557,68 +374,43 @@ class ResearchAgent:
         Route and execute one research request.
         """
 
-        routed = (
-            self.router.route(
-                request
-            )
-        )
+        routed = self.router.route(request)
 
         if routed.needs_clarification:
 
-            return (
-                self._clarification_response(
-                    routed
-                )
-            )
+            return self._clarification_response(routed)
 
-        trace: list[
-            ToolExecutionTrace
-        ] = []
+        trace: list[ToolExecutionTrace] = []
 
-        if (
-            routed.intent
-            == ResearchIntent.SEARCH
-        ):
+        if routed.intent == ResearchIntent.SEARCH:
 
             return self._run_search(
                 routed,
                 trace,
             )
 
-        if (
-            routed.intent
-            == ResearchIntent.SUMMARIZE
-        ):
+        if routed.intent == ResearchIntent.SUMMARIZE:
 
             return self._run_summary(
                 routed,
                 trace,
             )
 
-        if (
-            routed.intent
-            == ResearchIntent.COMPARE
-        ):
+        if routed.intent == ResearchIntent.COMPARE:
 
             return self._run_compare(
                 routed,
                 trace,
             )
 
-        if (
-            routed.intent
-            == ResearchIntent.EVIDENCE
-        ):
+        if routed.intent == ResearchIntent.EVIDENCE:
 
             return self._run_evidence(
                 routed,
                 trace,
             )
 
-        if (
-            routed.intent
-            == ResearchIntent.CITATION
-        ):
+        if routed.intent == ResearchIntent.CITATION:
 
             return self._run_citation(
                 routed,
@@ -626,27 +418,12 @@ class ResearchAgent:
             )
 
         return ResearchAgentResponse(
-            query=(
-                routed.original_query
-            ),
-
-            intent=(
-                routed.intent
-            ),
-
+            query=(routed.original_query),
+            intent=(routed.intent),
             status="needs_clarification",
-
-            message=(
-                "The research intent could not "
-                "be determined."
-            ),
-
+            message=("The research intent could not " "be determined."),
             needs_clarification=True,
-
-            missing_fields=[
-                "supported_research_intent"
-            ],
-
+            missing_fields=["supported_research_intent"],
             trace=[],
         )
 
@@ -660,12 +437,6 @@ def run_research_agent(
 
     agent = ResearchAgent()
 
-    request = (
-        ResearchAgentRequest(
-            query=query
-        )
-    )
+    request = ResearchAgentRequest(query=query)
 
-    return agent.run(
-        request
-    )
+    return agent.run(request)

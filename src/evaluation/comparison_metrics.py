@@ -21,9 +21,7 @@ class ComparisonAggregateMetrics:
 
 
 def calculate_comparison_metrics(
-    results: list[
-        ComparisonEvaluationResult
-    ],
+    results: list[ComparisonEvaluationResult],
 ) -> ComparisonAggregateMetrics:
 
     if not results:
@@ -38,27 +36,20 @@ def calculate_comparison_metrics(
             finding_evidence_reference_integrity=0.0,
         )
 
-    count = len(
-        results
-    )
+    count = len(results)
 
     total_cell_references = sum(
-        result.populated_cell_evidence_reference_count
-        for result in results
+        result.populated_cell_evidence_reference_count for result in results
     )
 
     total_missing_cell_references = sum(
-        len(
-            result.missing_cell_evidence_references
-        )
-        for result in results
+        len(result.missing_cell_evidence_references) for result in results
     )
 
     if total_cell_references:
 
         cell_integrity = (
-            total_cell_references
-            - total_missing_cell_references
+            total_cell_references - total_missing_cell_references
         ) / total_cell_references
 
     else:
@@ -66,22 +57,17 @@ def calculate_comparison_metrics(
         cell_integrity = 1.0
 
     total_finding_references = sum(
-        result.finding_evidence_reference_count
-        for result in results
+        result.finding_evidence_reference_count for result in results
     )
 
     total_missing_finding_references = sum(
-        len(
-            result.missing_finding_evidence_references
-        )
-        for result in results
+        len(result.missing_finding_evidence_references) for result in results
     )
 
     if total_finding_references:
 
         finding_integrity = (
-            total_finding_references
-            - total_missing_finding_references
+            total_finding_references - total_missing_finding_references
         ) / total_finding_references
 
     else:
@@ -90,32 +76,19 @@ def calculate_comparison_metrics(
 
     return ComparisonAggregateMetrics(
         case_count=count,
-
-        structural_pass_rate=sum(
-            result.structural_valid
-            for result in results
-        ) / count,
-
+        structural_pass_rate=sum(result.structural_valid for result in results) / count,
         mean_profile_paper_coverage=sum(
-            result.profile_paper_coverage
-            for result in results
-        ) / count,
-
+            result.profile_paper_coverage for result in results
+        )
+        / count,
         mean_matrix_paper_coverage=sum(
-            result.matrix_paper_coverage
-            for result in results
-        ) / count,
-
+            result.matrix_paper_coverage for result in results
+        )
+        / count,
         mean_matrix_population_rate=sum(
-            result.matrix_population_rate
-            for result in results
-        ) / count,
-
-        cell_evidence_reference_integrity=(
-            cell_integrity
-        ),
-
-        finding_evidence_reference_integrity=(
-            finding_integrity
-        ),
+            result.matrix_population_rate for result in results
+        )
+        / count,
+        cell_evidence_reference_integrity=(cell_integrity),
+        finding_evidence_reference_integrity=(finding_integrity),
     )

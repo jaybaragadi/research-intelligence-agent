@@ -7,7 +7,6 @@ from src.analysis.gap_models import (
     GapSignalType,
     GapType,
 )
-
 from src.analysis.gap_scorer import (
     GapConfidenceScorer,
 )
@@ -29,10 +28,7 @@ class GapCandidateDetector:
         scorer: GapConfidenceScorer | None = None,
     ):
 
-        self.scorer = (
-            scorer
-            or GapConfidenceScorer()
-        )
+        self.scorer = scorer or GapConfidenceScorer()
 
     def build_explicit_candidates(
         self,
@@ -62,13 +58,9 @@ class GapCandidateDetector:
                     signal.paper_id,
                     signal.signal_type,
                 )
-            ].append(
-                signal
-            )
+            ].append(signal)
 
-        candidates: list[
-            GapCandidate
-        ] = []
+        candidates: list[GapCandidate] = []
 
         counter = 1
 
@@ -90,57 +82,32 @@ class GapCandidateDetector:
                 )
             ]
 
-            evidence_ids = (
-                self._unique_preserving_order(
-                    item.evidence_id
-                    for item in evidence
-                )
+            evidence_ids = self._unique_preserving_order(
+                item.evidence_id for item in evidence
             )
 
-            title = (
-                self._explicit_title(
-                    signal_type
-                )
+            title = self._explicit_title(signal_type)
+
+            description = self._explicit_description(
+                paper_id=paper_id,
+                signal_type=signal_type,
             )
 
-            description = (
-                self._explicit_description(
-                    paper_id=paper_id,
-                    signal_type=signal_type,
-                )
-            )
-
-            confidence = (
-                self.scorer.score_explicit(
-                    signal_type=signal_type,
-                    evidence=evidence,
-                )
+            confidence = self.scorer.score_explicit(
+                signal_type=signal_type,
+                evidence=evidence,
             )
 
             candidates.append(
                 GapCandidate(
                     gap_id=f"G{counter}",
-
-                    gap_type=(
-                        GapType.EXPLICIT
-                    ),
-
+                    gap_type=(GapType.EXPLICIT),
                     title=title,
-
                     description=description,
-
                     confidence=confidence,
-
-                    paper_ids=[
-                        paper_id
-                    ],
-
-                    evidence_ids=(
-                        evidence_ids
-                    ),
-
+                    paper_ids=[paper_id],
+                    evidence_ids=(evidence_ids),
                     dimensions=[],
-
                     reason=(
                         "The indexed paper contains "
                         f"explicit {signal_type.value} "
@@ -156,9 +123,7 @@ class GapCandidateDetector:
 
     def build_imbalance_candidates(
         self,
-        coverage: list[
-            DimensionCoverage
-        ],
+        coverage: list[DimensionCoverage],
         corpus_size: int,
         minimum_high_coverage_ratio: float = 0.5,
         maximum_low_coverage_ratio: float = 0.25,
@@ -180,75 +145,41 @@ class GapCandidateDetector:
         if corpus_size < 2:
             return []
 
-        if not (
-            0
-            < minimum_high_coverage_ratio
-            <= 1
-        ):
-            raise ValueError(
-                "minimum_high_coverage_ratio "
-                "must be between 0 and 1"
-            )
+        if not (0 < minimum_high_coverage_ratio <= 1):
+            raise ValueError("minimum_high_coverage_ratio " "must be between 0 and 1")
 
-        if not (
-            0
-            <= maximum_low_coverage_ratio
-            < 1
-        ):
-            raise ValueError(
-                "maximum_low_coverage_ratio "
-                "must be between 0 and 1"
-            )
+        if not (0 <= maximum_low_coverage_ratio < 1):
+            raise ValueError("maximum_low_coverage_ratio " "must be between 0 and 1")
 
-        if (
-            maximum_low_coverage_ratio
-            >= minimum_high_coverage_ratio
-        ):
+        if maximum_low_coverage_ratio >= minimum_high_coverage_ratio:
             raise ValueError(
                 "maximum_low_coverage_ratio "
                 "must be lower than "
                 "minimum_high_coverage_ratio"
             )
 
-        represented = [
-            item
-            for item in coverage
-            if item.paper_count > 0
-        ]
+        represented = [item for item in coverage if item.paper_count > 0]
 
         if len(represented) < 2:
             return []
 
-        candidates: list[
-            GapCandidate
-        ] = []
+        candidates: list[GapCandidate] = []
 
         counter = 1
 
         for low in represented:
 
-            low_ratio = (
-                low.paper_count
-                / corpus_size
-            )
+            low_ratio = low.paper_count / corpus_size
 
-            if (
-                low_ratio
-                > maximum_low_coverage_ratio
-            ):
+            if low_ratio > maximum_low_coverage_ratio:
                 continue
 
             stronger = [
                 item
                 for item in represented
                 if (
-                    item.dimension
-                    != low.dimension
-                    and (
-                        item.paper_count
-                        / corpus_size
-                    )
-                    >= minimum_high_coverage_ratio
+                    item.dimension != low.dimension
+                    and (item.paper_count / corpus_size) >= minimum_high_coverage_ratio
                 )
             ]
 
@@ -264,82 +195,49 @@ class GapCandidateDetector:
                 ),
             )
 
-            high_ratio = (
-                strongest.paper_count
-                / corpus_size
-            )
+            high_ratio = strongest.paper_count / corpus_size
 
-            if (
-                high_ratio
-                <= low_ratio
-            ):
+            if high_ratio <= low_ratio:
                 continue
 
-            evidence_ids = (
-                self._unique_preserving_order(
-                    [
-                        *strongest.evidence_ids,
-                        *low.evidence_ids,
-                    ]
-                )
+            evidence_ids = self._unique_preserving_order(
+                [
+                    *strongest.evidence_ids,
+                    *low.evidence_ids,
+                ]
             )
 
-            paper_ids = (
-                self._unique_preserving_order(
-                    [
-                        *strongest.paper_ids,
-                        *low.paper_ids,
-                    ]
-                )
+            paper_ids = self._unique_preserving_order(
+                [
+                    *strongest.paper_ids,
+                    *low.paper_ids,
+                ]
             )
 
             candidates.append(
                 GapCandidate(
-                    gap_id=(
-                        f"CI{counter}"
-                    ),
-
-                    gap_type=(
-                        GapType.CORPUS_IMBALANCE
-                    ),
-
-                    title=(
-                        "Uneven corpus coverage: "
-                        f"{low.dimension}"
-                    ),
-
+                    gap_id=(f"CI{counter}"),
+                    gap_type=(GapType.CORPUS_IMBALANCE),
+                    title=("Uneven corpus coverage: " f"{low.dimension}"),
                     description=(
                         f"The indexed corpus contains "
                         f"substantially less evidence for "
                         f"'{low.dimension}' than for "
                         f"'{strongest.dimension}'."
                     ),
-
                     confidence=(
                         self.scorer.score_imbalance(
-                            high_paper_count=(
-                                strongest.paper_count
-                            ),
-
-                            low_paper_count=(
-                                low.paper_count
-                            ),
-
+                            high_paper_count=(strongest.paper_count),
+                            low_paper_count=(low.paper_count),
                             corpus_size=corpus_size,
                         )
                     ),
-
                     paper_ids=paper_ids,
-
-                    evidence_ids=(
-                        evidence_ids
-                    ),
-
+                    evidence_ids=(evidence_ids),
                     dimensions=[
                         strongest.dimension,
                         low.dimension,
                     ],
-
                     reason=(
                         f"{strongest.paper_count} of "
                         f"{corpus_size} papers contain "
@@ -368,30 +266,14 @@ class GapCandidateDetector:
         """
 
         labels = {
-            GapSignalType.LIMITATION: (
-                "Explicit reported limitation"
-            ),
-
-            GapSignalType.FUTURE_WORK: (
-                "Explicit future-work direction"
-            ),
-
-            GapSignalType.UNRESOLVED_PROBLEM: (
-                "Explicit unresolved problem"
-            ),
-
-            GapSignalType.UNDEREXPLORED_AREA: (
-                "Explicit underexplored area"
-            ),
-
-            GapSignalType.COVERAGE_IMBALANCE: (
-                "Corpus coverage imbalance"
-            ),
+            GapSignalType.LIMITATION: ("Explicit reported limitation"),
+            GapSignalType.FUTURE_WORK: ("Explicit future-work direction"),
+            GapSignalType.UNRESOLVED_PROBLEM: ("Explicit unresolved problem"),
+            GapSignalType.UNDEREXPLORED_AREA: ("Explicit underexplored area"),
+            GapSignalType.COVERAGE_IMBALANCE: ("Corpus coverage imbalance"),
         }
 
-        return labels[
-            signal_type
-        ]
+        return labels[signal_type]
 
     def _explicit_description(
         self,
@@ -426,12 +308,8 @@ class GapCandidateDetector:
             if value in seen:
                 continue
 
-            seen.add(
-                value
-            )
+            seen.add(value)
 
-            results.append(
-                value
-            )
+            results.append(value)
 
         return results

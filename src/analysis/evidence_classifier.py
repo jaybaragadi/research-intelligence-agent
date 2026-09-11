@@ -4,15 +4,12 @@ from src.analysis.comparison_dimensions import (
     COMPARISON_DIMENSIONS,
     ComparisonDimension,
 )
-
 from src.analysis.comparison_models import (
     DimensionEvidence,
 )
-
 from src.generation.models import (
     GroundingEvidence,
 )
-
 
 SECTION_BONUSES = {
     "evaluation_method": {
@@ -21,26 +18,22 @@ SECTION_BONUSES = {
         "experiments",
         "results",
     },
-
     "limitations": {
         "limitations",
         "threats",
         "threats_to_validity",
         "discussion",
     },
-
     "generation_strategy": {
         "methodology",
         "method",
         "approach",
     },
-
     "feedback_signal": {
         "methodology",
         "method",
         "approach",
     },
-
     "iteration_strategy": {
         "methodology",
         "method",
@@ -95,33 +88,20 @@ class EvidenceDimensionClassifier:
         generally carry stronger analytical meaning.
         """
 
-        normalized = self._normalize(
-            text
-        )
+        normalized = self._normalize(text)
 
         score = 0.0
 
         for keyword in dimension.keywords:
 
-            normalized_keyword = (
-                keyword.lower()
-            )
+            normalized_keyword = keyword.lower()
 
-            if (
-                normalized_keyword
-                not in normalized
-            ):
+            if normalized_keyword not in normalized:
                 continue
 
-            word_count = len(
-                normalized_keyword.split()
-            )
+            word_count = len(normalized_keyword.split())
 
-            score += (
-                1.0
-                if word_count == 1
-                else 1.5
-            )
+            score += 1.0 if word_count == 1 else 1.5
 
         return score
 
@@ -144,17 +124,11 @@ class EvidenceDimensionClassifier:
         if not section:
             return 0.0
 
-        normalized = (
-            section.lower()
-            .strip()
-            .replace(" ", "_")
-        )
+        normalized = section.lower().strip().replace(" ", "_")
 
-        preferred_sections = (
-            SECTION_BONUSES.get(
-                dimension,
-                set(),
-            )
+        preferred_sections = SECTION_BONUSES.get(
+            dimension,
+            set(),
         )
 
         if normalized in preferred_sections:
@@ -185,9 +159,7 @@ class EvidenceDimensionClassifier:
             "limitations of MuTAP"
         """
 
-        normalized = self._normalize(
-            text
-        )
+        normalized = self._normalize(text)
 
         if dimension != "limitations":
             return True
@@ -197,31 +169,24 @@ class EvidenceDimensionClassifier:
                 r"\blimitation of (?:our|the) "
                 r"(?:approach|method|study|system|framework)\b"
             ),
-
             (
                 r"\blimitations of (?:our|the) "
                 r"(?:approach|method|study|system|framework)\b"
             ),
-
             (
                 r"\bour (?:approach|method|study|system|framework) "
                 r"(?:is|has|cannot|does not)\b"
             ),
-
             r"\bthreat to validity\b",
-
             r"\bthreats to validity\b",
-
             (
                 r"\bdrawback of (?:our|the) "
                 r"(?:approach|method|study|system|framework)\b"
             ),
-
             (
                 r"\bdrawbacks of (?:our|the) "
                 r"(?:approach|method|study|system|framework)\b"
             ),
-
             r"\bfuture work\b",
         )
 
@@ -230,8 +195,7 @@ class EvidenceDimensionClassifier:
                 pattern,
                 normalized,
             )
-            for pattern
-            in limitation_patterns
+            for pattern in limitation_patterns
         )
 
     def classify(
@@ -250,17 +214,11 @@ class EvidenceDimensionClassifier:
         """
 
         if minimum_score <= 0:
-            raise ValueError(
-                "minimum_score must be positive"
-            )
+            raise ValueError("minimum_score must be positive")
 
-        results: list[
-            DimensionEvidence
-        ] = []
+        results: list[DimensionEvidence] = []
 
-        for dimension in (
-            COMPARISON_DIMENSIONS
-        ):
+        for dimension in COMPARISON_DIMENSIONS:
 
             score = self._keyword_score(
                 text=evidence.text,
@@ -283,37 +241,14 @@ class EvidenceDimensionClassifier:
 
             results.append(
                 DimensionEvidence(
-                    evidence_id=(
-                        evidence.evidence_id
-                    ),
-
-                    paper_id=(
-                        evidence.paper_id
-                    ),
-
-                    dimension=(
-                        dimension.name
-                    ),
-
-                    page_number=(
-                        evidence.page_number
-                    ),
-
-                    section=(
-                        evidence.section
-                    ),
-
-                    text=(
-                        evidence.text
-                    ),
-
-                    citation_text=(
-                        evidence.citation_text
-                    ),
-
-                    relevance_score=(
-                        score
-                    ),
+                    evidence_id=(evidence.evidence_id),
+                    paper_id=(evidence.paper_id),
+                    dimension=(dimension.name),
+                    page_number=(evidence.page_number),
+                    section=(evidence.section),
+                    text=(evidence.text),
+                    citation_text=(evidence.citation_text),
+                    relevance_score=(score),
                 )
             )
 
@@ -321,9 +256,7 @@ class EvidenceDimensionClassifier:
 
     def classify_many(
         self,
-        evidence_items: list[
-            GroundingEvidence
-        ],
+        evidence_items: list[GroundingEvidence],
     ) -> list[DimensionEvidence]:
         """
         Classify multiple validated evidence
@@ -331,16 +264,10 @@ class EvidenceDimensionClassifier:
         paper/dimension relationships.
         """
 
-        classified: list[
-            DimensionEvidence
-        ] = []
+        classified: list[DimensionEvidence] = []
 
         for evidence in evidence_items:
 
-            classified.extend(
-                self.classify(
-                    evidence
-                )
-            )
+            classified.extend(self.classify(evidence))
 
         return classified

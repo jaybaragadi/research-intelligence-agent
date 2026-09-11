@@ -3,17 +3,14 @@ import streamlit as st
 from src.ui.corpus import (
     CORPUS_PAPERS,
 )
-
 from src.ui.presentation import (
     literature_review_filename,
     review_validation_status,
 )
-
 from src.ui.services import (
     get_literature_review_renderer,
     get_literature_review_service,
 )
-
 
 DEFAULT_REVIEW_QUERY = (
     "How are Large Language Models and Generative AI "
@@ -22,10 +19,7 @@ DEFAULT_REVIEW_QUERY = (
 )
 
 
-DEFAULT_REVIEW_TITLE = (
-    "Large Language Models for Automated "
-    "Software Test Generation"
-)
+DEFAULT_REVIEW_TITLE = "Large Language Models for Automated " "Software Test Generation"
 
 
 def _paper_label(
@@ -36,10 +30,7 @@ def _paper_label(
 
         if paper.paper_id == paper_id:
 
-            return (
-                f"{paper.paper_id} — "
-                f"{paper.title}"
-            )
+            return f"{paper.paper_id} — " f"{paper.title}"
 
     return paper_id
 
@@ -48,15 +39,9 @@ def _render_review_summary(
     review,
 ) -> None:
 
-    st.subheader(
-        "Review Summary"
-    )
+    st.subheader("Review Summary")
 
-    validation_status = (
-        review_validation_status(
-            review.validation
-        )
-    )
+    validation_status = review_validation_status(review.validation)
 
     col1, col2, col3 = st.columns(3)
 
@@ -64,18 +49,14 @@ def _render_review_summary(
 
         st.metric(
             "Indexed Papers",
-            len(
-                review.paper_ids
-            ),
+            len(review.paper_ids),
         )
 
     with col2:
 
         st.metric(
             "Review Sections",
-            len(
-                review.sections
-            ),
+            len(review.sections),
         )
 
     with col3:
@@ -85,127 +66,74 @@ def _render_review_summary(
             validation_status,
         )
 
-    st.markdown(
-        "**Research Question**"
-    )
+    st.markdown("**Research Question**")
 
-    st.write(
-        review.query
-    )
+    st.write(review.query)
 
-    st.markdown(
-        "**Corpus**"
-    )
+    st.markdown("**Corpus**")
 
-    st.caption(
-        ", ".join(
-            review.paper_ids
-        )
-    )
+    st.caption(", ".join(review.paper_ids))
 
 
 def _render_review_sections(
     review,
 ) -> None:
 
-    st.subheader(
-        "Literature Review"
-    )
+    st.subheader("Literature Review")
 
     for section in review.sections:
 
-        st.markdown(
-            f"## {section.title}"
-        )
+        st.markdown(f"## {section.title}")
 
         if section.objective:
 
-            st.caption(
-                f"Section objective: "
-                f"{section.objective}"
-            )
+            st.caption(f"Section objective: " f"{section.objective}")
 
         if section.narrative:
 
-            st.write(
-                section.narrative
-            )
+            st.write(section.narrative)
 
         else:
 
-            st.info(
-                "No narrative was generated "
-                "for this section."
-            )
+            st.info("No narrative was generated " "for this section.")
 
         if section.findings:
 
-            with st.expander(
-                "Structured Findings"
-            ):
+            with st.expander("Structured Findings"):
 
                 for finding in section.findings:
 
-                    st.markdown(
-                        f"**{finding.finding_id}**"
-                    )
+                    st.markdown(f"**{finding.finding_id}**")
 
-                    st.write(
-                        finding.statement
-                    )
+                    st.write(finding.statement)
 
                     if finding.paper_ids:
 
-                        st.caption(
-                            "Papers: "
-                            + ", ".join(
-                                finding.paper_ids
-                            )
-                        )
+                        st.caption("Papers: " + ", ".join(finding.paper_ids))
 
                     if finding.evidence_ids:
 
-                        st.caption(
-                            "Evidence: "
-                            + ", ".join(
-                                finding.evidence_ids
-                            )
-                        )
+                        st.caption("Evidence: " + ", ".join(finding.evidence_ids))
 
         if section.evidence:
 
-            with st.expander(
-                f"Supporting Evidence "
-                f"({len(section.evidence)})"
-            ):
+            with st.expander(f"Supporting Evidence " f"({len(section.evidence)})"):
 
                 for evidence in section.evidence:
 
-                    st.markdown(
-                        f"**{evidence.evidence_id}**"
-                    )
+                    st.markdown(f"**{evidence.evidence_id}**")
 
-                    st.caption(
-                        f"Paper: {evidence.paper_id}"
-                    )
+                    st.caption(f"Paper: {evidence.paper_id}")
 
-                    st.caption(
-                        f"Page: {evidence.page_number}"
-                    )
+                    st.caption(f"Page: {evidence.page_number}")
 
                     if evidence.section:
 
-                        st.caption(
-                            f"Section: {evidence.section}"
-                        )
+                        st.caption(f"Section: {evidence.section}")
 
-                    st.write(
-                        evidence.text
-                    )
+                    st.write(evidence.text)
 
-                    st.caption(
-                        evidence.citation_text
-                    )
+                    st.caption(evidence.citation_text)
 
                     st.divider()
 
@@ -214,15 +142,11 @@ def _render_citations(
     review,
 ) -> None:
 
-    st.subheader(
-        "Citation Index"
-    )
+    st.subheader("Citation Index")
 
     if not review.citations:
 
-        st.info(
-            "No citation entries were generated."
-        )
+        st.info("No citation entries were generated.")
 
         return
 
@@ -231,49 +155,34 @@ def _render_citations(
         start=1,
     ):
 
-        st.markdown(
-            f"{number}. {citation}"
-        )
+        st.markdown(f"{number}. {citation}")
 
 
 def _render_validation(
     review,
 ) -> None:
 
-    st.subheader(
-        "Grounding Validation"
-    )
+    st.subheader("Grounding Validation")
 
-    validation = (
-        review.validation
-    )
+    validation = review.validation
 
     if validation is None:
 
-        st.warning(
-            "No grounding validation result "
-            "was attached to this review."
-        )
+        st.warning("No grounding validation result " "was attached to this review.")
 
         return
 
     if validation.valid:
 
-        st.success(
-            "Grounding validation passed."
-        )
+        st.success("Grounding validation passed.")
 
     else:
 
-        st.error(
-            "Grounding validation failed."
-        )
+        st.error("Grounding validation failed.")
 
     st.metric(
         "Validation Issues",
-        len(
-            validation.issues
-        ),
+        len(validation.issues),
     )
 
     for issue in validation.issues:
@@ -284,43 +193,30 @@ def _render_validation(
                 issue.code,
                 "value",
             )
-            else str(
-                issue.code
-            )
+            else str(issue.code)
         )
 
-        st.warning(
-            f"{code}: {issue.message}"
-        )
+        st.warning(f"{code}: {issue.message}")
 
 
 def render_literature_review_page() -> None:
 
-    st.title(
-        "Literature Review"
-    )
+    st.title("Literature Review")
 
-    st.write(
-        """
+    st.write("""
         Generate an evidence-grounded literature review
         across selected papers from the indexed corpus.
-        """
-    )
+        """)
 
-    st.info(
-        """
+    st.info("""
         The review is produced through the existing
         Phase 11 pipeline: comparative analysis,
         research-gap analysis, evidence aggregation,
         cross-paper synthesis, grounding validation,
         and deterministic generation.
-        """
-    )
+        """)
 
-    paper_ids = [
-        paper.paper_id
-        for paper in CORPUS_PAPERS
-    ]
+    paper_ids = [paper.paper_id for paper in CORPUS_PAPERS]
 
     selected_papers = st.multiselect(
         "Select papers for the literature review",
@@ -361,114 +257,74 @@ def render_literature_review_page() -> None:
 
     if len(selected_papers) < 2:
 
-        st.warning(
-            "Select at least two papers."
-        )
+        st.warning("Select at least two papers.")
 
         return
 
     if not cleaned_title:
 
-        st.warning(
-            "Enter a literature-review title."
-        )
+        st.warning("Enter a literature-review title.")
 
         return
 
     if not cleaned_query:
 
-        st.warning(
-            "Enter a research question."
-        )
+        st.warning("Enter a research question.")
 
         return
 
     try:
 
-        with st.spinner(
-            "Generating evidence-grounded literature review..."
-        ):
+        with st.spinner("Generating evidence-grounded literature review..."):
 
-            service = (
-                get_literature_review_service()
-            )
+            service = get_literature_review_service()
 
             review = service.generate(
                 query=cleaned_query,
                 paper_ids=selected_papers,
                 title=cleaned_title,
-                evidence_per_paper=(
-                    evidence_per_paper
-                ),
+                evidence_per_paper=(evidence_per_paper),
             )
 
-            renderer = (
-                get_literature_review_renderer()
-            )
+            renderer = get_literature_review_renderer()
 
-            markdown_report = (
-                renderer.render(
-                    review
-                )
-            )
+            markdown_report = renderer.render(review)
 
     except Exception as exc:
 
-        st.error(
-            "The literature review could not be generated."
-        )
+        st.error("The literature review could not be generated.")
 
-        st.exception(
-            exc
-        )
+        st.exception(exc)
 
         return
 
     st.divider()
 
-    _render_review_summary(
-        review
-    )
+    _render_review_summary(review)
 
     st.divider()
 
-    _render_review_sections(
-        review
-    )
+    _render_review_sections(review)
 
     st.divider()
 
-    _render_citations(
-        review
-    )
+    _render_citations(review)
 
     st.divider()
 
-    st.subheader(
-        "Scope Note"
-    )
+    st.subheader("Scope Note")
 
-    st.warning(
-        review.corpus_scope_note
-    )
+    st.warning(review.corpus_scope_note)
 
     st.divider()
 
-    _render_validation(
-        review
-    )
+    _render_validation(review)
 
     st.divider()
 
-    st.subheader(
-        "Download Report"
-    )
+    st.subheader("Download Report")
 
-    filename = (
-        literature_review_filename(
-            review.title
-        )
-    )
+    filename = literature_review_filename(review.title)
 
     st.download_button(
         label="Download Markdown Literature Review",

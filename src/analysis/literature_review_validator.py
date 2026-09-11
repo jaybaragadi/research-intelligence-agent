@@ -23,57 +23,35 @@ class LiteratureReviewGroundingValidator:
         synthesis: LiteratureReviewSynthesis,
     ) -> LiteratureReviewValidationResult:
 
-        issues: list[
-            LiteratureReviewValidationIssue
-        ] = []
+        issues: list[LiteratureReviewValidationIssue] = []
 
-        evidence_by_id = (
-            self._build_evidence_index(
-                aggregation
-            )
-        )
+        evidence_by_id = self._build_evidence_index(aggregation)
 
-        requested_papers = set(
-            aggregation.paper_ids
-        )
+        requested_papers = set(aggregation.paper_ids)
 
         seen_finding_ids: set[str] = set()
 
         for finding in synthesis.findings:
 
-            if (
-                finding.finding_id
-                in seen_finding_ids
-            ):
+            if finding.finding_id in seen_finding_ids:
                 issues.append(
                     LiteratureReviewValidationIssue(
-                        code=(
-                            LiteratureReviewValidationIssueCode
-                            .DUPLICATE_FINDING_ID
-                        ),
-                        message=(
-                            "Duplicate finding ID: "
-                            f"{finding.finding_id}"
-                        ),
+                        code=(LiteratureReviewValidationIssueCode.DUPLICATE_FINDING_ID),
+                        message=("Duplicate finding ID: " f"{finding.finding_id}"),
                         section_type=finding.section_type,
                         finding_id=finding.finding_id,
                     )
                 )
 
-            seen_finding_ids.add(
-                finding.finding_id
-            )
+            seen_finding_ids.add(finding.finding_id)
 
             if not finding.statement.strip():
                 issues.append(
                     LiteratureReviewValidationIssue(
                         code=(
-                            LiteratureReviewValidationIssueCode
-                            .EMPTY_FINDING_STATEMENT
+                            LiteratureReviewValidationIssueCode.EMPTY_FINDING_STATEMENT
                         ),
-                        message=(
-                            "Finding statement must not be empty."
-                        ),
+                        message=("Finding statement must not be empty."),
                         section_type=finding.section_type,
                         finding_id=finding.finding_id,
                     )
@@ -83,12 +61,9 @@ class LiteratureReviewGroundingValidator:
                 issues.append(
                     LiteratureReviewValidationIssue(
                         code=(
-                            LiteratureReviewValidationIssueCode
-                            .FINDING_WITHOUT_EVIDENCE
+                            LiteratureReviewValidationIssueCode.FINDING_WITHOUT_EVIDENCE
                         ),
-                        message=(
-                            "Finding has no supporting evidence."
-                        ),
+                        message=("Finding has no supporting evidence."),
                         section_type=finding.section_type,
                         finding_id=finding.finding_id,
                     )
@@ -101,21 +76,15 @@ class LiteratureReviewGroundingValidator:
 
             for evidence_id in finding.evidence_ids:
 
-                evidence = evidence_by_id.get(
-                    evidence_id
-                )
+                evidence = evidence_by_id.get(evidence_id)
 
                 if evidence is None:
                     issues.append(
                         LiteratureReviewValidationIssue(
                             code=(
-                                LiteratureReviewValidationIssueCode
-                                .UNKNOWN_EVIDENCE_ID
+                                LiteratureReviewValidationIssueCode.UNKNOWN_EVIDENCE_ID
                             ),
-                            message=(
-                                "Unknown evidence ID: "
-                                f"{evidence_id}"
-                            ),
+                            message=("Unknown evidence ID: " f"{evidence_id}"),
                             section_type=finding.section_type,
                             finding_id=finding.finding_id,
                         )
@@ -123,15 +92,11 @@ class LiteratureReviewGroundingValidator:
 
                     continue
 
-                if (
-                    evidence.paper_id
-                    not in requested_papers
-                ):
+                if evidence.paper_id not in requested_papers:
                     issues.append(
                         LiteratureReviewValidationIssue(
                             code=(
-                                LiteratureReviewValidationIssueCode
-                                .EVIDENCE_OUTSIDE_CORPUS
+                                LiteratureReviewValidationIssueCode.EVIDENCE_OUTSIDE_CORPUS
                             ),
                             message=(
                                 "Evidence "
@@ -144,33 +109,18 @@ class LiteratureReviewGroundingValidator:
                         )
                     )
 
-                if (
-                    evidence.paper_id
-                    not in supporting_seen
-                ):
-                    supporting_seen.add(
-                        evidence.paper_id
-                    )
+                if evidence.paper_id not in supporting_seen:
+                    supporting_seen.add(evidence.paper_id)
 
-                    supporting_papers.append(
-                        evidence.paper_id
-                    )
+                    supporting_papers.append(evidence.paper_id)
 
-            claimed_papers = (
-                self._unique_nonempty(
-                    finding.paper_ids
-                )
-            )
+            claimed_papers = self._unique_nonempty(finding.paper_ids)
 
-            if (
-                set(claimed_papers)
-                != set(supporting_papers)
-            ):
+            if set(claimed_papers) != set(supporting_papers):
                 issues.append(
                     LiteratureReviewValidationIssue(
                         code=(
-                            LiteratureReviewValidationIssueCode
-                            .PAPER_SUPPORT_MISMATCH
+                            LiteratureReviewValidationIssueCode.PAPER_SUPPORT_MISMATCH
                         ),
                         message=(
                             "Finding paper_ids do not match "
@@ -182,19 +132,13 @@ class LiteratureReviewGroundingValidator:
                     )
                 )
 
-            actual_support_count = len(
-                supporting_papers
-            )
+            actual_support_count = len(supporting_papers)
 
-            if (
-                finding.support_count
-                != actual_support_count
-            ):
+            if finding.support_count != actual_support_count:
                 issues.append(
                     LiteratureReviewValidationIssue(
                         code=(
-                            LiteratureReviewValidationIssueCode
-                            .SUPPORT_COUNT_MISMATCH
+                            LiteratureReviewValidationIssueCode.SUPPORT_COUNT_MISMATCH
                         ),
                         message=(
                             "Finding support_count does not "
@@ -206,15 +150,11 @@ class LiteratureReviewGroundingValidator:
                     )
                 )
 
-            if (
-                finding.is_cross_paper
-                and actual_support_count < 2
-            ):
+            if finding.is_cross_paper and actual_support_count < 2:
                 issues.append(
                     LiteratureReviewValidationIssue(
                         code=(
-                            LiteratureReviewValidationIssueCode
-                            .CROSS_PAPER_SUPPORT_TOO_LOW
+                            LiteratureReviewValidationIssueCode.CROSS_PAPER_SUPPORT_TOO_LOW
                         ),
                         message=(
                             "Cross-paper finding requires "
@@ -226,15 +166,11 @@ class LiteratureReviewGroundingValidator:
                     )
                 )
 
-            if (
-                not finding.is_cross_paper
-                and actual_support_count > 1
-            ):
+            if not finding.is_cross_paper and actual_support_count > 1:
                 issues.append(
                     LiteratureReviewValidationIssue(
                         code=(
-                            LiteratureReviewValidationIssueCode
-                            .SINGLE_PAPER_FLAG_MISMATCH
+                            LiteratureReviewValidationIssueCode.SINGLE_PAPER_FLAG_MISMATCH
                         ),
                         message=(
                             "Finding is marked as single-paper "
@@ -261,13 +197,8 @@ class LiteratureReviewGroundingValidator:
 
             for evidence in bundle.evidence:
 
-                if (
-                    evidence.evidence_id
-                    not in evidence_by_id
-                ):
-                    evidence_by_id[
-                        evidence.evidence_id
-                    ] = evidence
+                if evidence.evidence_id not in evidence_by_id:
+                    evidence_by_id[evidence.evidence_id] = evidence
 
         return evidence_by_id
 
@@ -289,12 +220,8 @@ class LiteratureReviewGroundingValidator:
             if normalized in seen:
                 continue
 
-            seen.add(
-                normalized
-            )
+            seen.add(normalized)
 
-            cleaned.append(
-                normalized
-            )
+            cleaned.append(normalized)
 
         return cleaned

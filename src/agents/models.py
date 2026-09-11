@@ -2,7 +2,6 @@ from dataclasses import (
     dataclass,
     field,
 )
-
 from typing import Any
 
 from src.agents.intents import (
@@ -18,9 +17,7 @@ class ResearchAgentRequest:
 
     query: str
 
-    paper_ids: list[str] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
     evidence_id: str | None = None
 
@@ -37,9 +34,7 @@ class RoutedResearchRequest:
 
     intent: ResearchIntent
 
-    paper_ids: list[str] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
     evidence_id: str | None = None
 
@@ -49,9 +44,7 @@ class RoutedResearchRequest:
 
     needs_clarification: bool = False
 
-    missing_fields: list[str] = field(
-        default_factory=list
-    )
+    missing_fields: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -71,9 +64,7 @@ class ToolExecutionTrace:
 
     status: str
 
-    inputs: dict[str, Any] = field(
-        default_factory=dict
-    )
+    inputs: dict[str, Any] = field(default_factory=dict)
 
     error: str | None = None
 
@@ -102,20 +93,12 @@ class ResearchAgentResponse:
 
     data: Any = None
 
-    paper_ids: list[str] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
     evidence_id: str | None = None
 
     needs_clarification: bool = False
 
-    missing_fields: list[str] = field(
-        default_factory=list
-    )
+    missing_fields: list[str] = field(default_factory=list)
 
-    trace: list[
-        ToolExecutionTrace
-    ] = field(
-        default_factory=list
-    )
+    trace: list[ToolExecutionTrace] = field(default_factory=list)

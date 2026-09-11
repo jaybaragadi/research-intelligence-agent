@@ -1,7 +1,6 @@
 from src.chunking.section_mapper import (
     section_for_page,
 )
-
 from src.models import (
     PaperProfile,
     SectionLocation,

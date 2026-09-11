@@ -17,19 +17,14 @@ def save_paper_profile(
         exist_ok=True,
     )
 
-    output_path = (
-        output_directory
-        / f"{profile.paper_id}.json"
-    )
+    output_path = output_directory / f"{profile.paper_id}.json"
 
     with output_path.open(
         "w",
         encoding="utf-8",
     ) as file:
         json.dump(
-            profile.model_dump(
-                mode="json"
-            ),
+            profile.model_dump(mode="json"),
             file,
             indent=2,
             ensure_ascii=False,

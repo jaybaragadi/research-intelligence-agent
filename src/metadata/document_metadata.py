@@ -3,10 +3,7 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-
-YEAR_PATTERN = re.compile(
-    r"\b(19\d{2}|20\d{2})\b"
-)
+YEAR_PATTERN = re.compile(r"\b(19\d{2}|20\d{2})\b")
 
 
 def normalize_value(
@@ -44,11 +41,7 @@ def split_authors(
         flags=re.IGNORECASE,
     )
 
-    return [
-        author.strip()
-        for author in parts
-        if author.strip()
-    ]
+    return [author.strip() for author in parts if author.strip()]
 
 
 def extract_year(
@@ -84,34 +77,22 @@ def read_pdf_document_metadata(
     Read title, authors and year from PDF document properties.
     """
 
-    reader = PdfReader(
-        str(pdf_path)
-    )
+    reader = PdfReader(str(pdf_path))
 
     metadata = reader.metadata
 
     if not metadata:
         return None, [], None
 
-    title = normalize_value(
-        getattr(metadata, "title", None)
-    )
+    title = normalize_value(getattr(metadata, "title", None))
 
-    author_text = normalize_value(
-        getattr(metadata, "author", None)
-    )
+    author_text = normalize_value(getattr(metadata, "author", None))
 
-    creation_date = normalize_value(
-        getattr(metadata, "creation_date", None)
-    )
+    creation_date = normalize_value(getattr(metadata, "creation_date", None))
 
-    modification_date = normalize_value(
-        getattr(metadata, "modification_date", None)
-    )
+    modification_date = normalize_value(getattr(metadata, "modification_date", None))
 
-    authors = split_authors(
-        author_text
-    )
+    authors = split_authors(author_text)
 
     year = extract_year(
         creation_date,

@@ -4,15 +4,12 @@ from src.analysis.comparison_models import (
     PaperAnalysisProfile,
     PaperDimensionAnalysis,
 )
-
 from src.analysis.gap_analysis_service import (
     ResearchGapAnalysisService,
 )
-
 from src.analysis.gap_models import (
     GapType,
 )
-
 from src.generation.models import (
     GroundingEvidence,
 )
@@ -27,19 +24,12 @@ def make_dimension_evidence(
 
     return DimensionEvidence(
         evidence_id=evidence_id,
-
         paper_id=paper_id,
-
         dimension=dimension,
-
         page_number=2,
-
         section="discussion",
-
         text=text,
-
         citation_text="Citation",
-
         relevance_score=2.0,
     )
 
@@ -52,17 +42,11 @@ def make_grounding_evidence(
 
     return GroundingEvidence(
         evidence_id=evidence_id,
-
         label="E1",
-
         paper_id=paper_id,
-
         page_number=2,
-
         section="discussion",
-
         text=text,
-
         citation_text="Citation",
     )
 
@@ -71,9 +55,7 @@ class FakeComparativeService:
 
     def __init__(
         self,
-        evidence: list[
-            DimensionEvidence
-        ],
+        evidence: list[DimensionEvidence],
     ):
 
         self.evidence = evidence
@@ -90,10 +72,7 @@ class FakeComparativeService:
         for paper_id in paper_ids:
 
             paper_evidence = [
-                item
-                for item in self.evidence
-                if item.paper_id
-                == paper_id
+                item for item in self.evidence if item.paper_id == paper_id
             ]
 
             dimensions = {}
@@ -103,37 +82,26 @@ class FakeComparativeService:
                 dimensions.setdefault(
                     item.dimension,
                     [],
-                ).append(
-                    item
-                )
+                ).append(item)
 
             profiles.append(
                 PaperAnalysisProfile(
                     paper_id=paper_id,
-
                     dimensions=[
                         PaperDimensionAnalysis(
                             dimension=dimension,
                             evidence=items,
                         )
-                        for (
-                            dimension,
-                            items
-                        )
-                        in dimensions.items()
+                        for (dimension, items) in dimensions.items()
                     ],
                 )
             )
 
         return ComparativeAnalysis(
             query=query,
-
             requested_papers=paper_ids,
-
             profiles=profiles,
-
             matrix=[],
-
             findings=[],
         )
 
@@ -142,15 +110,10 @@ class FakeExplicitGapRetriever:
 
     def __init__(
         self,
-        evidence: list[
-            GroundingEvidence
-        ] | None = None,
+        evidence: list[GroundingEvidence] | None = None,
     ) -> None:
 
-        self.evidence = (
-            evidence
-            or []
-        )
+        self.evidence = evidence or []
 
         self.calls = []
 
@@ -162,35 +125,19 @@ class FakeExplicitGapRetriever:
 
         self.calls.append(
             {
-                "paper_ids": (
-                    paper_ids
-                ),
-
-                "evidence_per_query": (
-                    evidence_per_query
-                ),
+                "paper_ids": (paper_ids),
+                "evidence_per_query": (evidence_per_query),
             }
         )
 
-        return list(
-            self.evidence
-        )
+        return list(self.evidence)
 
 
 def test_service_requires_two_unique_papers():
 
-    service = (
-        ResearchGapAnalysisService(
-            comparative_service=(
-                FakeComparativeService(
-                    []
-                )
-            ),
-
-            explicit_gap_retriever=(
-                FakeExplicitGapRetriever()
-            ),
-        )
+    service = ResearchGapAnalysisService(
+        comparative_service=(FakeComparativeService([])),
+        explicit_gap_retriever=(FakeExplicitGapRetriever()),
     )
 
     try:
@@ -200,7 +147,6 @@ def test_service_requires_two_unique_papers():
                 "paper_a",
                 "paper_a",
             ],
-
             query="Find gaps",
         )
 
@@ -208,10 +154,7 @@ def test_service_requires_two_unique_papers():
 
     except ValueError as exc:
 
-        assert (
-            "two unique papers"
-            in str(exc)
-        )
+        assert "two unique papers" in str(exc)
 
 
 def test_service_extracts_explicit_gap_signal():
@@ -219,45 +162,25 @@ def test_service_extracts_explicit_gap_signal():
     evidence = [
         make_dimension_evidence(
             evidence_id="comparison_e1",
-
             paper_id="paper_a",
-
             dimension="limitations",
-
-            text=(
-                "The evaluation measures "
-                "branch coverage."
-            ),
+            text=("The evaluation measures " "branch coverage."),
         )
     ]
 
     explicit_evidence = [
         make_grounding_evidence(
             evidence_id="e1",
-
             paper_id="paper_a",
-
             text=(
-                "A limitation of our approach "
-                "is the restricted evaluation scope."
+                "A limitation of our approach " "is the restricted evaluation scope."
             ),
         )
     ]
 
-    service = (
-        ResearchGapAnalysisService(
-            comparative_service=(
-                FakeComparativeService(
-                    evidence
-                )
-            ),
-
-            explicit_gap_retriever=(
-                FakeExplicitGapRetriever(
-                    explicit_evidence
-                )
-            ),
-        )
+    service = ResearchGapAnalysisService(
+        comparative_service=(FakeComparativeService(evidence)),
+        explicit_gap_retriever=(FakeExplicitGapRetriever(explicit_evidence)),
     )
 
     result = service.analyze(
@@ -265,33 +188,18 @@ def test_service_extracts_explicit_gap_signal():
             "paper_a",
             "paper_b",
         ],
-
         query="Find research gaps",
     )
 
-    assert len(
-        result.candidates
-    ) == 1
+    assert len(result.candidates) == 1
 
-    assert (
-        result.candidates[0].gap_type
-        == GapType.EXPLICIT
-    )
+    assert result.candidates[0].gap_type == GapType.EXPLICIT
 
-    assert (
-        result.candidates[0].evidence_ids
-        == ["e1"]
-    )
+    assert result.candidates[0].evidence_ids == ["e1"]
 
-    assert (
-        result.validation
-        is not None
-    )
+    assert result.validation is not None
 
-    assert (
-        result.validation.is_valid
-        is True
-    )
+    assert result.validation.is_valid is True
 
 
 def test_service_preserves_papers_without_signals():
@@ -299,45 +207,25 @@ def test_service_preserves_papers_without_signals():
     evidence = [
         make_dimension_evidence(
             evidence_id="comparison_e1",
-
             paper_id="paper_a",
-
             dimension="limitations",
-
-            text=(
-                "The evaluation measures "
-                "branch coverage."
-            ),
+            text=("The evaluation measures " "branch coverage."),
         )
     ]
 
     explicit_evidence = [
         make_grounding_evidence(
             evidence_id="e1",
-
             paper_id="paper_a",
-
             text=(
-                "A limitation of our approach "
-                "is the restricted evaluation scope."
+                "A limitation of our approach " "is the restricted evaluation scope."
             ),
         )
     ]
 
-    service = (
-        ResearchGapAnalysisService(
-            comparative_service=(
-                FakeComparativeService(
-                    evidence
-                )
-            ),
-
-            explicit_gap_retriever=(
-                FakeExplicitGapRetriever(
-                    explicit_evidence
-                )
-            ),
-        )
+    service = ResearchGapAnalysisService(
+        comparative_service=(FakeComparativeService(evidence)),
+        explicit_gap_retriever=(FakeExplicitGapRetriever(explicit_evidence)),
     )
 
     result = service.analyze(
@@ -345,43 +233,24 @@ def test_service_preserves_papers_without_signals():
             "paper_a",
             "paper_b",
         ],
-
         query="Find research gaps",
     )
 
-    assert [
-        item.paper_id
-        for item
-        in result.paper_signals
-    ] == [
+    assert [item.paper_id for item in result.paper_signals] == [
         "paper_a",
         "paper_b",
     ]
 
-    paper_b = (
-        result.paper_signals[1]
-    )
+    paper_b = result.paper_signals[1]
 
-    assert (
-        paper_b.signals
-        == []
-    )
+    assert paper_b.signals == []
 
 
 def test_service_preserves_zero_dimension_coverage():
 
-    service = (
-        ResearchGapAnalysisService(
-            comparative_service=(
-                FakeComparativeService(
-                    []
-                )
-            ),
-
-            explicit_gap_retriever=(
-                FakeExplicitGapRetriever()
-            ),
-        )
+    service = ResearchGapAnalysisService(
+        comparative_service=(FakeComparativeService([])),
+        explicit_gap_retriever=(FakeExplicitGapRetriever()),
     )
 
     result = service.analyze(
@@ -389,68 +258,38 @@ def test_service_preserves_zero_dimension_coverage():
             "paper_a",
             "paper_b",
         ],
-
         query="Find research gaps",
     )
 
-    lookup = {
-        item.dimension: item
-        for item
-        in result.dimension_coverage
-    }
+    lookup = {item.dimension: item for item in result.dimension_coverage}
 
-    assert (
-        "limitations"
-        in lookup
-    )
+    assert "limitations" in lookup
 
-    assert (
-        lookup[
-            "limitations"
-        ].paper_count
-        == 0
-    )
+    assert lookup["limitations"].paper_count == 0
 
 
 def test_duplicate_explicit_evidence_is_not_duplicate_signal():
 
     shared_text = (
-        "In future work, we plan to investigate "
-        "additional programming languages."
+        "In future work, we plan to investigate " "additional programming languages."
     )
 
     explicit_evidence = [
         make_grounding_evidence(
             evidence_id="e1",
-
             paper_id="paper_a",
-
             text=shared_text,
         ),
-
         make_grounding_evidence(
             evidence_id="e1",
-
             paper_id="paper_a",
-
             text=shared_text,
         ),
     ]
 
-    service = (
-        ResearchGapAnalysisService(
-            comparative_service=(
-                FakeComparativeService(
-                    []
-                )
-            ),
-
-            explicit_gap_retriever=(
-                FakeExplicitGapRetriever(
-                    explicit_evidence
-                )
-            ),
-        )
+    service = ResearchGapAnalysisService(
+        comparative_service=(FakeComparativeService([])),
+        explicit_gap_retriever=(FakeExplicitGapRetriever(explicit_evidence)),
     )
 
     result = service.analyze(
@@ -458,21 +297,14 @@ def test_duplicate_explicit_evidence_is_not_duplicate_signal():
             "paper_a",
             "paper_b",
         ],
-
         query="Find research gaps",
     )
 
-    signals = (
-        result.paper_signals[0]
-        .signals
-    )
+    signals = result.paper_signals[0].signals
 
     assert len(signals) == 1
 
-    assert (
-        signals[0].evidence_id
-        == "e1"
-    )
+    assert signals[0].evidence_id == "e1"
 
 
 def test_service_can_create_corpus_imbalance():
@@ -486,22 +318,10 @@ def test_service_can_create_corpus_imbalance():
 
         evidence.append(
             make_dimension_evidence(
-                evidence_id=(
-                    f"q{index}"
-                ),
-
-                paper_id=(
-                    f"p{index}"
-                ),
-
-                dimension=(
-                    "quality_objective"
-                ),
-
-                text=(
-                    "The evaluation measures "
-                    "branch coverage."
-                ),
+                evidence_id=(f"q{index}"),
+                paper_id=(f"p{index}"),
+                dimension=("quality_objective"),
+                text=("The evaluation measures " "branch coverage."),
             )
         )
 
@@ -512,75 +332,42 @@ def test_service_can_create_corpus_imbalance():
 
         evidence.append(
             make_dimension_evidence(
-                evidence_id=(
-                    f"l{index}"
-                ),
-
-                paper_id=(
-                    f"p{index}"
-                ),
-
+                evidence_id=(f"l{index}"),
+                paper_id=(f"p{index}"),
                 dimension="limitations",
-
-                text=(
-                    "The discussion describes "
-                    "study constraints."
-                ),
+                text=("The discussion describes " "study constraints."),
             )
         )
 
     papers = [
         f"p{index}"
-        for index
-        in range(
+        for index in range(
             1,
             11,
         )
     ]
 
-    service = (
-        ResearchGapAnalysisService(
-            comparative_service=(
-                FakeComparativeService(
-                    evidence
-                )
-            ),
-
-            explicit_gap_retriever=(
-                FakeExplicitGapRetriever()
-            ),
-        )
+    service = ResearchGapAnalysisService(
+        comparative_service=(FakeComparativeService(evidence)),
+        explicit_gap_retriever=(FakeExplicitGapRetriever()),
     )
 
     result = service.analyze(
         paper_ids=papers,
-
         query="Find research gaps",
     )
 
     imbalance = [
         candidate
-        for candidate
-        in result.candidates
-        if (
-            candidate.gap_type
-            == GapType.CORPUS_IMBALANCE
-        )
+        for candidate in result.candidates
+        if (candidate.gap_type == GapType.CORPUS_IMBALANCE)
     ]
 
-    assert len(
-        imbalance
-    ) >= 1
+    assert len(imbalance) >= 1
 
-    assert (
-        result.validation
-        is not None
-    )
+    assert result.validation is not None
 
-    assert (
-        result.validation.is_valid
-        is True
-    )
+    assert result.validation.is_valid is True
 
 
 def test_service_uses_dedicated_explicit_gap_evidence():
@@ -588,24 +375,16 @@ def test_service_uses_dedicated_explicit_gap_evidence():
     comparative_evidence = [
         make_dimension_evidence(
             evidence_id="comparison_e1",
-
             paper_id="paper_a",
-
             dimension="limitations",
-
-            text=(
-                "The evaluation measures "
-                "branch coverage."
-            ),
+            text=("The evaluation measures " "branch coverage."),
         )
     ]
 
     explicit_evidence = [
         make_grounding_evidence(
             evidence_id="gap_e1",
-
             paper_id="paper_a",
-
             text=(
                 "In future work, we plan "
                 "to investigate additional "
@@ -615,17 +394,8 @@ def test_service_uses_dedicated_explicit_gap_evidence():
     ]
 
     service = ResearchGapAnalysisService(
-        comparative_service=(
-            FakeComparativeService(
-                comparative_evidence
-            )
-        ),
-
-        explicit_gap_retriever=(
-            FakeExplicitGapRetriever(
-                explicit_evidence
-            )
-        ),
+        comparative_service=(FakeComparativeService(comparative_evidence)),
+        explicit_gap_retriever=(FakeExplicitGapRetriever(explicit_evidence)),
     )
 
     result = service.analyze(
@@ -633,26 +403,18 @@ def test_service_uses_dedicated_explicit_gap_evidence():
             "paper_a",
             "paper_b",
         ],
-
         query="Find research gaps",
     )
 
     explicit = [
         candidate
-        for candidate
-        in result.candidates
-        if (
-            candidate.gap_type
-            == GapType.EXPLICIT
-        )
+        for candidate in result.candidates
+        if (candidate.gap_type == GapType.EXPLICIT)
     ]
 
     assert len(explicit) == 1
 
-    assert (
-        explicit[0].evidence_ids
-        == ["gap_e1"]
-    )
+    assert explicit[0].evidence_ids == ["gap_e1"]
 
 
 def test_validator_accepts_dedicated_gap_evidence():
@@ -660,28 +422,14 @@ def test_validator_accepts_dedicated_gap_evidence():
     explicit_evidence = [
         make_grounding_evidence(
             evidence_id="gap_e1",
-
             paper_id="paper_a",
-
-            text=(
-                "A limitation of our approach "
-                "is the restricted dataset."
-            ),
+            text=("A limitation of our approach " "is the restricted dataset."),
         )
     ]
 
     service = ResearchGapAnalysisService(
-        comparative_service=(
-            FakeComparativeService(
-                []
-            )
-        ),
-
-        explicit_gap_retriever=(
-            FakeExplicitGapRetriever(
-                explicit_evidence
-            )
-        ),
+        comparative_service=(FakeComparativeService([])),
+        explicit_gap_retriever=(FakeExplicitGapRetriever(explicit_evidence)),
     )
 
     result = service.analyze(
@@ -689,21 +437,11 @@ def test_validator_accepts_dedicated_gap_evidence():
             "paper_a",
             "paper_b",
         ],
-
         query="Find research gaps",
     )
 
-    assert (
-        result.validation
-        is not None
-    )
+    assert result.validation is not None
 
-    assert (
-        result.validation.is_valid
-        is True
-    )
+    assert result.validation.is_valid is True
 
-    assert (
-        result.validation.issue_count
-        == 0
-    )
+    assert result.validation.issue_count == 0

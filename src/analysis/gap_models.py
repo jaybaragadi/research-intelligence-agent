@@ -2,7 +2,6 @@ from dataclasses import (
     dataclass,
     field,
 )
-
 from enum import Enum
 
 
@@ -26,13 +25,9 @@ class GapType(str, Enum):
 
     EXPLICIT = "explicit"
 
-    CORPUS_IMBALANCE = (
-        "corpus_imbalance"
-    )
+    CORPUS_IMBALANCE = "corpus_imbalance"
 
-    INSUFFICIENT_EVIDENCE = (
-        "insufficient_evidence"
-    )
+    INSUFFICIENT_EVIDENCE = "insufficient_evidence"
 
 
 class GapSignalType(str, Enum):
@@ -45,17 +40,11 @@ class GapSignalType(str, Enum):
 
     FUTURE_WORK = "future_work"
 
-    UNRESOLVED_PROBLEM = (
-        "unresolved_problem"
-    )
+    UNRESOLVED_PROBLEM = "unresolved_problem"
 
-    UNDEREXPLORED_AREA = (
-        "underexplored_area"
-    )
+    UNDEREXPLORED_AREA = "underexplored_area"
 
-    COVERAGE_IMBALANCE = (
-        "coverage_imbalance"
-    )
+    COVERAGE_IMBALANCE = "coverage_imbalance"
 
 
 class GapConfidence(str, Enum):
@@ -111,11 +100,7 @@ class PaperGapSignals:
 
     paper_id: str
 
-    signals: list[
-        GapEvidence
-    ] = field(
-        default_factory=list
-    )
+    signals: list[GapEvidence] = field(default_factory=list)
 
 
 @dataclass
@@ -134,17 +119,9 @@ class DimensionCoverage:
 
     evidence_count: int
 
-    paper_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
-    evidence_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -166,23 +143,11 @@ class GapCandidate:
 
     confidence: GapConfidence
 
-    paper_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
-    evidence_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
-    dimensions: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    dimensions: list[str] = field(default_factory=list)
 
     reason: str = ""
 
@@ -216,11 +181,7 @@ class GapValidationResult:
 
     issue_count: int
 
-    issues: list[
-        GapValidationIssue
-    ] = field(
-        default_factory=list
-    )
+    issues: list[GapValidationIssue] = field(default_factory=list)
 
 
 @dataclass
@@ -231,23 +192,12 @@ class ResearchGapAnalysis:
 
     query: str
 
-    corpus_papers: list[
-        str
-    ]
+    corpus_papers: list[str]
 
-    paper_signals: list[
-        PaperGapSignals
-    ]
+    paper_signals: list[PaperGapSignals]
 
-    dimension_coverage: list[
-        DimensionCoverage
-    ]
+    dimension_coverage: list[DimensionCoverage]
 
-    candidates: list[
-        GapCandidate
-    ]
+    candidates: list[GapCandidate]
 
-    validation: (
-        GapValidationResult
-        | None
-    ) = None
+    validation: GapValidationResult | None = None

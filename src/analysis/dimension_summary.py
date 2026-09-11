@@ -3,7 +3,6 @@ import re
 from src.analysis.comparison_dimensions import (
     COMPARISON_DIMENSIONS,
 )
-
 from src.analysis.comparison_models import (
     DimensionEvidence,
 )
@@ -21,9 +20,7 @@ class DimensionSummarySelector:
     def __init__(self) -> None:
 
         self._dimension_map = {
-            dimension.name: dimension
-            for dimension
-            in COMPARISON_DIMENSIONS
+            dimension.name: dimension for dimension in COMPARISON_DIMENSIONS
         }
 
     def _normalize(
@@ -58,11 +55,7 @@ class DimensionSummarySelector:
         text: str,
     ) -> list[str]:
 
-        normalized = (
-            self._normalize(
-                text
-            )
-        )
+        normalized = self._normalize(text)
 
         if not normalized:
             return []
@@ -72,11 +65,7 @@ class DimensionSummarySelector:
             normalized,
         )
 
-        return [
-            sentence.strip()
-            for sentence in sentences
-            if sentence.strip()
-        ]
+        return [sentence.strip() for sentence in sentences if sentence.strip()]
 
     def _score_sentence(
         self,
@@ -84,53 +73,32 @@ class DimensionSummarySelector:
         dimension: str,
     ) -> float:
 
-        definition = (
-            self._dimension_map.get(
-                dimension
-            )
-        )
+        definition = self._dimension_map.get(dimension)
 
         if definition is None:
             return 0.0
 
-        normalized = (
-            sentence.lower()
-        )
+        normalized = sentence.lower()
 
         score = 0.0
 
-        for keyword in (
-            definition.keywords
-        ):
+        for keyword in definition.keywords:
 
-            keyword_normalized = (
-                keyword.lower()
-            )
+            keyword_normalized = keyword.lower()
 
-            if (
-                keyword_normalized
-                not in normalized
-            ):
+            if keyword_normalized not in normalized:
                 continue
 
-            word_count = len(
-                keyword_normalized.split()
-            )
+            word_count = len(keyword_normalized.split())
 
-            score += (
-                1.0
-                if word_count == 1
-                else 2.0
-            )
+            score += 1.0 if word_count == 1 else 2.0
 
         return score
 
     def select(
         self,
         dimension: str,
-        evidence: list[
-            DimensionEvidence
-        ],
+        evidence: list[DimensionEvidence],
     ) -> tuple[
         str | None,
         list[str],
@@ -150,41 +118,26 @@ class DimensionSummarySelector:
 
         for item in evidence:
 
-            for sentence in (
-                self._sentences(
-                    item.text
-                )
-            ):
+            for sentence in self._sentences(item.text):
 
-                score = (
-                    self._score_sentence(
-                        sentence=sentence,
-                        dimension=dimension,
-                    )
+                score = self._score_sentence(
+                    sentence=sentence,
+                    dimension=dimension,
                 )
 
                 if score > best_score:
 
                     best_score = score
 
-                    best_sentence = (
-                        sentence
-                    )
+                    best_sentence = sentence
 
-                    best_evidence_id = (
-                        item.evidence_id
-                    )
+                    best_evidence_id = item.evidence_id
 
-        if (
-            best_sentence is None
-            or best_evidence_id is None
-        ):
+        if best_sentence is None or best_evidence_id is None:
 
             return None, []
 
         return (
             best_sentence,
-            [
-                best_evidence_id
-            ],
+            [best_evidence_id],
         )

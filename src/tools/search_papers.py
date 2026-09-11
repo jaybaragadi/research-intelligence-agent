@@ -55,11 +55,7 @@ class SearchPapersTool:
         retriever: SemanticRetriever | None = None,
     ) -> None:
 
-        self.retriever = (
-            retriever
-            if retriever is not None
-            else SemanticRetriever()
-        )
+        self.retriever = retriever if retriever is not None else SemanticRetriever()
 
     def search(
         self,
@@ -103,9 +99,7 @@ class SearchPapersTool:
 
         if not query.strip():
 
-            raise ValueError(
-                "Query cannot be empty"
-            )
+            raise ValueError("Query cannot be empty")
 
         search_kwargs = {
             "query": query,
@@ -114,28 +108,15 @@ class SearchPapersTool:
 
         if allowed_paper_ids is not None:
 
-            search_kwargs[
-                "allowed_paper_ids"
-            ] = allowed_paper_ids
+            search_kwargs["allowed_paper_ids"] = allowed_paper_ids
 
         if max_per_paper is not None:
 
-            search_kwargs[
-                "max_per_paper"
-            ] = max_per_paper
+            search_kwargs["max_per_paper"] = max_per_paper
 
-        retrieved = (
-            self.retriever.search(
-                **search_kwargs
-            )
-        )
+        retrieved = self.retriever.search(**search_kwargs)
 
-        results = [
-            self._convert_result(
-                result
-            )
-            for result in retrieved
-        ]
+        results = [self._convert_result(result) for result in retrieved]
 
         return PaperSearchResponse(
             query=query,
@@ -157,13 +138,9 @@ class SearchPapersTool:
             paper_id=result.paper_id,
             page_number=result.page_number,
             section=result.section,
-
             score=result.score,
             raw_score=result.raw_score,
-            lexical_score=(
-                result.lexical_score
-            ),
-
+            lexical_score=(result.lexical_score),
             chunk_id=result.chunk_id,
             text=result.text,
         )

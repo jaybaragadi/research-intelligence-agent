@@ -12,42 +12,23 @@ def main() -> None:
     have incomplete metadata.
     """
 
-    files = sorted(
-        settings.metadata_dir.glob(
-            "*.json"
-        )
-    )
+    files = sorted(settings.metadata_dir.glob("*.json"))
 
     warnings: list[str] = []
 
     for path in files:
 
-        data = json.loads(
-            path.read_text(
-                encoding="utf-8"
-            )
-        )
+        data = json.loads(path.read_text(encoding="utf-8"))
 
-        paper_id = data[
-            "paper_id"
-        ]
+        paper_id = data["paper_id"]
 
         if not data["abstract"]:
-            warnings.append(
-                f"{paper_id}: abstract missing"
-            )
+            warnings.append(f"{paper_id}: abstract missing")
 
-        if len(
-            data["sections"]
-        ) < 3:
-            warnings.append(
-                f"{paper_id}: "
-                "fewer than 3 sections detected"
-            )
+        if len(data["sections"]) < 3:
+            warnings.append(f"{paper_id}: " "fewer than 3 sections detected")
 
-        if len(
-            data["research_questions"]
-        ) > 10:
+        if len(data["research_questions"]) > 10:
             warnings.append(
                 f"{paper_id}: "
                 "suspiciously high RQ count "
@@ -55,33 +36,23 @@ def main() -> None:
             )
 
         if data["year"] is None:
-            warnings.append(
-                f"{paper_id}: year missing"
-            )
+            warnings.append(f"{paper_id}: year missing")
 
         if not data["title"]:
-            warnings.append(
-                f"{paper_id}: title missing"
-            )
+            warnings.append(f"{paper_id}: title missing")
 
     print("=" * 70)
     print("Corpus Validation")
     print("=" * 70)
 
-    print(
-        f"Papers checked : {len(files)}"
-    )
+    print(f"Papers checked : {len(files)}")
 
-    print(
-        f"Warnings       : {len(warnings)}"
-    )
+    print(f"Warnings       : {len(warnings)}")
 
     if not warnings:
 
         print()
-        print(
-            "Corpus metadata validation passed."
-        )
+        print("Corpus metadata validation passed.")
 
         return
 
@@ -89,9 +60,7 @@ def main() -> None:
 
     for warning in warnings:
 
-        print(
-            f"WARNING: {warning}"
-        )
+        print(f"WARNING: {warning}")
 
 
 if __name__ == "__main__":

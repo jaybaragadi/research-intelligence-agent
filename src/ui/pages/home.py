@@ -7,40 +7,29 @@ from src.ui.corpus import (
 
 def render_home_page() -> None:
 
-    st.title(
-        "Research Intelligence Agent"
-    )
+    st.title("Research Intelligence Agent")
 
-    st.subheader(
-        "Evidence-Grounded Research Analysis"
-    )
+    st.subheader("Evidence-Grounded Research Analysis")
 
-    st.write(
-        """
+    st.write("""
         This application analyzes an indexed corpus of
         research papers focused on Large Language Models
         and automated software test generation.
-        """
-    )
+        """)
 
-    st.info(
-        """
+    st.info("""
         The system is designed around evidence grounding.
         Research findings are linked back to the indexed
         paper, page, section, and evidence chunk.
-        """
-    )
+        """)
 
-    st.subheader(
-        "Research Capabilities"
-    )
+    st.subheader("Research Capabilities")
 
     col1, col2 = st.columns(2)
 
     with col1:
 
-        st.markdown(
-            """
+        st.markdown("""
             **Evidence-Grounded Q&A**
 
             Ask research questions and retrieve
@@ -50,13 +39,11 @@ def render_home_page() -> None:
 
             Compare methodologies, feedback strategies,
             evaluation approaches, and limitations.
-            """
-        )
+            """)
 
     with col2:
 
-        st.markdown(
-            """
+        st.markdown("""
             **Research Gap Analysis**
 
             Identify explicit gaps and corpus-level
@@ -67,21 +54,16 @@ def render_home_page() -> None:
 
             Generate structured, evidence-grounded
             literature reviews across multiple papers.
-            """
-        )
+            """)
 
-    st.subheader(
-        "Indexed Research Corpus"
-    )
+    st.subheader("Indexed Research Corpus")
 
     for paper in CORPUS_PAPERS:
 
-        st.markdown(
-            f"""
+        st.markdown(f"""
             **{paper.paper_id}**
 
             {paper.title} ({paper.year})
-            """
-        )
+            """)
 
         st.divider()

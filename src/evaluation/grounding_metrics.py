@@ -21,9 +21,7 @@ class GroundingAggregateMetrics:
 
 
 def calculate_grounding_metrics(
-    results: list[
-        GroundingEvaluationResult
-    ],
+    results: list[GroundingEvaluationResult],
 ) -> GroundingAggregateMetrics:
 
     if not results:
@@ -37,31 +35,17 @@ def calculate_grounding_metrics(
             mean_expected_paper_recall=0.0,
         )
 
-    count = len(
-        results
-    )
+    count = len(results)
 
-    total_references = sum(
-        result.referenced_evidence_count
-        for result in results
-    )
+    total_references = sum(result.referenced_evidence_count for result in results)
 
     missing_references = sum(
-        len(
-            result.missing_evidence_references
-        )
-        for result in results
+        len(result.missing_evidence_references) for result in results
     )
 
     if total_references:
 
-        reference_integrity = (
-            (
-                total_references
-                - missing_references
-            )
-            / total_references
-        )
+        reference_integrity = (total_references - missing_references) / total_references
 
     else:
 
@@ -69,28 +53,21 @@ def calculate_grounding_metrics(
 
     return GroundingAggregateMetrics(
         case_count=count,
-
         backend_validation_pass_rate=sum(
-            result.backend_validation_valid
-            for result in results
-        ) / count,
-
+            result.backend_validation_valid for result in results
+        )
+        / count,
         mean_claim_evidence_coverage=sum(
-            result.claim_evidence_coverage
-            for result in results
-        ) / count,
-
+            result.claim_evidence_coverage for result in results
+        )
+        / count,
         mean_provenance_completeness=sum(
-            result.provenance_completeness
-            for result in results
-        ) / count,
-
-        evidence_reference_integrity=(
-            reference_integrity
-        ),
-
+            result.provenance_completeness for result in results
+        )
+        / count,
+        evidence_reference_integrity=(reference_integrity),
         mean_expected_paper_recall=sum(
-            result.expected_paper_recall
-            for result in results
-        ) / count,
+            result.expected_paper_recall for result in results
+        )
+        / count,
     )

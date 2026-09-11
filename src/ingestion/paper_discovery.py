@@ -17,8 +17,7 @@ def discover_pdfs(
     pdf_files = [
         path
         for path in papers_directory.iterdir()
-        if path.is_file()
-        and path.suffix.lower() == ".pdf"
+        if path.is_file() and path.suffix.lower() == ".pdf"
     ]
 
     return sorted(

@@ -10,28 +10,17 @@ def main() -> None:
     print("Phase 3 - Metadata and Research Structure Extraction")
     print("=" * 70)
 
-    summary = (
-        run_metadata_extraction()
-    )
+    summary = run_metadata_extraction()
 
     print("=" * 70)
     print("Metadata Extraction Summary")
     print("=" * 70)
 
-    print(
-        f"Discovered : "
-        f"{summary.discovered}"
-    )
+    print(f"Discovered : " f"{summary.discovered}")
 
-    print(
-        f"Successful : "
-        f"{summary.successful}"
-    )
+    print(f"Successful : " f"{summary.successful}")
 
-    print(
-        f"Failed     : "
-        f"{summary.failed}"
-    )
+    print(f"Failed     : " f"{summary.failed}")
 
 
 if __name__ == "__main__":

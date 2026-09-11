@@ -22,16 +22,11 @@ def test_clean_text_joins_single_line_break():
 
     result = clean_text(text)
 
-    assert result == (
-        "Large language models for software testing"
-    )
+    assert result == ("Large language models for software testing")
 
 
 def test_clean_text_preserves_paragraph_break():
-    text = (
-        "First paragraph.\n\n"
-        "Second paragraph."
-    )
+    text = "First paragraph.\n\n" "Second paragraph."
 
     result = clean_text(text)
 

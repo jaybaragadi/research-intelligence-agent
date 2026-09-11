@@ -2,22 +2,18 @@ from src.tools.citation_tool import (
     CitationRecord,
     CitationTool,
 )
-
 from src.tools.compare_papers import (
     ComparePapersTool,
     PaperComparisonResponse,
 )
-
 from src.tools.evidence_tool import (
     EvidenceRecord,
     EvidenceTool,
 )
-
 from src.tools.search_papers import (
     PaperSearchResponse,
     SearchPapersTool,
 )
-
 from src.tools.summarize_paper import (
     PaperSummary,
     SummarizePaperTool,
@@ -36,60 +32,33 @@ class ResearchTools:
 
     def __init__(
         self,
-        search_tool: (
-            SearchPapersTool
-            | None
-        ) = None,
-        summarize_tool: (
-            SummarizePaperTool
-            | None
-        ) = None,
-        compare_tool: (
-            ComparePapersTool
-            | None
-        ) = None,
-        evidence_tool: (
-            EvidenceTool
-            | None
-        ) = None,
-        citation_tool: (
-            CitationTool
-            | None
-        ) = None,
+        search_tool: SearchPapersTool | None = None,
+        summarize_tool: SummarizePaperTool | None = None,
+        compare_tool: ComparePapersTool | None = None,
+        evidence_tool: EvidenceTool | None = None,
+        citation_tool: CitationTool | None = None,
     ) -> None:
 
         self.evidence_tool = (
-            evidence_tool
-            if evidence_tool is not None
-            else EvidenceTool()
+            evidence_tool if evidence_tool is not None else EvidenceTool()
         )
 
         self.citation_tool = (
             citation_tool
             if citation_tool is not None
-            else CitationTool(
-                evidence_tool=(
-                    self.evidence_tool
-                )
-            )
+            else CitationTool(evidence_tool=(self.evidence_tool))
         )
 
         self.search_tool = (
-            search_tool
-            if search_tool is not None
-            else SearchPapersTool()
+            search_tool if search_tool is not None else SearchPapersTool()
         )
 
         self.summarize_tool = (
-            summarize_tool
-            if summarize_tool is not None
-            else SummarizePaperTool()
+            summarize_tool if summarize_tool is not None else SummarizePaperTool()
         )
 
         self.compare_tool = (
-            compare_tool
-            if compare_tool is not None
-            else ComparePapersTool()
+            compare_tool if compare_tool is not None else ComparePapersTool()
         )
 
     def search(
@@ -102,11 +71,9 @@ class ResearchTools:
         evidence.
         """
 
-        return (
-            self.search_tool.search(
-                query=query,
-                top_k=top_k,
-            )
+        return self.search_tool.search(
+            query=query,
+            top_k=top_k,
         )
 
     def summarize(
@@ -118,12 +85,7 @@ class ResearchTools:
         summary for one paper.
         """
 
-        return (
-            self.summarize_tool
-            .summarize(
-                paper_id
-            )
-        )
+        return self.summarize_tool.summarize(paper_id)
 
     def compare(
         self,
@@ -136,14 +98,10 @@ class ResearchTools:
         paper-scoped retrieved evidence.
         """
 
-        return (
-            self.compare_tool.compare(
-                paper_ids=paper_ids,
-                query=query,
-                evidence_per_paper=(
-                    evidence_per_paper
-                ),
-            )
+        return self.compare_tool.compare(
+            paper_ids=paper_ids,
+            query=query,
+            evidence_per_paper=(evidence_per_paper),
         )
 
     def evidence(
@@ -154,11 +112,7 @@ class ResearchTools:
         Resolve and validate one evidence ID.
         """
 
-        return (
-            self.evidence_tool.get(
-                evidence_id
-            )
-        )
+        return self.evidence_tool.get(evidence_id)
 
     def citation(
         self,
@@ -169,8 +123,4 @@ class ResearchTools:
         evidence.
         """
 
-        return (
-            self.citation_tool.cite(
-                evidence_id
-            )
-        )
+        return self.citation_tool.cite(evidence_id)

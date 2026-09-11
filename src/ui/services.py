@@ -3,26 +3,22 @@ from functools import lru_cache
 from src.analysis.comparative_service import (
     ComparativeAnalysisService,
 )
-
 from src.analysis.gap_analysis_service import (
     ResearchGapAnalysisService,
 )
-
-from src.generation.answer_service import (
-    GroundedAnswerService,
-)
-
 from src.analysis.literature_review_renderer import (
     LiteratureReviewMarkdownRenderer,
 )
-
 from src.analysis.literature_review_service import (
     LiteratureReviewService,
 )
-
+from src.generation.answer_service import (
+    GroundedAnswerService,
+)
 from src.tools.search_papers import (
     SearchPapersTool,
 )
+
 
 @lru_cache(maxsize=1)
 def get_search_papers_tool() -> SearchPapersTool:
@@ -34,6 +30,7 @@ def get_search_papers_tool() -> SearchPapersTool:
     """
 
     return SearchPapersTool()
+
 
 @lru_cache(maxsize=1)
 def get_grounded_answer_service() -> GroundedAnswerService:
@@ -56,6 +53,7 @@ def get_research_gap_analysis_service() -> ResearchGapAnalysisService:
     """
 
     return ResearchGapAnalysisService()
+
 
 @lru_cache(maxsize=1)
 def get_literature_review_service() -> LiteratureReviewService:

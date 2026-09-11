@@ -16,25 +16,13 @@ def main() -> None:
     print("Chunking Summary")
     print("=" * 70)
 
-    print(
-        f"Discovered   : "
-        f"{summary.discovered}"
-    )
+    print(f"Discovered   : " f"{summary.discovered}")
 
-    print(
-        f"Successful   : "
-        f"{summary.successful}"
-    )
+    print(f"Successful   : " f"{summary.successful}")
 
-    print(
-        f"Failed       : "
-        f"{summary.failed}"
-    )
+    print(f"Failed       : " f"{summary.failed}")
 
-    print(
-        f"Total chunks : "
-        f"{summary.total_chunks}"
-    )
+    print(f"Total chunks : " f"{summary.total_chunks}")
 
 
 if __name__ == "__main__":

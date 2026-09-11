@@ -9,8 +9,7 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Run structured evidence-grounded "
-            "comparative research analysis"
+            "Run structured evidence-grounded " "comparative research analysis"
         )
     )
 
@@ -25,24 +24,13 @@ def main() -> None:
         required=True,
     )
 
-    args = (
-        parser.parse_args()
-    )
+    args = parser.parse_args()
 
-    service = (
-        ComparativeAnalysisService()
-    )
+    service = ComparativeAnalysisService()
 
-    result = (
-        service.analyze(
-            paper_ids=(
-                args.papers
-            ),
-
-            query=(
-                args.query
-            ),
-        )
+    result = service.analyze(
+        paper_ids=(args.papers),
+        query=(args.query),
     )
 
     print()
@@ -50,57 +38,32 @@ def main() -> None:
     print("COMPARATIVE RESEARCH ANALYSIS")
     print("=" * 78)
 
-    print(
-        f"Query: {result.query}"
-    )
+    print(f"Query: {result.query}")
 
-    print(
-        "Papers: "
-        + ", ".join(
-            result.requested_papers
-        )
-    )
+    print("Papers: " + ", ".join(result.requested_papers))
 
     print()
     print("COMPARISON MATRIX")
     print("-" * 78)
 
-    for row in (
-        result.matrix
-    ):
+    for row in result.matrix:
 
         print()
-        print(
-            f"[{row.dimension}]"
-        )
+        print(f"[{row.dimension}]")
 
-        for cell in (
-            row.cells
-        ):
+        for cell in row.cells:
 
-            print(
-                f"  {cell.paper_id}:"
-            )
+            print(f"  {cell.paper_id}:")
 
             if cell.summary:
 
-                print(
-                    f"    {cell.summary}"
-                )
+                print(f"    {cell.summary}")
 
-                print(
-                    "    Evidence: "
-                    + ", ".join(
-                        cell.evidence_ids
-                    )
-                )
+                print("    Evidence: " + ", ".join(cell.evidence_ids))
 
             else:
 
-                print(
-                    "    No matching "
-                    "validated evidence."
-                )
+                print("    No matching " "validated evidence.")
 
     print()
     print("CROSS-PAPER FINDINGS")
@@ -108,33 +71,15 @@ def main() -> None:
 
     if not result.findings:
 
-        print(
-            "No shared analytical dimensions "
-            "were identified."
-        )
+        print("No shared analytical dimensions " "were identified.")
 
-    for finding in (
-        result.findings
-    ):
+    for finding in result.findings:
 
-        print(
-            f"{finding.finding_id}: "
-            f"{finding.text}"
-        )
+        print(f"{finding.finding_id}: " f"{finding.text}")
 
-        print(
-            "  Papers: "
-            + ", ".join(
-                finding.paper_ids
-            )
-        )
+        print("  Papers: " + ", ".join(finding.paper_ids))
 
-        print(
-            "  Evidence: "
-            + ", ".join(
-                finding.evidence_ids
-            )
-        )
+        print("  Evidence: " + ", ".join(finding.evidence_ids))
 
     print()
     print("=" * 78)

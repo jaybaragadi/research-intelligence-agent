@@ -1,32 +1,27 @@
 from __future__ import annotations
 
+from src.analysis.comparative_service import (
+    ComparativeAnalysisService,
+)
+from src.analysis.gap_analysis_service import (
+    ResearchGapAnalysisService,
+)
 from src.analysis.literature_review_evidence import (
     LiteratureReviewEvidenceAggregator,
 )
-
 from src.analysis.literature_review_generator import (
     DeterministicLiteratureReviewGenerator,
 )
-
 from src.analysis.literature_review_models import (
     LiteratureReview,
 )
-
 from src.analysis.literature_review_synthesis import (
     LiteratureReviewSynthesisBuilder,
 )
-
 from src.analysis.literature_review_validator import (
     LiteratureReviewGroundingValidator,
 )
 
-from src.analysis.comparative_service import (
-    ComparativeAnalysisService,
-)
-
-from src.analysis.gap_analysis_service import (
-    ResearchGapAnalysisService,
-)
 
 class LiteratureReviewService:
     """
@@ -51,35 +46,21 @@ class LiteratureReviewService:
         generator: DeterministicLiteratureReviewGenerator | None = None,
     ) -> None:
 
-        self.comparative_service = (
-            comparative_service
-            or ComparativeAnalysisService()
-        )
+        self.comparative_service = comparative_service or ComparativeAnalysisService()
 
-        self.gap_service = (
-            gap_service
-            or ResearchGapAnalysisService()
-        )
+        self.gap_service = gap_service or ResearchGapAnalysisService()
 
         self.evidence_aggregator = (
-            evidence_aggregator
-            or LiteratureReviewEvidenceAggregator()
+            evidence_aggregator or LiteratureReviewEvidenceAggregator()
         )
 
-        self.synthesis_builder = (
-            synthesis_builder
-            or LiteratureReviewSynthesisBuilder()
-        )
+        self.synthesis_builder = synthesis_builder or LiteratureReviewSynthesisBuilder()
 
         self.grounding_validator = (
-            grounding_validator
-            or LiteratureReviewGroundingValidator()
+            grounding_validator or LiteratureReviewGroundingValidator()
         )
 
-        self.generator = (
-            generator
-            or DeterministicLiteratureReviewGenerator()
-        )
+        self.generator = generator or DeterministicLiteratureReviewGenerator()
 
     def generate(
         self,
@@ -92,112 +73,65 @@ class LiteratureReviewService:
         cleaned_query = query.strip()
 
         if not cleaned_query:
-            raise ValueError(
-                "query must not be empty"
-            )
+            raise ValueError("query must not be empty")
 
-        cleaned_paper_ids = (
-            self._clean_paper_ids(
-                paper_ids
-            )
-        )
+        cleaned_paper_ids = self._clean_paper_ids(paper_ids)
 
         if len(cleaned_paper_ids) < 2:
             raise ValueError(
-                "literature review requires "
-                "at least two unique paper_ids"
+                "literature review requires " "at least two unique paper_ids"
             )
 
         if evidence_per_paper <= 0:
-            raise ValueError(
-                "evidence_per_paper must be positive"
-            )
+            raise ValueError("evidence_per_paper must be positive")
 
-        comparative_analysis = (
-            self.comparative_service.analyze(
-                query=cleaned_query,
-                paper_ids=cleaned_paper_ids,
-                evidence_per_paper=(
-                    evidence_per_paper
-                ),
-            )
+        comparative_analysis = self.comparative_service.analyze(
+            query=cleaned_query,
+            paper_ids=cleaned_paper_ids,
+            evidence_per_paper=(evidence_per_paper),
         )
 
-        gap_analysis = (
-            self.gap_service.analyze(
-                query=cleaned_query,
-                paper_ids=cleaned_paper_ids,
-                evidence_per_paper=(
-                    evidence_per_paper
-                ),
-            )
+        gap_analysis = self.gap_service.analyze(
+            query=cleaned_query,
+            paper_ids=cleaned_paper_ids,
+            evidence_per_paper=(evidence_per_paper),
         )
 
-        dimension_evidence = (
-            self._collect_dimension_evidence(
-                comparative_analysis
-            )
+        dimension_evidence = self._collect_dimension_evidence(comparative_analysis)
+
+        explicit_gap_evidence = self._collect_explicit_gap_evidence(gap_analysis)
+
+        aggregation = self.evidence_aggregator.aggregate(
+            query=cleaned_query,
+            paper_ids=cleaned_paper_ids,
+            dimension_evidence=(dimension_evidence),
+            explicit_gap_evidence=(explicit_gap_evidence),
         )
 
-        explicit_gap_evidence = (
-            self._collect_explicit_gap_evidence(
-                gap_analysis
-            )
-        )
+        synthesis = self.synthesis_builder.build(aggregation)
 
-        aggregation = (
-            self.evidence_aggregator.aggregate(
-                query=cleaned_query,
-                paper_ids=cleaned_paper_ids,
-                dimension_evidence=(
-                    dimension_evidence
-                ),
-                explicit_gap_evidence=(
-                    explicit_gap_evidence
-                ),
-            )
-        )
-
-        synthesis = (
-            self.synthesis_builder.build(
-                aggregation
-            )
-        )
-
-        validation = (
-            self.grounding_validator.validate(
-                aggregation,
-                synthesis,
-            )
+        validation = self.grounding_validator.validate(
+            aggregation,
+            synthesis,
         )
 
         if not validation.valid:
             issue_summary = "; ".join(
-                (
-                    f"{issue.code.value}: "
-                    f"{issue.message}"
-                )
-                for issue
-                in validation.issues
+                (f"{issue.code.value}: " f"{issue.message}")
+                for issue in validation.issues
             )
 
             raise ValueError(
-                "literature review grounding "
-                "validation failed: "
-                f"{issue_summary}"
+                "literature review grounding " "validation failed: " f"{issue_summary}"
             )
 
-        review = (
-            self.generator.generate(
-                aggregation=aggregation,
-                synthesis=synthesis,
-                title=title,
-            )
+        review = self.generator.generate(
+            aggregation=aggregation,
+            synthesis=synthesis,
+            title=title,
         )
 
-        review.validation = (
-            validation
-        )
+        review.validation = validation
 
         return review
 
@@ -245,13 +179,9 @@ class LiteratureReviewService:
                     if evidence_id in seen:
                         continue
 
-                    seen.add(
-                        evidence_id
-                    )
+                    seen.add(evidence_id)
 
-                    evidence_items.append(
-                        item
-                    )
+                    evidence_items.append(item)
 
         return evidence_items
 
@@ -300,13 +230,9 @@ class LiteratureReviewService:
                 if dedupe_key in seen:
                     continue
 
-                seen.add(
-                    dedupe_key
-                )
+                seen.add(dedupe_key)
 
-                evidence_items.append(
-                    item
-                )
+                evidence_items.append(item)
 
         return evidence_items
 
@@ -328,12 +254,8 @@ class LiteratureReviewService:
             if value in seen:
                 continue
 
-            seen.add(
-                value
-            )
+            seen.add(value)
 
-            cleaned.append(
-                value
-            )
+            cleaned.append(value)
 
         return cleaned

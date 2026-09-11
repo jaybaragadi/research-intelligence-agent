@@ -28,24 +28,16 @@ def validate_pdf(pdf_path: Path) -> None:
     """Validate that a path points to a readable PDF."""
 
     if not pdf_path.exists():
-        raise PDFExtractionError(
-            f"PDF does not exist: {pdf_path}"
-        )
+        raise PDFExtractionError(f"PDF does not exist: {pdf_path}")
 
     if not pdf_path.is_file():
-        raise PDFExtractionError(
-            f"Path is not a file: {pdf_path}"
-        )
+        raise PDFExtractionError(f"Path is not a file: {pdf_path}")
 
     if pdf_path.suffix.lower() != ".pdf":
-        raise PDFExtractionError(
-            f"Not a PDF file: {pdf_path.name}"
-        )
+        raise PDFExtractionError(f"Not a PDF file: {pdf_path.name}")
 
     if pdf_path.stat().st_size == 0:
-        raise PDFExtractionError(
-            f"PDF file is empty: {pdf_path.name}"
-        )
+        raise PDFExtractionError(f"PDF file is empty: {pdf_path.name}")
 
 
 def extract_pdf(pdf_path: Path) -> ExtractedPaper:
@@ -59,14 +51,10 @@ def extract_pdf(pdf_path: Path) -> ExtractedPaper:
     try:
         reader = PdfReader(str(pdf_path))
     except PdfReadError as exc:
-        raise PDFExtractionError(
-            f"Unable to read PDF: {pdf_path.name}"
-        ) from exc
+        raise PDFExtractionError(f"Unable to read PDF: {pdf_path.name}") from exc
 
     except Exception as exc:
-        raise PDFExtractionError(
-            f"Unexpected PDF error: {pdf_path.name}"
-        ) from exc
+        raise PDFExtractionError(f"Unexpected PDF error: {pdf_path.name}") from exc
 
     extracted_pages: list[ExtractedPage] = []
 

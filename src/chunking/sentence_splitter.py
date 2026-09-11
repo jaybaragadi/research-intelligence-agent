@@ -1,9 +1,6 @@
 import re
 
-
-SENTENCE_BOUNDARY_PATTERN = re.compile(
-    r"(?<=[.!?])\s+(?=[A-Z0-9])"
-)
+SENTENCE_BOUNDARY_PATTERN = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9])")
 
 
 def split_sentences(
@@ -25,14 +22,6 @@ def split_sentences(
         text,
     ).strip()
 
-    sentences = (
-        SENTENCE_BOUNDARY_PATTERN.split(
-            text
-        )
-    )
+    sentences = SENTENCE_BOUNDARY_PATTERN.split(text)
 
-    return [
-        sentence.strip()
-        for sentence in sentences
-        if sentence.strip()
-    ]
+    return [sentence.strip() for sentence in sentences if sentence.strip()]

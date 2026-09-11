@@ -24,35 +24,25 @@ class LiteratureReviewSynthesisBuilder:
         aggregation: LiteratureReviewEvidenceAggregation,
     ) -> LiteratureReviewSynthesis:
 
-        findings: list[
-            LiteratureReviewSynthesisFinding
-        ] = []
+        findings: list[LiteratureReviewSynthesisFinding] = []
 
         next_finding_number = 1
 
         for bundle in aggregation.bundles:
 
-            section_findings = (
-                self._build_section_findings(
-                    section_type=bundle.section_type,
-                    evidence=bundle.evidence,
-                    starting_index=next_finding_number,
-                )
+            section_findings = self._build_section_findings(
+                section_type=bundle.section_type,
+                evidence=bundle.evidence,
+                starting_index=next_finding_number,
             )
 
-            findings.extend(
-                section_findings
-            )
+            findings.extend(section_findings)
 
-            next_finding_number += len(
-                section_findings
-            )
+            next_finding_number += len(section_findings)
 
         return LiteratureReviewSynthesis(
             query=aggregation.query,
-            paper_ids=list(
-                aggregation.paper_ids
-            ),
+            paper_ids=list(aggregation.paper_ids),
             findings=findings,
         )
 
@@ -61,54 +51,31 @@ class LiteratureReviewSynthesisBuilder:
         section_type: LiteratureReviewSectionType,
         evidence: list[LiteratureReviewEvidence],
         starting_index: int,
-    ) -> list[
-        LiteratureReviewSynthesisFinding
-    ]:
+    ) -> list[LiteratureReviewSynthesisFinding]:
 
         if not evidence:
             return []
 
-        grouped_by_paper = (
-            self._group_by_paper(
-                evidence
-            )
-        )
+        grouped_by_paper = self._group_by_paper(evidence)
 
-        if (
-            len(grouped_by_paper)
-            >= 2
-        ):
-            finding = (
-                self._build_cross_paper_finding(
-                    section_type=section_type,
-                    grouped_by_paper=grouped_by_paper,
-                    finding_id=(
-                        f"SF{starting_index}"
-                    ),
-                )
+        if len(grouped_by_paper) >= 2:
+            finding = self._build_cross_paper_finding(
+                section_type=section_type,
+                grouped_by_paper=grouped_by_paper,
+                finding_id=(f"SF{starting_index}"),
             )
 
             return [finding]
 
-        paper_id = next(
-            iter(grouped_by_paper)
-        )
+        paper_id = next(iter(grouped_by_paper))
 
-        paper_evidence = (
-            grouped_by_paper[
-                paper_id
-            ]
-        )
+        paper_evidence = grouped_by_paper[paper_id]
 
-        finding = (
-            self._build_single_paper_finding(
-                section_type=section_type,
-                paper_id=paper_id,
-                evidence=paper_evidence,
-                finding_id=(
-                    f"SF{starting_index}"
-                ),
-            )
+        finding = self._build_single_paper_finding(
+            section_type=section_type,
+            paper_id=paper_id,
+            evidence=paper_evidence,
+            finding_id=(f"SF{starting_index}"),
         )
 
         return [finding]
@@ -118,16 +85,12 @@ class LiteratureReviewSynthesisBuilder:
         evidence: list[LiteratureReviewEvidence],
     ) -> dict[
         str,
-        list[
-            LiteratureReviewEvidence
-        ],
+        list[LiteratureReviewEvidence],
     ]:
 
         grouped: dict[
             str,
-            list[
-                LiteratureReviewEvidence
-            ],
+            list[LiteratureReviewEvidence],
         ] = defaultdict(list)
 
         seen_ids: dict[
@@ -137,117 +100,72 @@ class LiteratureReviewSynthesisBuilder:
 
         for item in evidence:
 
-            if (
-                item.evidence_id
-                in seen_ids[
-                    item.paper_id
-                ]
-            ):
+            if item.evidence_id in seen_ids[item.paper_id]:
                 continue
 
-            seen_ids[
-                item.paper_id
-            ].add(
-                item.evidence_id
-            )
+            seen_ids[item.paper_id].add(item.evidence_id)
 
-            grouped[
-                item.paper_id
-            ].append(
-                item
-            )
+            grouped[item.paper_id].append(item)
 
-        return dict(
-            grouped
-        )
+        return dict(grouped)
 
     def _build_cross_paper_finding(
         self,
         section_type: LiteratureReviewSectionType,
         grouped_by_paper: dict[
             str,
-            list[
-                LiteratureReviewEvidence
-            ],
+            list[LiteratureReviewEvidence],
         ],
         finding_id: str,
     ) -> LiteratureReviewSynthesisFinding:
 
-        paper_ids = list(
-            grouped_by_paper.keys()
-        )
+        paper_ids = list(grouped_by_paper.keys())
 
         evidence_ids = []
 
         for paper_id in paper_ids:
 
-            for item in (
-                grouped_by_paper[
-                    paper_id
-                ]
-            ):
-                evidence_ids.append(
-                    item.evidence_id
-                )
+            for item in grouped_by_paper[paper_id]:
+                evidence_ids.append(item.evidence_id)
 
-        statement = (
-            self._cross_paper_statement(
-                section_type=section_type,
-                paper_count=len(
-                    paper_ids
-                ),
-            )
+        statement = self._cross_paper_statement(
+            section_type=section_type,
+            paper_count=len(paper_ids),
         )
 
-        return (
-            LiteratureReviewSynthesisFinding(
-                finding_id=finding_id,
-                section_type=section_type,
-                statement=statement,
-                paper_ids=paper_ids,
-                evidence_ids=evidence_ids,
-                support_count=len(
-                    paper_ids
-                ),
-                is_cross_paper=True,
-            )
+        return LiteratureReviewSynthesisFinding(
+            finding_id=finding_id,
+            section_type=section_type,
+            statement=statement,
+            paper_ids=paper_ids,
+            evidence_ids=evidence_ids,
+            support_count=len(paper_ids),
+            is_cross_paper=True,
         )
 
     def _build_single_paper_finding(
         self,
         section_type: LiteratureReviewSectionType,
         paper_id: str,
-        evidence: list[
-            LiteratureReviewEvidence
-        ],
+        evidence: list[LiteratureReviewEvidence],
         finding_id: str,
     ) -> LiteratureReviewSynthesisFinding:
 
-        evidence_ids = [
-            item.evidence_id
-            for item
-            in evidence
-        ]
+        evidence_ids = [item.evidence_id for item in evidence]
 
-        statement = (
-            self._single_paper_statement(
-                section_type=section_type,
-                paper_id=paper_id,
-            )
+        statement = self._single_paper_statement(
+            section_type=section_type,
+            paper_id=paper_id,
         )
 
-        return (
-            LiteratureReviewSynthesisFinding(
-                finding_id=finding_id,
-                section_type=section_type,
-                statement=statement,
-                paper_ids=[
-                    paper_id
-                ],
-                evidence_ids=evidence_ids,
-                support_count=1,
-                is_cross_paper=False,
-            )
+        return LiteratureReviewSynthesisFinding(
+            finding_id=finding_id,
+            section_type=section_type,
+            statement=statement,
+            paper_ids=[paper_id],
+            evidence_ids=evidence_ids,
+            support_count=1,
+            is_cross_paper=False,
         )
 
     def _cross_paper_statement(
@@ -262,34 +180,28 @@ class LiteratureReviewSynthesisBuilder:
                 "distinct methodological approaches "
                 "to LLM-based automated test generation."
             ),
-
             LiteratureReviewSectionType.GENERATION_STRATEGIES: (
                 "Multiple indexed studies use structured "
                 "strategies to guide or improve "
                 "LLM-generated tests."
             ),
-
             LiteratureReviewSectionType.FEEDBACK_AND_ITERATION: (
                 "Multiple indexed studies incorporate "
                 "feedback or iterative refinement into "
                 "LLM-based test generation."
             ),
-
             LiteratureReviewSectionType.QUALITY_AND_EVALUATION: (
                 "Multiple indexed studies evaluate "
                 "generated tests using explicit quality "
                 "objectives or empirical evaluation methods."
             ),
-
             LiteratureReviewSectionType.LIMITATIONS_AND_GAPS: (
                 "Multiple indexed studies report "
                 "limitations or unresolved research "
                 "constraints."
             ),
-
             LiteratureReviewSectionType.FUTURE_DIRECTIONS: (
-                "Multiple indexed studies identify "
-                "future research directions."
+                "Multiple indexed studies identify " "future research directions."
             ),
         }
 
@@ -312,37 +224,27 @@ class LiteratureReviewSynthesisBuilder:
                 f"{paper_id} contributes methodological "
                 "evidence to the indexed research landscape."
             ),
-
             LiteratureReviewSectionType.GENERATION_STRATEGIES: (
                 f"{paper_id} provides evidence about "
                 "an LLM-based test-generation strategy."
             ),
-
             LiteratureReviewSectionType.FEEDBACK_AND_ITERATION: (
                 f"{paper_id} provides evidence about "
                 "feedback or iterative refinement."
             ),
-
             LiteratureReviewSectionType.QUALITY_AND_EVALUATION: (
                 f"{paper_id} provides evidence about "
                 "test-quality objectives or evaluation."
             ),
-
             LiteratureReviewSectionType.LIMITATIONS_AND_GAPS: (
-                f"{paper_id} reports a limitation or "
-                "unresolved research constraint."
+                f"{paper_id} reports a limitation or " "unresolved research constraint."
             ),
-
             LiteratureReviewSectionType.FUTURE_DIRECTIONS: (
-                f"{paper_id} reports an explicit "
-                "future research direction."
+                f"{paper_id} reports an explicit " "future research direction."
             ),
         }
 
         return templates.get(
             section_type,
-            (
-                f"{paper_id} contributes evidence "
-                "to this review section."
-            ),
+            (f"{paper_id} contributes evidence " "to this review section."),
         )

@@ -5,28 +5,23 @@ from src.models import (
     SectionLocation,
 )
 
-
 SECTION_ALIASES: dict[str, list[str]] = {
     "abstract": [
         "abstract",
     ],
-
     "introduction": [
         "introduction",
     ],
-
     "background": [
         "background",
         "preliminaries",
         "background and motivation",
     ],
-
     "related_work": [
         "related work",
         "related works",
         "literature review",
     ],
-
     "methodology": [
         "methodology",
         "methods",
@@ -36,7 +31,6 @@ SECTION_ALIASES: dict[str, list[str]] = {
         "approach",
         "framework",
     ],
-
     "experimental_setup": [
         "experimental setup",
         "experiment setup",
@@ -45,50 +39,42 @@ SECTION_ALIASES: dict[str, list[str]] = {
         "experimental design",
         "experiment design",
     ],
-
     "evaluation": [
         "evaluation",
         "empirical evaluation",
         "experiments",
         "empirical study",
     ],
-
     "results": [
         "results",
         "experimental results",
         "evaluation results",
         "results and discussion",
     ],
-
     "discussion": [
         "discussion",
         "results and discussion",
     ],
-
     "limitations": [
         "limitations",
         "limitations and future work",
     ],
-
     "threats_to_validity": [
         "threats to validity",
         "threat to validity",
         "validity threats",
     ],
-
     "future_work": [
         "future work",
         "future directions",
         "limitations and future work",
         "conclusion and future work",
     ],
-
     "conclusion": [
         "conclusion",
         "conclusions",
         "conclusion and future work",
     ],
-
     "references": [
         "references",
         "bibliography",
@@ -113,9 +99,7 @@ def build_numbered_heading_pattern(
     have been flattened during text cleaning.
     """
 
-    escaped = re.escape(
-        heading
-    )
+    escaped = re.escape(heading)
 
     return re.compile(
         rf"\b(?:"
@@ -136,9 +120,7 @@ def build_plain_heading_pattern(
     Conservative fallback for headings without numbering.
     """
 
-    escaped = re.escape(
-        heading
-    )
+    escaped = re.escape(heading)
 
     return re.compile(
         rf"(?:"
@@ -161,20 +143,14 @@ def find_heading(
     detection first, then a conservative plain-heading fallback.
     """
 
-    numbered = build_numbered_heading_pattern(
-        alias
-    )
+    numbered = build_numbered_heading_pattern(alias)
 
     if numbered.search(text):
         return True
 
-    plain = build_plain_heading_pattern(
-        alias
-    )
+    plain = build_plain_heading_pattern(alias)
 
-    return bool(
-        plain.search(text)
-    )
+    return bool(plain.search(text))
 
 
 def discover_sections(

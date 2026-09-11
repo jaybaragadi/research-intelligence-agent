@@ -21,25 +21,18 @@ class GapSignalDefinition:
 
     phrases: tuple[str, ...]
 
-    preferred_sections: tuple[
-        str,
-        ...
-    ] = ()
+    preferred_sections: tuple[str, ...] = ()
 
 
 GAP_SIGNAL_DEFINITIONS = (
     GapSignalDefinition(
-        signal_type=(
-            GapSignalType.LIMITATION
-        ),
-
+        signal_type=(GapSignalType.LIMITATION),
         description=(
             "The paper explicitly reports a "
             "limitation, weakness, constraint, "
             "or threat affecting the proposed "
             "method or study."
         ),
-
         phrases=(
             "limitation of our approach",
             "limitations of our approach",
@@ -57,7 +50,6 @@ GAP_SIGNAL_DEFINITIONS = (
             "drawback of the approach",
             "drawbacks of the approach",
         ),
-
         preferred_sections=(
             "limitations",
             "discussion",
@@ -65,18 +57,13 @@ GAP_SIGNAL_DEFINITIONS = (
             "threats_to_validity",
         ),
     ),
-
     GapSignalDefinition(
-        signal_type=(
-            GapSignalType.FUTURE_WORK
-        ),
-
+        signal_type=(GapSignalType.FUTURE_WORK),
         description=(
             "The paper explicitly identifies "
             "future research or an extension "
             "that remains to be investigated."
         ),
-
         phrases=(
             "future work",
             "future research",
@@ -90,7 +77,6 @@ GAP_SIGNAL_DEFINITIONS = (
             "an area of future work",
             "directions for future work",
         ),
-
         preferred_sections=(
             "conclusion",
             "conclusions",
@@ -98,18 +84,13 @@ GAP_SIGNAL_DEFINITIONS = (
             "future_work",
         ),
     ),
-
     GapSignalDefinition(
-        signal_type=(
-            GapSignalType.UNRESOLVED_PROBLEM
-        ),
-
+        signal_type=(GapSignalType.UNRESOLVED_PROBLEM),
         description=(
             "The paper explicitly describes an "
             "open, unresolved, or still difficult "
             "research problem."
         ),
-
         phrases=(
             "remains an open problem",
             "remains a challenge",
@@ -127,7 +108,6 @@ GAP_SIGNAL_DEFINITIONS = (
             "underexplored",
             "under-explored",
         ),
-
         preferred_sections=(
             "introduction",
             "background",
@@ -147,18 +127,10 @@ def get_gap_signal_definition(
     with one signal type.
     """
 
-    for definition in (
-        GAP_SIGNAL_DEFINITIONS
-    ):
+    for definition in GAP_SIGNAL_DEFINITIONS:
 
-        if (
-            definition.signal_type
-            == signal_type
-        ):
+        if definition.signal_type == signal_type:
 
             return definition
 
-    raise ValueError(
-        "Unsupported gap signal type: "
-        f"{signal_type}"
-    )
+    raise ValueError("Unsupported gap signal type: " f"{signal_type}")

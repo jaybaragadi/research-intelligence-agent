@@ -13,17 +13,11 @@ def main() -> None:
     print("Ingestion Summary")
     print("=" * 70)
 
-    print(
-        f"Discovered : {summary.discovered}"
-    )
+    print(f"Discovered : {summary.discovered}")
 
-    print(
-        f"Successful : {summary.successful}"
-    )
+    print(f"Successful : {summary.successful}")
 
-    print(
-        f"Failed     : {summary.failed}"
-    )
+    print(f"Failed     : {summary.failed}")
 
 
 if __name__ == "__main__":

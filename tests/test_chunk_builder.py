@@ -5,7 +5,6 @@ import pytest
 from src.chunking.chunk_builder import (
     create_page_chunks,
 )
-
 from src.models import (
     ExtractedPage,
     ExtractedPaper,
@@ -27,9 +26,7 @@ def create_test_data():
     paper = ExtractedPaper(
         paper_id="test",
         filename="test.pdf",
-        source_path=Path(
-            "test.pdf"
-        ),
+        source_path=Path("test.pdf"),
         total_pages=1,
         extracted_pages=1,
         empty_pages=0,
@@ -37,9 +34,7 @@ def create_test_data():
             ExtractedPage(
                 page_number=1,
                 text=text,
-                character_count=len(
-                    text
-                ),
+                character_count=len(text),
             )
         ],
     )
@@ -62,9 +57,7 @@ def create_test_data():
 
 def test_create_chunks():
 
-    paper, profile = (
-        create_test_data()
-    )
+    paper, profile = create_test_data()
 
     chunks = create_page_chunks(
         paper=paper,
@@ -78,9 +71,7 @@ def test_create_chunks():
 
 def test_chunks_keep_provenance():
 
-    paper, profile = (
-        create_test_data()
-    )
+    paper, profile = create_test_data()
 
     chunks = create_page_chunks(
         paper=paper,
@@ -98,9 +89,7 @@ def test_chunks_keep_provenance():
 
 def test_chunk_ids_are_unique():
 
-    paper, profile = (
-        create_test_data()
-    )
+    paper, profile = create_test_data()
 
     chunks = create_page_chunks(
         paper=paper,
@@ -109,27 +98,16 @@ def test_chunk_ids_are_unique():
         chunk_overlap=40,
     )
 
-    chunk_ids = [
-        chunk.chunk_id
-        for chunk in chunks
-    ]
+    chunk_ids = [chunk.chunk_id for chunk in chunks]
 
-    assert len(
-        chunk_ids
-    ) == len(
-        set(chunk_ids)
-    )
+    assert len(chunk_ids) == len(set(chunk_ids))
 
 
 def test_invalid_chunk_size():
 
-    paper, profile = (
-        create_test_data()
-    )
+    paper, profile = create_test_data()
 
-    with pytest.raises(
-        ValueError
-    ):
+    with pytest.raises(ValueError):
         create_page_chunks(
             paper=paper,
             profile=profile,
@@ -140,13 +118,9 @@ def test_invalid_chunk_size():
 
 def test_overlap_must_be_smaller_than_chunk():
 
-    paper, profile = (
-        create_test_data()
-    )
+    paper, profile = create_test_data()
 
-    with pytest.raises(
-        ValueError
-    ):
+    with pytest.raises(ValueError):
         create_page_chunks(
             paper=paper,
             profile=profile,
@@ -154,11 +128,10 @@ def test_overlap_must_be_smaller_than_chunk():
             chunk_overlap=100,
         )
 
+
 def test_long_sentence_is_split():
 
-    long_sentence = (
-        "word " * 400
-    ).strip()
+    long_sentence = ("word " * 400).strip()
 
     paper = ExtractedPaper(
         paper_id="test",
@@ -171,9 +144,7 @@ def test_long_sentence_is_split():
             ExtractedPage(
                 page_number=1,
                 text=long_sentence,
-                character_count=len(
-                    long_sentence
-                ),
+                character_count=len(long_sentence),
             )
         ],
     )
@@ -194,7 +165,4 @@ def test_long_sentence_is_split():
 
     assert len(chunks) > 1
 
-    assert all(
-        chunk.character_count <= 500
-        for chunk in chunks
-    )
+    assert all(chunk.character_count <= 500 for chunk in chunks)

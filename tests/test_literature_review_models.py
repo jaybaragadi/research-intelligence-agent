@@ -30,9 +30,7 @@ def test_literature_review_finding_links_to_evidence():
 
     finding = LiteratureReviewFinding(
         finding_id="F1",
-        section_type=(
-            LiteratureReviewSectionType.GENERATION_STRATEGIES
-        ),
+        section_type=(LiteratureReviewSectionType.GENERATION_STRATEGIES),
         statement=(
             "Several approaches augment LLM generation "
             "with traditional testing feedback."
@@ -64,31 +62,20 @@ def test_literature_review_section_groups_findings():
 
     finding = LiteratureReviewFinding(
         finding_id="F1",
-        section_type=(
-            LiteratureReviewSectionType.QUALITY_AND_EVALUATION
-        ),
-        statement=(
-            "Evaluation commonly uses structural coverage."
-        ),
+        section_type=(LiteratureReviewSectionType.QUALITY_AND_EVALUATION),
+        statement=("Evaluation commonly uses structural coverage."),
     )
 
     section = LiteratureReviewSection(
-        section_type=(
-            LiteratureReviewSectionType.QUALITY_AND_EVALUATION
-        ),
+        section_type=(LiteratureReviewSectionType.QUALITY_AND_EVALUATION),
         title="Quality and Evaluation",
-        objective=(
-            "Describe how generated tests are evaluated."
-        ),
+        objective=("Describe how generated tests are evaluated."),
         findings=[finding],
     )
 
     assert len(section.findings) == 1
 
-    assert (
-        section.findings[0].finding_id
-        == "F1"
-    )
+    assert section.findings[0].finding_id == "F1"
 
 
 def test_literature_review_plan_preserves_paper_order():
@@ -117,20 +104,11 @@ def test_literature_review_has_corpus_scope_note():
             "01_testpilot",
             "03_mutap",
         ],
-        title=(
-            "LLM-Based Automated Test Generation"
-        ),
+        title=("LLM-Based Automated Test Generation"),
         sections=[],
-        validation=(
-            LiteratureReviewValidationResult(
-                valid=True
-            )
-        ),
+        validation=(LiteratureReviewValidationResult(valid=True)),
     )
 
     assert "indexed corpus" in review.corpus_scope_note
 
-    assert (
-        "exhaustive"
-        in review.corpus_scope_note
-    )
+    assert "exhaustive" in review.corpus_scope_note

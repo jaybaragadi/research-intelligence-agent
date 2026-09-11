@@ -1,5 +1,4 @@
 import numpy as np
-
 from sentence_transformers import (
     SentenceTransformer,
 )
@@ -23,11 +22,7 @@ class EmbeddingModel:
 
         self.model_name = model_name
 
-        self._model: (
-            SentenceTransformer
-            | None
-        ) = None
-
+        self._model: SentenceTransformer | None = None
 
     @property
     def model(
@@ -36,19 +31,11 @@ class EmbeddingModel:
 
         if self._model is None:
 
-            print(
-                f"Loading embedding model: "
-                f"{self.model_name}"
-            )
+            print(f"Loading embedding model: " f"{self.model_name}")
 
-            self._model = (
-                SentenceTransformer(
-                    self.model_name
-                )
-            )
+            self._model = SentenceTransformer(self.model_name)
 
         return self._model
-
 
     def encode_documents(
         self,
@@ -77,7 +64,6 @@ class EmbeddingModel:
             dtype=np.float32,
         )
 
-
     def encode_query(
         self,
         query: str,
@@ -88,9 +74,7 @@ class EmbeddingModel:
 
         if not query.strip():
 
-            raise ValueError(
-                "Query cannot be empty"
-            )
+            raise ValueError("Query cannot be empty")
 
         embedding = self.model.encode(
             [query],

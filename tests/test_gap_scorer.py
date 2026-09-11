@@ -5,7 +5,6 @@ from src.analysis.gap_models import (
     GapEvidence,
     GapSignalType,
 )
-
 from src.analysis.gap_scorer import (
     GapConfidenceScorer,
 )
@@ -19,19 +18,12 @@ def make_evidence(
 
     return GapEvidence(
         evidence_id=evidence_id,
-
         paper_id="paper_a",
-
         page_number=1,
-
         section="discussion",
-
         signal_type=signal_type,
-
         text="Evidence text",
-
         citation_text="Citation",
-
         relevance_score=score,
     )
 
@@ -41,10 +33,7 @@ def test_explicit_limitation_can_score_high():
     scorer = GapConfidenceScorer()
 
     confidence = scorer.score_explicit(
-        signal_type=(
-            GapSignalType.LIMITATION
-        ),
-
+        signal_type=(GapSignalType.LIMITATION),
         evidence=[
             make_evidence(
                 "e1",
@@ -54,10 +43,7 @@ def test_explicit_limitation_can_score_high():
         ],
     )
 
-    assert (
-        confidence
-        == GapConfidence.HIGH
-    )
+    assert confidence == GapConfidence.HIGH
 
 
 def test_future_work_can_score_high():
@@ -65,10 +51,7 @@ def test_future_work_can_score_high():
     scorer = GapConfidenceScorer()
 
     confidence = scorer.score_explicit(
-        signal_type=(
-            GapSignalType.FUTURE_WORK
-        ),
-
+        signal_type=(GapSignalType.FUTURE_WORK),
         evidence=[
             make_evidence(
                 "e1",
@@ -78,10 +61,7 @@ def test_future_work_can_score_high():
         ],
     )
 
-    assert (
-        confidence
-        == GapConfidence.HIGH
-    )
+    assert confidence == GapConfidence.HIGH
 
 
 def test_unresolved_problem_is_more_conservative():
@@ -89,10 +69,7 @@ def test_unresolved_problem_is_more_conservative():
     scorer = GapConfidenceScorer()
 
     confidence = scorer.score_explicit(
-        signal_type=(
-            GapSignalType.UNRESOLVED_PROBLEM
-        ),
-
+        signal_type=(GapSignalType.UNRESOLVED_PROBLEM),
         evidence=[
             make_evidence(
                 "e1",
@@ -102,10 +79,7 @@ def test_unresolved_problem_is_more_conservative():
         ],
     )
 
-    assert (
-        confidence
-        == GapConfidence.MEDIUM
-    )
+    assert confidence == GapConfidence.MEDIUM
 
 
 def test_multiple_unresolved_signals_can_score_high():
@@ -113,17 +87,13 @@ def test_multiple_unresolved_signals_can_score_high():
     scorer = GapConfidenceScorer()
 
     confidence = scorer.score_explicit(
-        signal_type=(
-            GapSignalType.UNRESOLVED_PROBLEM
-        ),
-
+        signal_type=(GapSignalType.UNRESOLVED_PROBLEM),
         evidence=[
             make_evidence(
                 "e1",
                 GapSignalType.UNRESOLVED_PROBLEM,
                 2.0,
             ),
-
             make_evidence(
                 "e2",
                 GapSignalType.UNRESOLVED_PROBLEM,
@@ -132,10 +102,7 @@ def test_multiple_unresolved_signals_can_score_high():
         ],
     )
 
-    assert (
-        confidence
-        == GapConfidence.HIGH
-    )
+    assert confidence == GapConfidence.HIGH
 
 
 def test_empty_explicit_evidence_is_low():
@@ -143,17 +110,11 @@ def test_empty_explicit_evidence_is_low():
     scorer = GapConfidenceScorer()
 
     confidence = scorer.score_explicit(
-        signal_type=(
-            GapSignalType.LIMITATION
-        ),
-
+        signal_type=(GapSignalType.LIMITATION),
         evidence=[],
     )
 
-    assert (
-        confidence
-        == GapConfidence.LOW
-    )
+    assert confidence == GapConfidence.LOW
 
 
 def test_strong_imbalance_scores_high():
@@ -166,10 +127,7 @@ def test_strong_imbalance_scores_high():
         corpus_size=10,
     )
 
-    assert (
-        confidence
-        == GapConfidence.HIGH
-    )
+    assert confidence == GapConfidence.HIGH
 
 
 def test_moderate_imbalance_scores_medium():
@@ -182,10 +140,7 @@ def test_moderate_imbalance_scores_medium():
         corpus_size=10,
     )
 
-    assert (
-        confidence
-        == GapConfidence.MEDIUM
-    )
+    assert confidence == GapConfidence.MEDIUM
 
 
 def test_small_difference_scores_low():
@@ -198,10 +153,7 @@ def test_small_difference_scores_low():
         corpus_size=10,
     )
 
-    assert (
-        confidence
-        == GapConfidence.LOW
-    )
+    assert confidence == GapConfidence.LOW
 
 
 def test_zero_low_coverage_is_low():
@@ -214,19 +166,14 @@ def test_zero_low_coverage_is_low():
         corpus_size=10,
     )
 
-    assert (
-        confidence
-        == GapConfidence.LOW
-    )
+    assert confidence == GapConfidence.LOW
 
 
 def test_invalid_corpus_size_raises():
 
     scorer = GapConfidenceScorer()
 
-    with pytest.raises(
-        ValueError
-    ):
+    with pytest.raises(ValueError):
 
         scorer.score_imbalance(
             high_paper_count=1,
@@ -239,9 +186,7 @@ def test_paper_count_cannot_exceed_corpus():
 
     scorer = GapConfidenceScorer()
 
-    with pytest.raises(
-        ValueError
-    ):
+    with pytest.raises(ValueError):
 
         scorer.score_imbalance(
             high_paper_count=11,

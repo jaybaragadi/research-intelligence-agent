@@ -11,17 +11,11 @@ def load_extracted_paper(
     """
 
     if not json_path.exists():
-        raise FileNotFoundError(
-            f"Processed paper not found: {json_path}"
-        )
+        raise FileNotFoundError(f"Processed paper not found: {json_path}")
 
-    raw_json = json_path.read_text(
-        encoding="utf-8"
-    )
+    raw_json = json_path.read_text(encoding="utf-8")
 
-    return ExtractedPaper.model_validate_json(
-        raw_json
-    )
+    return ExtractedPaper.model_validate_json(raw_json)
 
 
 def discover_processed_papers(

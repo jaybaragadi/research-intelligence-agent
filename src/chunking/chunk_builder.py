@@ -1,11 +1,9 @@
 from src.chunking.section_mapper import (
     section_for_page,
 )
-
 from src.chunking.sentence_splitter import (
     split_sentences,
 )
-
 from src.models import (
     ExtractedPaper,
     PaperChunk,
@@ -25,10 +23,7 @@ def build_chunk_id(
         01_testpilot_chunk_0001
     """
 
-    return (
-        f"{paper_id}_chunk_"
-        f"{chunk_index:04d}"
-    )
+    return f"{paper_id}_chunk_" f"{chunk_index:04d}"
 
 
 def split_long_text(
@@ -72,11 +67,7 @@ def split_long_text(
 
             if current_words:
 
-                parts.append(
-                    " ".join(
-                        current_words
-                    )
-                )
+                parts.append(" ".join(current_words))
 
                 current_words = []
                 current_length = 0
@@ -85,65 +76,33 @@ def split_long_text(
 
             while start < len(word):
 
-                parts.append(
-                    word[
-                        start:
-                        start + max_size
-                    ]
-                )
+                parts.append(word[start : start + max_size])
 
                 start += max_size
 
             continue
 
-        separator_length = (
-            1
-            if current_words
-            else 0
-        )
+        separator_length = 1 if current_words else 0
 
-        projected_length = (
-            current_length
-            + separator_length
-            + len(word)
-        )
+        projected_length = current_length + separator_length + len(word)
 
-        if (
-            current_words
-            and projected_length > max_size
-        ):
+        if current_words and projected_length > max_size:
 
-            parts.append(
-                " ".join(
-                    current_words
-                )
-            )
+            parts.append(" ".join(current_words))
 
-            current_words = [
-                word
-            ]
+            current_words = [word]
 
-            current_length = len(
-                word
-            )
+            current_length = len(word)
 
         else:
 
-            current_words.append(
-                word
-            )
+            current_words.append(word)
 
-            current_length = (
-                projected_length
-            )
+            current_length = projected_length
 
     if current_words:
 
-        parts.append(
-            " ".join(
-                current_words
-            )
-        )
+        parts.append(" ".join(current_words))
 
     return parts
 
@@ -166,21 +125,11 @@ def build_overlap(
     overlap_units: list[str] = []
     overlap_length = 0
 
-    for unit in reversed(
-        previous_units
-    ):
+    for unit in reversed(previous_units):
 
-        separator_length = (
-            1
-            if overlap_units
-            else 0
-        )
+        separator_length = 1 if overlap_units else 0
 
-        projected_length = (
-            overlap_length
-            + separator_length
-            + len(unit)
-        )
+        projected_length = overlap_length + separator_length + len(unit)
 
         if projected_length > chunk_overlap:
             break
@@ -190,9 +139,7 @@ def build_overlap(
             unit,
         )
 
-        overlap_length = (
-            projected_length
-        )
+        overlap_length = projected_length
 
     return overlap_units
 
@@ -218,20 +165,13 @@ def create_page_chunks(
     """
 
     if chunk_size <= 0:
-        raise ValueError(
-            "chunk_size must be positive"
-        )
+        raise ValueError("chunk_size must be positive")
 
     if chunk_overlap < 0:
-        raise ValueError(
-            "chunk_overlap cannot be negative"
-        )
+        raise ValueError("chunk_overlap cannot be negative")
 
     if chunk_overlap >= chunk_size:
-        raise ValueError(
-            "chunk_overlap must be smaller "
-            "than chunk_size"
-        )
+        raise ValueError("chunk_overlap must be smaller " "than chunk_size")
 
     chunks: list[PaperChunk] = []
 
@@ -239,9 +179,7 @@ def create_page_chunks(
 
     for page in paper.pages:
 
-        sentences = split_sentences(
-            page.text
-        )
+        sentences = split_sentences(page.text)
 
         if not sentences:
             continue
@@ -262,37 +200,22 @@ def create_page_chunks(
                 chunk_size,
             )
 
-            page_units.extend(
-                sentence_parts
-            )
+            page_units.extend(sentence_parts)
 
         current_units: list[str] = []
 
         for unit in page_units:
 
-            current_text = " ".join(
-                current_units
-            )
+            current_text = " ".join(current_units)
 
             projected_length = (
-                len(current_text)
-                + (
-                    1
-                    if current_units
-                    else 0
-                )
-                + len(unit)
+                len(current_text) + (1 if current_units else 0) + len(unit)
             )
 
             # Current chunk is full enough.
-            if (
-                current_units
-                and projected_length > chunk_size
-            ):
+            if current_units and projected_length > chunk_size:
 
-                chunk_text = " ".join(
-                    current_units
-                )
+                chunk_text = " ".join(current_units)
 
                 chunks.append(
                     PaperChunk(
@@ -302,14 +225,10 @@ def create_page_chunks(
                         ),
                         paper_id=paper.paper_id,
                         text=chunk_text,
-                        page_number=(
-                            page.page_number
-                        ),
+                        page_number=(page.page_number),
                         section=section,
                         chunk_index=chunk_index,
-                        character_count=len(
-                            chunk_text
-                        ),
+                        character_count=len(chunk_text),
                     )
                 )
 
@@ -318,28 +237,16 @@ def create_page_chunks(
                 # Carry controlled overlap into the
                 # next chunk.
                 current_units = build_overlap(
-                    previous_units=(
-                        current_units
-                    ),
-                    chunk_overlap=(
-                        chunk_overlap
-                    ),
+                    previous_units=(current_units),
+                    chunk_overlap=(chunk_overlap),
                 )
 
-                current_text = " ".join(
-                    current_units
-                )
+                current_text = " ".join(current_units)
 
                 # Important safety check:
                 # overlap + new unit must still fit.
                 projected_length = (
-                    len(current_text)
-                    + (
-                        1
-                        if current_units
-                        else 0
-                    )
-                    + len(unit)
+                    len(current_text) + (1 if current_units else 0) + len(unit)
                 )
 
                 # If the overlap would make the new
@@ -348,16 +255,12 @@ def create_page_chunks(
 
                     current_units = []
 
-            current_units.append(
-                unit
-            )
+            current_units.append(unit)
 
         # Flush the remaining content for this page.
         if current_units:
 
-            chunk_text = " ".join(
-                current_units
-            )
+            chunk_text = " ".join(current_units)
 
             chunks.append(
                 PaperChunk(
@@ -367,14 +270,10 @@ def create_page_chunks(
                     ),
                     paper_id=paper.paper_id,
                     text=chunk_text,
-                    page_number=(
-                        page.page_number
-                    ),
+                    page_number=(page.page_number),
                     section=section,
                     chunk_index=chunk_index,
-                    character_count=len(
-                        chunk_text
-                    ),
+                    character_count=len(chunk_text),
                 )
             )
 

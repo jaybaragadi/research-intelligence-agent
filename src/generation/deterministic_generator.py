@@ -8,7 +8,6 @@ from src.generation.models import (
     GeneratedDraft,
 )
 
-
 STOP_WORDS = {
     "a",
     "an",
@@ -73,23 +72,15 @@ class DeterministicGroundedGenerator:
 
         if max_claims <= 0:
 
-            raise ValueError(
-                "max_claims must be positive"
-            )
+            raise ValueError("max_claims must be positive")
 
         if min_relevance_score <= 0:
 
-            raise ValueError(
-                "min_relevance_score must be positive"
-            )
+            raise ValueError("min_relevance_score must be positive")
 
-        self.max_claims = (
-            max_claims
-        )
+        self.max_claims = max_claims
 
-        self.min_relevance_score = (
-            min_relevance_score
-        )
+        self.min_relevance_score = min_relevance_score
 
     def _normalize(
         self,
@@ -124,12 +115,7 @@ class DeterministicGroundedGenerator:
         )
 
         return [
-            token
-            for token in tokens
-            if (
-                len(token) > 1
-                and token not in STOP_WORDS
-            )
+            token for token in tokens if (len(token) > 1 and token not in STOP_WORDS)
         ]
 
     def _sentences(
@@ -137,11 +123,7 @@ class DeterministicGroundedGenerator:
         text: str,
     ) -> list[str]:
 
-        cleaned = (
-            self._normalize(
-                text
-            )
-        )
+        cleaned = self._normalize(text)
 
         if not cleaned:
             return []
@@ -151,11 +133,7 @@ class DeterministicGroundedGenerator:
             cleaned,
         )
 
-        return [
-            sentence.strip()
-            for sentence in sentences
-            if sentence.strip()
-        ]
+        return [sentence.strip() for sentence in sentences if sentence.strip()]
 
     def _query_weights(
         self,
@@ -173,27 +151,12 @@ class DeterministicGroundedGenerator:
         discriminating.
         """
 
-        query_terms = list(
-            dict.fromkeys(
-                self._tokens(
-                    package.query
-                )
-            )
-        )
+        query_terms = list(dict.fromkeys(self._tokens(package.query)))
 
         if not query_terms:
             return {}
 
-        documents = [
-            set(
-                self._tokens(
-                    evidence.text
-                )
-            )
-
-            for evidence
-            in package.evidence
-        ]
+        documents = [set(self._tokens(evidence.text)) for evidence in package.evidence]
 
         document_count = max(
             len(documents),
@@ -208,9 +171,7 @@ class DeterministicGroundedGenerator:
 
                 if term in document:
 
-                    frequencies[
-                        term
-                    ] += 1
+                    frequencies[term] += 1
 
         weights: dict[
             str,
@@ -219,27 +180,10 @@ class DeterministicGroundedGenerator:
 
         for term in query_terms:
 
-            document_frequency = (
-                frequencies[
-                    term
-                ]
-            )
+            document_frequency = frequencies[term]
 
-            weights[
-                term
-            ] = (
-                math.log(
-                    (
-                        document_count
-                        + 1
-                    )
-                    /
-                    (
-                        document_frequency
-                        + 1
-                    )
-                )
-                + 1.0
+            weights[term] = (
+                math.log((document_count + 1) / (document_frequency + 1)) + 1.0
             )
 
         return weights
@@ -257,11 +201,7 @@ class DeterministicGroundedGenerator:
         sentence directly addresses the question.
         """
 
-        return set(
-            self._tokens(
-                package.query
-            )
-        )
+        return set(self._tokens(package.query))
 
     def _best_sentence(
         self,
@@ -272,11 +212,7 @@ class DeterministicGroundedGenerator:
         ],
     ) -> tuple[str, float]:
 
-        sentences = (
-            self._sentences(
-                text
-            )
-        )
+        sentences = self._sentences(text)
 
         if not sentences:
             return "", 0.0
@@ -286,31 +222,19 @@ class DeterministicGroundedGenerator:
 
         for sentence in sentences:
 
-            sentence_tokens = set(
-                self._tokens(
-                    sentence
-                )
-            )
+            sentence_tokens = set(self._tokens(sentence))
 
             score = sum(
                 weight
-
-                for term, weight
-                in query_weights.items()
-
-                if term
-                in sentence_tokens
+                for term, weight in query_weights.items()
+                if term in sentence_tokens
             )
 
             if score > best_score:
 
-                best_sentence = (
-                    sentence
-                )
+                best_sentence = sentence
 
-                best_score = (
-                    score
-                )
+                best_score = score
 
         return (
             best_sentence,
@@ -324,35 +248,21 @@ class DeterministicGroundedGenerator:
 
         if not package.query.strip():
 
-            raise ValueError(
-                "Evidence package query "
-                "cannot be empty"
-            )
+            raise ValueError("Evidence package query " "cannot be empty")
 
         if not package.evidence:
 
             return GeneratedDraft(
                 query=package.query,
-
                 answer_text=(
-                    "No validated evidence was "
-                    "available for this question."
+                    "No validated evidence was " "available for this question."
                 ),
-
                 claims=[],
             )
 
-        query_weights = (
-            self._query_weights(
-                package
-            )
-        )
+        query_weights = self._query_weights(package)
 
-        focus_terms = (
-            self._focus_terms(
-                package
-            )
-        )
+        focus_terms = self._focus_terms(package)
 
         candidates: list[
             tuple[
@@ -362,36 +272,18 @@ class DeterministicGroundedGenerator:
             ]
         ] = []
 
-        for evidence in (
-            package.evidence
-        ):
+        for evidence in package.evidence:
 
-            sentence, score = (
-                self._best_sentence(
-                    text=evidence.text,
-
-                    query_weights=(
-                        query_weights
-                    ),
-                )
+            sentence, score = self._best_sentence(
+                text=evidence.text,
+                query_weights=(query_weights),
             )
 
-            sentence_tokens = set(
-                self._tokens(
-                    sentence
-                )
-            )
+            sentence_tokens = set(self._tokens(sentence))
 
-            has_focus_overlap = bool(
-                sentence_tokens
-                & focus_terms
-            )
+            has_focus_overlap = bool(sentence_tokens & focus_terms)
 
-            if (
-                sentence
-                and score >= self.min_relevance_score
-                and has_focus_overlap
-            ):
+            if sentence and score >= self.min_relevance_score and has_focus_overlap:
 
                 candidates.append(
                     (
@@ -407,15 +299,9 @@ class DeterministicGroundedGenerator:
             reverse=True,
         )
 
-        candidates = (
-            candidates[
-                :self.max_claims
-            ]
-        )
+        candidates = candidates[: self.max_claims]
 
-        claims: list[
-            GeneratedClaim
-        ] = []
+        claims: list[GeneratedClaim] = []
 
         rendered: list[str] = []
 
@@ -425,32 +311,22 @@ class DeterministicGroundedGenerator:
             sentence,
         ) in candidates:
 
-            claim_id = (
-                f"C{len(claims) + 1}"
-            )
+            claim_id = f"C{len(claims) + 1}"
 
             claims.append(
                 GeneratedClaim(
                     claim_id=claim_id,
-
                     text=sentence,
-
-                    evidence_ids=[
-                        evidence.evidence_id
-                    ],
+                    evidence_ids=[evidence.evidence_id],
                 )
             )
 
-            rendered.append(
-                f"{sentence} "
-                f"[{evidence.label}]"
-            )
+            rendered.append(f"{sentence} " f"[{evidence.label}]")
 
         if not claims:
 
             return GeneratedDraft(
                 query=package.query,
-
                 answer_text=(
                     "Validated evidence was "
                     "retrieved, but no passage "
@@ -458,16 +334,11 @@ class DeterministicGroundedGenerator:
                     "to produce a grounded "
                     "deterministic claim."
                 ),
-
                 claims=[],
             )
 
         return GeneratedDraft(
             query=package.query,
-
-            answer_text=" ".join(
-                rendered
-            ),
-
+            answer_text=" ".join(rendered),
             claims=claims,
         )

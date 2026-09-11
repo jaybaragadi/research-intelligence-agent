@@ -37,11 +37,7 @@ class PaperDimensionAnalysis:
 
     dimension: str
 
-    evidence: list[
-        DimensionEvidence
-    ] = field(
-        default_factory=list
-    )
+    evidence: list[DimensionEvidence] = field(default_factory=list)
 
 
 @dataclass
@@ -53,11 +49,7 @@ class PaperAnalysisProfile:
 
     paper_id: str
 
-    dimensions: list[
-        PaperDimensionAnalysis
-    ] = field(
-        default_factory=list
-    )
+    dimensions: list[PaperDimensionAnalysis] = field(default_factory=list)
 
 
 @dataclass
@@ -76,11 +68,7 @@ class ComparisonCell:
 
     summary: str | None
 
-    evidence_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -92,11 +80,7 @@ class ComparisonRow:
 
     dimension: str
 
-    cells: list[
-        ComparisonCell
-    ] = field(
-        default_factory=list
-    )
+    cells: list[ComparisonCell] = field(default_factory=list)
 
 
 @dataclass
@@ -116,11 +100,7 @@ class ComparativeFinding:
 
     paper_ids: list[str]
 
-    evidence_ids: list[
-        str
-    ] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -133,14 +113,8 @@ class ComparativeAnalysis:
 
     requested_papers: list[str]
 
-    profiles: list[
-        PaperAnalysisProfile
-    ]
+    profiles: list[PaperAnalysisProfile]
 
-    matrix: list[
-        ComparisonRow
-    ]
+    matrix: list[ComparisonRow]
 
-    findings: list[
-        ComparativeFinding
-    ]
+    findings: list[ComparativeFinding]

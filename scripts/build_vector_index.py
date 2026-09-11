@@ -7,13 +7,9 @@ def main() -> None:
 
     print("=" * 70)
 
-    print(
-        "Research Intelligence Agent"
-    )
+    print("Research Intelligence Agent")
 
-    print(
-        "Phase 5 - Semantic Vector Index"
-    )
+    print("Phase 5 - Semantic Vector Index")
 
     print("=" * 70)
     print()
@@ -23,31 +19,17 @@ def main() -> None:
     print()
     print("=" * 70)
 
-    print(
-        "Vector Index Summary"
-    )
+    print("Vector Index Summary")
 
     print("=" * 70)
 
-    print(
-        f"Chunks indexed : "
-        f"{summary.chunk_count}"
-    )
+    print(f"Chunks indexed : " f"{summary.chunk_count}")
 
-    print(
-        f"Dimensions     : "
-        f"{summary.embedding_dimension}"
-    )
+    print(f"Dimensions     : " f"{summary.embedding_dimension}")
 
-    print(
-        f"FAISS index    : "
-        f"{summary.index_path}"
-    )
+    print(f"FAISS index    : " f"{summary.index_path}")
 
-    print(
-        f"Metadata       : "
-        f"{summary.metadata_path}"
-    )
+    print(f"Metadata       : " f"{summary.metadata_path}")
 
 
 if __name__ == "__main__":

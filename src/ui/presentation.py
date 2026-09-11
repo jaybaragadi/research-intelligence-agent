@@ -4,11 +4,7 @@ def evidence_title(
     page_number: int,
 ) -> str:
 
-    return (
-        f"{evidence_id} | "
-        f"{paper_id} | "
-        f"Page {page_number}"
-    )
+    return f"{evidence_id} | " f"{paper_id} | " f"Page {page_number}"
 
 
 def evidence_section(
@@ -25,11 +21,7 @@ def grounding_status(
     is_valid: bool,
 ) -> str:
 
-    return (
-        "Yes"
-        if is_valid
-        else "No"
-    )
+    return "Yes" if is_valid else "No"
 
 
 def dimension_label(
@@ -61,10 +53,7 @@ def comparison_cell_status(
     if summary:
         return summary
 
-    return (
-        "No matching validated evidence "
-        "was identified for this dimension."
-    )
+    return "No matching validated evidence " "was identified for this dimension."
 
 
 def join_evidence_ids(
@@ -74,19 +63,14 @@ def join_evidence_ids(
     if not evidence_ids:
         return "None"
 
-    return ", ".join(
-        evidence_ids
-    )
+    return ", ".join(evidence_ids)
+
 
 def gap_type_label(
     gap_type,
 ) -> str:
 
-    value = (
-        gap_type.value
-        if hasattr(gap_type, "value")
-        else str(gap_type)
-    )
+    value = gap_type.value if hasattr(gap_type, "value") else str(gap_type)
 
     labels = {
         "explicit": "Explicit Gap",
@@ -107,11 +91,7 @@ def gap_confidence_label(
     confidence,
 ) -> str:
 
-    value = (
-        confidence.value
-        if hasattr(confidence, "value")
-        else str(confidence)
-    )
+    value = confidence.value if hasattr(confidence, "value") else str(confidence)
 
     return value.title()
 
@@ -120,18 +100,12 @@ def signal_type_label(
     signal_type,
 ) -> str:
 
-    value = (
-        signal_type.value
-        if hasattr(signal_type, "value")
-        else str(signal_type)
-    )
+    value = signal_type.value if hasattr(signal_type, "value") else str(signal_type)
 
-    return (
-        value.replace(
-            "_",
-            " ",
-        ).title()
-    )
+    return value.replace(
+        "_",
+        " ",
+    ).title()
 
 
 def coverage_label(
@@ -140,27 +114,19 @@ def coverage_label(
     corpus_size: int,
 ) -> str:
 
-    return (
-        f"{dimension_label(dimension)}: "
-        f"{paper_count}/{corpus_size} papers"
-    )
+    return f"{dimension_label(dimension)}: " f"{paper_count}/{corpus_size} papers"
+
 
 def review_section_label(
     section_type,
 ) -> str:
 
-    value = (
-        section_type.value
-        if hasattr(section_type, "value")
-        else str(section_type)
-    )
+    value = section_type.value if hasattr(section_type, "value") else str(section_type)
 
-    return (
-        value.replace(
-            "_",
-            " ",
-        ).title()
-    )
+    return value.replace(
+        "_",
+        " ",
+    ).title()
 
 
 def literature_review_filename(
@@ -168,25 +134,15 @@ def literature_review_filename(
 ) -> str:
 
     cleaned = "".join(
-        character.lower()
-        if character.isalnum()
-        else "_"
-        for character in title.strip()
+        character.lower() if character.isalnum() else "_" for character in title.strip()
     )
 
-    cleaned = "_".join(
-        part
-        for part in cleaned.split("_")
-        if part
-    )
+    cleaned = "_".join(part for part in cleaned.split("_") if part)
 
     if not cleaned:
         cleaned = "literature_review"
 
-    return (
-        cleaned
-        + ".md"
-    )
+    return cleaned + ".md"
 
 
 def review_validation_status(
@@ -196,11 +152,8 @@ def review_validation_status(
     if validation is None:
         return "Not Available"
 
-    return (
-        "Valid"
-        if validation.valid
-        else "Invalid"
-    )
+    return "Valid" if validation.valid else "Invalid"
+
 
 def search_result_title(
     rank: int,
@@ -208,11 +161,7 @@ def search_result_title(
     page_number: int,
 ) -> str:
 
-    return (
-        f"#{rank} | "
-        f"{paper_id} | "
-        f"Page {page_number}"
-    )
+    return f"#{rank} | " f"{paper_id} | " f"Page {page_number}"
 
 
 def search_score_label(
@@ -230,6 +179,7 @@ def result_section_label(
         return section
 
     return "Unspecified"
+
 
 def page_intro(
     title: str,

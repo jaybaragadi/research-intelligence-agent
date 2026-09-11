@@ -37,38 +37,21 @@ class GapConfidenceScorer:
         if not evidence:
             return GapConfidence.LOW
 
-        strongest_score = max(
-            item.relevance_score
-            for item in evidence
-        )
+        strongest_score = max(item.relevance_score for item in evidence)
 
-        evidence_count = len(
-            {
-                item.evidence_id
-                for item in evidence
-            }
-        )
+        evidence_count = len({item.evidence_id for item in evidence})
 
         if signal_type in {
             GapSignalType.LIMITATION,
             GapSignalType.FUTURE_WORK,
         }:
 
-            if (
-                strongest_score >= 2.0
-                and evidence_count >= 1
-            ):
+            if strongest_score >= 2.0 and evidence_count >= 1:
                 return GapConfidence.HIGH
 
-        if (
-            signal_type
-            == GapSignalType.UNRESOLVED_PROBLEM
-        ):
+        if signal_type == GapSignalType.UNRESOLVED_PROBLEM:
 
-            if (
-                strongest_score >= 2.0
-                and evidence_count >= 2
-            ):
+            if strongest_score >= 2.0 and evidence_count >= 2:
                 return GapConfidence.HIGH
 
         if strongest_score >= 1.5:
@@ -94,50 +77,25 @@ class GapConfidenceScorer:
         """
 
         if corpus_size <= 0:
-            raise ValueError(
-                "corpus_size must be positive"
-            )
+            raise ValueError("corpus_size must be positive")
 
         if high_paper_count < 0:
-            raise ValueError(
-                "high_paper_count cannot be negative"
-            )
+            raise ValueError("high_paper_count cannot be negative")
 
         if low_paper_count < 0:
-            raise ValueError(
-                "low_paper_count cannot be negative"
-            )
+            raise ValueError("low_paper_count cannot be negative")
 
-        if (
-            high_paper_count
-            > corpus_size
-            or low_paper_count
-            > corpus_size
-        ):
-            raise ValueError(
-                "paper counts cannot exceed corpus_size"
-            )
+        if high_paper_count > corpus_size or low_paper_count > corpus_size:
+            raise ValueError("paper counts cannot exceed corpus_size")
 
-        if (
-            high_paper_count == 0
-            or low_paper_count == 0
-        ):
+        if high_paper_count == 0 or low_paper_count == 0:
             return GapConfidence.LOW
 
-        high_ratio = (
-            high_paper_count
-            / corpus_size
-        )
+        high_ratio = high_paper_count / corpus_size
 
-        low_ratio = (
-            low_paper_count
-            / corpus_size
-        )
+        low_ratio = low_paper_count / corpus_size
 
-        difference = (
-            high_ratio
-            - low_ratio
-        )
+        difference = high_ratio - low_ratio
 
         if difference >= 0.6:
             return GapConfidence.HIGH

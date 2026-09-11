@@ -9,7 +9,6 @@ from src.retrieval.faiss_store import (
     FaissStore,
 )
 
-
 LOW_VALUE_SECTIONS = {
     "references",
 }
@@ -117,13 +116,9 @@ class SemanticRetriever:
     """
 
     def __init__(self) -> None:
-        self.embedding_model = EmbeddingModel(
-            settings.embedding_model
-        )
+        self.embedding_model = EmbeddingModel(settings.embedding_model)
 
-        self.store = FaissStore(
-            settings.vector_store_dir
-        )
+        self.store = FaissStore(settings.vector_store_dir)
 
     def _normalize_token(
         self,
@@ -160,24 +155,12 @@ class SemanticRetriever:
         }
 
         if token in irregular_forms:
-            return irregular_forms[
-                token
-            ]
+            return irregular_forms[token]
 
-        if (
-            token.endswith("ies")
-            and len(token) > 4
-        ):
-            return (
-                token[:-3]
-                + "y"
-            )
+        if token.endswith("ies") and len(token) > 4:
+            return token[:-3] + "y"
 
-        if (
-            token.endswith("s")
-            and not token.endswith("ss")
-            and len(token) > 4
-        ):
+        if token.endswith("s") and not token.endswith("ss") and len(token) > 4:
             return token[:-1]
 
         return token
@@ -200,26 +183,13 @@ class SemanticRetriever:
 
         for token in raw_tokens:
 
-            if (
-                len(token) <= 2
-                or token in STOPWORDS
-            ):
+            if len(token) <= 2 or token in STOPWORDS:
                 continue
 
-            normalized = (
-                self._normalize_token(
-                    token
-                )
-            )
+            normalized = self._normalize_token(token)
 
-            if (
-                len(normalized) > 2
-                and normalized
-                not in STOPWORDS
-            ):
-                tokens.add(
-                    normalized
-                )
+            if len(normalized) > 2 and normalized not in STOPWORDS:
+                tokens.add(normalized)
 
         return tokens
 
@@ -233,30 +203,16 @@ class SemanticRetriever:
         are represented in an evidence chunk.
         """
 
-        query_terms = (
-            self._tokenize(
-                query
-            )
-        )
+        query_terms = self._tokenize(query)
 
         if not query_terms:
             return 0.0
 
-        text_terms = (
-            self._tokenize(
-                text
-            )
-        )
+        text_terms = self._tokenize(text)
 
-        overlap = (
-            query_terms
-            & text_terms
-        )
+        overlap = query_terms & text_terms
 
-        return (
-            len(overlap)
-            / len(query_terms)
-        )
+        return len(overlap) / len(query_terms)
 
     def _concept_alignment_bonus(
         self,
@@ -272,29 +228,16 @@ class SemanticRetriever:
         without hard-coding individual queries.
         """
 
-        query_terms = (
-            self._tokenize(
-                query
-            )
-        )
+        query_terms = self._tokenize(query)
 
-        text_terms = (
-            self._tokenize(
-                text
-            )
-        )
+        text_terms = self._tokenize(text)
 
         if not query_terms:
             return 0.0
 
-        matched_terms = (
-            query_terms
-            & text_terms
-        )
+        matched_terms = query_terms & text_terms
 
-        matched_count = len(
-            matched_terms
-        )
+        matched_count = len(matched_terms)
 
         if matched_count >= 5:
             return 0.040
@@ -320,9 +263,7 @@ class SemanticRetriever:
         `references` section filter.
         """
 
-        normalized = (
-            text.lower()
-        )
+        normalized = text.lower()
 
         reference_markers = (
             "doi.org/",
@@ -335,12 +276,7 @@ class SemanticRetriever:
             "et al.",
         )
 
-        marker_count = sum(
-            1
-            for marker
-            in reference_markers
-            if marker in normalized
-        )
+        marker_count = sum(1 for marker in reference_markers if marker in normalized)
 
         citation_patterns = len(
             re.findall(
@@ -359,11 +295,7 @@ class SemanticRetriever:
         if marker_count >= 3:
             return True
 
-        if (
-            citation_patterns >= 4
-            and year_patterns >= 3
-            and marker_count >= 1
-        ):
+        if citation_patterns >= 4 and year_patterns >= 3 and marker_count >= 1:
             return True
 
         return False
@@ -401,9 +333,7 @@ class SemanticRetriever:
         if section is None:
             return 0.0
 
-        normalized_query = (
-            query.lower()
-        )
+        normalized_query = query.lower()
 
         bonus = 0.0
 
@@ -463,12 +393,7 @@ class SemanticRetriever:
             "comparison",
         )
 
-        if any(
-            term
-            in normalized_query
-            for term
-            in limitation_terms
-        ):
+        if any(term in normalized_query for term in limitation_terms):
             if section in {
                 "limitations",
                 "threats_to_validity",
@@ -482,36 +407,18 @@ class SemanticRetriever:
             }:
                 bonus += 0.020
 
-        if any(
-            term
-            in normalized_query
-            for term
-            in methodology_terms
-        ):
-            if (
-                section
-                == "methodology"
-            ):
+        if any(term in normalized_query for term in methodology_terms):
+            if section == "methodology":
                 bonus += 0.030
 
-        if any(
-            term
-            in normalized_query
-            for term
-            in result_terms
-        ):
+        if any(term in normalized_query for term in result_terms):
             if section in {
                 "results",
                 "evaluation",
             }:
                 bonus += 0.025
 
-        if any(
-            term
-            in normalized_query
-            for term
-            in evaluation_terms
-        ):
+        if any(term in normalized_query for term in evaluation_terms):
             if section in {
                 "evaluation",
                 "experimental_setup",
@@ -539,41 +446,25 @@ class SemanticRetriever:
         provide lightweight reranking.
         """
 
-        lexical_score = (
-            self._lexical_score(
-                query,
-                text,
-            )
+        lexical_score = self._lexical_score(
+            query,
+            text,
         )
 
-        semantic_component = (
-            raw_score
-            * 0.85
+        semantic_component = raw_score * 0.85
+
+        lexical_component = lexical_score * 0.15
+
+        concept_bonus = self._concept_alignment_bonus(
+            query,
+            text,
         )
 
-        lexical_component = (
-            lexical_score
-            * 0.15
-        )
+        section_bonus = self._section_bonus(section)
 
-        concept_bonus = (
-            self._concept_alignment_bonus(
-                query,
-                text,
-            )
-        )
-
-        section_bonus = (
-            self._section_bonus(
-                section
-            )
-        )
-
-        query_section_bonus = (
-            self._query_section_bonus(
-                query,
-                section,
-            )
+        query_section_bonus = self._query_section_bonus(
+            query,
+            section,
         )
 
         final_score = (
@@ -595,9 +486,7 @@ class SemanticRetriever:
         top_k: int | None = None,
         candidate_multiplier: int = 6,
         max_per_paper: int = 2,
-        allowed_paper_ids: (
-            set[str] | None
-        ) = None,
+        allowed_paper_ids: set[str] | None = None,
     ) -> list[RetrievedChunk]:
         """
         Search the research-paper vector index.
@@ -634,49 +523,29 @@ class SemanticRetriever:
         """
 
         if not query.strip():
-            raise ValueError(
-                "Query cannot be empty"
-            )
+            raise ValueError("Query cannot be empty")
 
         if top_k is None:
-            top_k = (
-                settings.top_k
-            )
+            top_k = settings.top_k
 
         if top_k <= 0:
-            raise ValueError(
-                "top_k must be positive"
-            )
+            raise ValueError("top_k must be positive")
 
         if candidate_multiplier <= 0:
-            raise ValueError(
-                "candidate_multiplier must be positive"
-            )
+            raise ValueError("candidate_multiplier must be positive")
 
         if max_per_paper <= 0:
-            raise ValueError(
-                "max_per_paper must be positive"
-            )
+            raise ValueError("max_per_paper must be positive")
 
-        if (
-            allowed_paper_ids
-            is not None
-            and not allowed_paper_ids
-        ):
+        if allowed_paper_ids is not None and not allowed_paper_ids:
             return []
 
-        chunks = (
-            self.store.load_chunks()
-        )
+        chunks = self.store.load_chunks()
 
         if not chunks:
             return []
 
-        query_embedding = (
-            self.embedding_model.encode_query(
-                query
-            )
-        )
+        query_embedding = self.embedding_model.encode_query(query)
 
         if allowed_paper_ids is not None:
             # The corpus currently contains only
@@ -688,30 +557,23 @@ class SemanticRetriever:
             # requested paper simply because that
             # paper was outside a global Top-N
             # candidate cutoff.
-            candidate_k = len(
-                chunks
-            )
+            candidate_k = len(chunks)
 
         else:
             candidate_k = min(
                 len(chunks),
                 max(
                     top_k,
-                    top_k
-                    * candidate_multiplier,
+                    top_k * candidate_multiplier,
                 ),
             )
 
-        scores, indexes = (
-            self.store.search(
-                query_embedding,
-                candidate_k,
-            )
+        scores, indexes = self.store.search(
+            query_embedding,
+            candidate_k,
         )
 
-        candidates: list[
-            RetrievedChunk
-        ] = []
+        candidates: list[RetrievedChunk] = []
 
         for score, index in zip(
             scores[0],
@@ -720,34 +582,21 @@ class SemanticRetriever:
             if index < 0:
                 continue
 
-            chunk = chunks[
-                int(index)
-            ]
+            chunk = chunks[int(index)]
 
             if (
-                allowed_paper_ids
-                is not None
-                and chunk.paper_id
-                not in allowed_paper_ids
+                allowed_paper_ids is not None
+                and chunk.paper_id not in allowed_paper_ids
             ):
                 continue
 
-            if (
-                chunk.section
-                in LOW_VALUE_SECTIONS
-            ):
+            if chunk.section in LOW_VALUE_SECTIONS:
                 continue
 
-            if (
-                self._looks_like_reference_text(
-                    chunk.text
-                )
-            ):
+            if self._looks_like_reference_text(chunk.text):
                 continue
 
-            raw_score = float(
-                score
-            )
+            raw_score = float(score)
 
             (
                 hybrid_score,
@@ -762,51 +611,23 @@ class SemanticRetriever:
             candidates.append(
                 RetrievedChunk(
                     rank=0,
-
-                    score=(
-                        hybrid_score
-                    ),
-
-                    raw_score=(
-                        raw_score
-                    ),
-
-                    lexical_score=(
-                        lexical_score
-                    ),
-
-                    chunk_id=(
-                        chunk.chunk_id
-                    ),
-
-                    paper_id=(
-                        chunk.paper_id
-                    ),
-
-                    page_number=(
-                        chunk.page_number
-                    ),
-
-                    section=(
-                        chunk.section
-                    ),
-
-                    text=(
-                        chunk.text
-                    ),
+                    score=(hybrid_score),
+                    raw_score=(raw_score),
+                    lexical_score=(lexical_score),
+                    chunk_id=(chunk.chunk_id),
+                    paper_id=(chunk.paper_id),
+                    page_number=(chunk.page_number),
+                    section=(chunk.section),
+                    text=(chunk.text),
                 )
             )
 
         candidates.sort(
-            key=lambda result: (
-                result.score
-            ),
+            key=lambda result: (result.score),
             reverse=True,
         )
 
-        selected: list[
-            RetrievedChunk
-        ] = []
+        selected: list[RetrievedChunk] = []
 
         paper_counts: dict[
             str,
@@ -815,39 +636,21 @@ class SemanticRetriever:
 
         for candidate in candidates:
 
-            current_count = (
-                paper_counts.get(
-                    candidate.paper_id,
-                    0,
-                )
+            current_count = paper_counts.get(
+                candidate.paper_id,
+                0,
             )
 
-            if (
-                current_count
-                >= max_per_paper
-            ):
+            if current_count >= max_per_paper:
                 continue
 
-            candidate.rank = (
-                len(selected)
-                + 1
-            )
+            candidate.rank = len(selected) + 1
 
-            selected.append(
-                candidate
-            )
+            selected.append(candidate)
 
-            paper_counts[
-                candidate.paper_id
-            ] = (
-                current_count
-                + 1
-            )
+            paper_counts[candidate.paper_id] = current_count + 1
 
-            if (
-                len(selected)
-                >= top_k
-            ):
+            if len(selected) >= top_k:
                 break
 
         return selected

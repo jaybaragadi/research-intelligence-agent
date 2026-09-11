@@ -15,13 +15,8 @@ def section_for_page(
     current page is treated as the active section.
     """
 
-    eligible_sections: list[
-        SectionLocation
-    ] = [
-        section
-        for section in profile.sections
-        if section.page_number
-        <= page_number
+    eligible_sections: list[SectionLocation] = [
+        section for section in profile.sections if section.page_number <= page_number
     ]
 
     if not eligible_sections:
@@ -29,9 +24,7 @@ def section_for_page(
 
     active_section = max(
         eligible_sections,
-        key=lambda section: (
-            section.page_number
-        ),
+        key=lambda section: (section.page_number),
     )
 
     return active_section.canonical_name

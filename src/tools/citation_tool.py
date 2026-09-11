@@ -52,20 +52,12 @@ class CitationTool:
 
     def __init__(
         self,
-        evidence_tool: (
-            EvidenceTool
-            | None
-        ) = None,
-        metadata_directory: (
-            Path
-            | None
-        ) = None,
+        evidence_tool: EvidenceTool | None = None,
+        metadata_directory: Path | None = None,
     ) -> None:
 
         self.evidence_tool = (
-            evidence_tool
-            if evidence_tool is not None
-            else EvidenceTool()
+            evidence_tool if evidence_tool is not None else EvidenceTool()
         )
 
         self.metadata_directory = (
@@ -82,10 +74,7 @@ class CitationTool:
         Return the Phase 3 metadata path.
         """
 
-        return (
-            self.metadata_directory
-            / f"{paper_id}.json"
-        )
+        return self.metadata_directory / f"{paper_id}.json"
 
     def _load_profile(
         self,
@@ -99,26 +88,14 @@ class CitationTool:
         can fall back to the paper ID.
         """
 
-        path = (
-            self._metadata_path(
-                paper_id
-            )
-        )
+        path = self._metadata_path(paper_id)
 
         if not path.exists():
             return None
 
-        data = json.loads(
-            path.read_text(
-                encoding="utf-8"
-            )
-        )
+        data = json.loads(path.read_text(encoding="utf-8"))
 
-        return (
-            PaperProfile.model_validate(
-                data
-            )
-        )
+        return PaperProfile.model_validate(data)
 
     def _format_citation(
         self,
@@ -132,40 +109,23 @@ class CitationTool:
 
         if profile is not None:
 
-            source_name = (
-                profile.title
-            )
+            source_name = profile.title
 
-            year_text = (
-                f" ({profile.year})"
-                if profile.year
-                is not None
-                else ""
-            )
+            year_text = f" ({profile.year})" if profile.year is not None else ""
 
         else:
 
-            source_name = (
-                evidence.paper_id
-            )
+            source_name = evidence.paper_id
 
             year_text = ""
 
-        location_parts = [
-            f"p. {evidence.page_number}"
-        ]
+        location_parts = [f"p. {evidence.page_number}"]
 
         if evidence.section:
 
-            location_parts.append(
-                evidence.section
-            )
+            location_parts.append(evidence.section)
 
-        location_text = (
-            ", ".join(
-                location_parts
-            )
-        )
+        location_text = ", ".join(location_parts)
 
         return (
             f"{source_name}"
@@ -183,96 +143,42 @@ class CitationTool:
         evidence ID.
         """
 
-        evidence = (
-            self.evidence_tool.get(
-                evidence_id
-            )
-        )
+        evidence = self.evidence_tool.get(evidence_id)
 
-        profile = (
-            self._load_profile(
-                evidence.paper_id
-            )
-        )
+        profile = self._load_profile(evidence.paper_id)
 
-        title = (
-            profile.title
-            if profile is not None
-            else evidence.paper_id
-        )
+        title = profile.title if profile is not None else evidence.paper_id
 
-        year = (
-            profile.year
-            if profile is not None
-            else None
-        )
+        year = profile.year if profile is not None else None
 
-        citation_text = (
-            self._format_citation(
-                evidence=evidence,
-                profile=profile,
-            )
+        citation_text = self._format_citation(
+            evidence=evidence,
+            profile=profile,
         )
 
         return CitationRecord(
-            evidence_id=(
-                evidence.evidence_id
-            ),
-
-            paper_id=(
-                evidence.paper_id
-            ),
-
-            title=(
-                title
-            ),
-
-            year=(
-                year
-            ),
-
-            page_number=(
-                evidence.page_number
-            ),
-
-            section=(
-                evidence.section
-            ),
-
-            chunk_id=(
-                evidence.chunk_id
-            ),
-
-            citation_text=(
-                citation_text
-            ),
+            evidence_id=(evidence.evidence_id),
+            paper_id=(evidence.paper_id),
+            title=(title),
+            year=(year),
+            page_number=(evidence.page_number),
+            section=(evidence.section),
+            chunk_id=(evidence.chunk_id),
+            citation_text=(citation_text),
         )
 
     def cite_many(
         self,
         evidence_ids: list[str],
-    ) -> list[
-        CitationRecord
-    ]:
+    ) -> list[CitationRecord]:
         """
         Generate citations for several evidence
         IDs while preserving caller order.
         """
 
-        evidence_records = (
-            self.evidence_tool.get_many(
-                evidence_ids
-            )
-        )
+        evidence_records = self.evidence_tool.get_many(evidence_ids)
 
-        return [
-            self.cite(
-                evidence.evidence_id
-            )
-
-            for evidence
-            in evidence_records
-        ]
+        return [self.cite(evidence.evidence_id) for evidence in evidence_records]
 
 
 def cite_evidence(
@@ -284,6 +190,4 @@ def cite_evidence(
 
     tool = CitationTool()
 
-    return tool.cite(
-        evidence_id
-    )
+    return tool.cite(evidence_id)

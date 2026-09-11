@@ -3,7 +3,6 @@ import pytest
 from src.analysis.gap_candidate_detector import (
     GapCandidateDetector,
 )
-
 from src.analysis.gap_models import (
     DimensionCoverage,
     GapConfidence,
@@ -22,19 +21,12 @@ def make_signal(
 
     return GapEvidence(
         evidence_id=evidence_id,
-
         paper_id=paper_id,
-
         page_number=1,
-
         section="discussion",
-
         signal_type=signal_type,
-
         text="Evidence text",
-
         citation_text="Citation",
-
         relevance_score=score,
     )
 
@@ -47,17 +39,9 @@ def make_coverage(
 
     return DimensionCoverage(
         dimension=dimension,
-
-        paper_count=len(
-            paper_ids
-        ),
-
-        evidence_count=len(
-            evidence_ids
-        ),
-
+        paper_count=len(paper_ids),
+        evidence_count=len(evidence_ids),
         paper_ids=paper_ids,
-
         evidence_ids=evidence_ids,
     )
 
@@ -75,31 +59,17 @@ def test_builds_explicit_limitation_candidate():
         )
     ]
 
-    candidates = (
-        detector
-        .build_explicit_candidates(
-            signals
-        )
-    )
+    candidates = detector.build_explicit_candidates(signals)
 
     assert len(candidates) == 1
 
     candidate = candidates[0]
 
-    assert (
-        candidate.gap_type
-        == GapType.EXPLICIT
-    )
+    assert candidate.gap_type == GapType.EXPLICIT
 
-    assert (
-        candidate.confidence
-        == GapConfidence.HIGH
-    )
+    assert candidate.confidence == GapConfidence.HIGH
 
-    assert (
-        candidate.evidence_ids
-        == ["e1"]
-    )
+    assert candidate.evidence_ids == ["e1"]
 
 
 def test_groups_same_signal_for_same_paper():
@@ -112,7 +82,6 @@ def test_groups_same_signal_for_same_paper():
             "paper_a",
             GapSignalType.FUTURE_WORK,
         ),
-
         make_signal(
             "e2",
             "paper_a",
@@ -120,22 +89,14 @@ def test_groups_same_signal_for_same_paper():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_explicit_candidates(
-            signals
-        )
-    )
+    candidates = detector.build_explicit_candidates(signals)
 
     assert len(candidates) == 1
 
-    assert (
-        candidates[0].evidence_ids
-        == [
-            "e1",
-            "e2",
-        ]
-    )
+    assert candidates[0].evidence_ids == [
+        "e1",
+        "e2",
+    ]
 
 
 def test_different_signal_types_create_separate_candidates():
@@ -148,7 +109,6 @@ def test_different_signal_types_create_separate_candidates():
             "paper_a",
             GapSignalType.LIMITATION,
         ),
-
         make_signal(
             "e2",
             "paper_a",
@@ -156,12 +116,7 @@ def test_different_signal_types_create_separate_candidates():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_explicit_candidates(
-            signals
-        )
-    )
+    candidates = detector.build_explicit_candidates(signals)
 
     assert len(candidates) == 2
 
@@ -188,7 +143,6 @@ def test_zero_coverage_does_not_create_imbalance_gap():
                 "e5",
             ],
         ),
-
         make_coverage(
             "limitations",
             [],
@@ -196,12 +150,9 @@ def test_zero_coverage_does_not_create_imbalance_gap():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_imbalance_candidates(
-            coverage=coverage,
-            corpus_size=5,
-        )
+    candidates = detector.build_imbalance_candidates(
+        coverage=coverage,
+        corpus_size=5,
     )
 
     assert candidates == []
@@ -235,7 +186,6 @@ def test_low_nonzero_coverage_can_create_imbalance():
                 "q8",
             ],
         ),
-
         make_coverage(
             "limitations",
             [
@@ -249,30 +199,21 @@ def test_low_nonzero_coverage_can_create_imbalance():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_imbalance_candidates(
-            coverage=coverage,
-            corpus_size=10,
-        )
+    candidates = detector.build_imbalance_candidates(
+        coverage=coverage,
+        corpus_size=10,
     )
 
     assert len(candidates) == 1
 
     candidate = candidates[0]
 
-    assert (
-        candidate.gap_type
-        == GapType.CORPUS_IMBALANCE
-    )
+    assert candidate.gap_type == GapType.CORPUS_IMBALANCE
 
-    assert (
-        candidate.dimensions
-        == [
-            "quality_objective",
-            "limitations",
-        ]
-    )
+    assert candidate.dimensions == [
+        "quality_objective",
+        "limitations",
+    ]
 
 
 def test_similar_coverage_does_not_create_candidate():
@@ -299,7 +240,6 @@ def test_similar_coverage_does_not_create_candidate():
                 "q6",
             ],
         ),
-
         make_coverage(
             "feedback_signal",
             [
@@ -317,12 +257,9 @@ def test_similar_coverage_does_not_create_candidate():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_imbalance_candidates(
-            coverage=coverage,
-            corpus_size=10,
-        )
+    candidates = detector.build_imbalance_candidates(
+        coverage=coverage,
+        corpus_size=10,
     )
 
     assert candidates == []
@@ -338,7 +275,6 @@ def test_small_corpus_does_not_create_imbalance():
             ["p1"],
             ["e1"],
         ),
-
         make_coverage(
             "limitations",
             ["p2"],
@@ -346,12 +282,9 @@ def test_small_corpus_does_not_create_imbalance():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_imbalance_candidates(
-            coverage=coverage,
-            corpus_size=1,
-        )
+    candidates = detector.build_imbalance_candidates(
+        coverage=coverage,
+        corpus_size=1,
     )
 
     assert candidates == []
@@ -361,17 +294,12 @@ def test_invalid_ratio_configuration_raises():
 
     detector = GapCandidateDetector()
 
-    with pytest.raises(
-        ValueError
-    ):
+    with pytest.raises(ValueError):
 
         detector.build_imbalance_candidates(
             coverage=[],
-
             corpus_size=10,
-
             minimum_high_coverage_ratio=0.2,
-
             maximum_low_coverage_ratio=0.4,
         )
 
@@ -406,7 +334,6 @@ def test_strong_imbalance_gets_high_confidence():
                 "e9",
             ],
         ),
-
         make_coverage(
             "limitations",
             ["p1"],
@@ -414,17 +341,11 @@ def test_strong_imbalance_gets_high_confidence():
         ),
     ]
 
-    candidates = (
-        detector
-        .build_imbalance_candidates(
-            coverage=coverage,
-            corpus_size=10,
-        )
+    candidates = detector.build_imbalance_candidates(
+        coverage=coverage,
+        corpus_size=10,
     )
 
     assert len(candidates) == 1
 
-    assert (
-        candidates[0].confidence
-        == GapConfidence.HIGH
-    )
+    assert candidates[0].confidence == GapConfidence.HIGH

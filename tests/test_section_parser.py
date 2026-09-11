@@ -3,7 +3,6 @@ from pathlib import Path
 from src.metadata.section_parser import (
     discover_sections,
 )
-
 from src.models import (
     ExtractedPage,
     ExtractedPaper,
@@ -24,9 +23,7 @@ def test_discover_sections():
     paper = ExtractedPaper(
         paper_id="test",
         filename="test.pdf",
-        source_path=Path(
-            "test.pdf"
-        ),
+        source_path=Path("test.pdf"),
         total_pages=1,
         extracted_pages=1,
         empty_pages=0,
@@ -34,21 +31,14 @@ def test_discover_sections():
             ExtractedPage(
                 page_number=1,
                 text=text,
-                character_count=len(
-                    text
-                ),
+                character_count=len(text),
             )
         ],
     )
 
-    sections = discover_sections(
-        paper
-    )
+    sections = discover_sections(paper)
 
-    names = {
-        section.canonical_name
-        for section in sections
-    }
+    names = {section.canonical_name for section in sections}
 
     assert "introduction" in names
     assert "related_work" in names

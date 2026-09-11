@@ -12,9 +12,7 @@ class PaperMetadata(BaseModel):
 
     title: str = "Unknown Title"
 
-    authors: list[str] = Field(
-        default_factory=list
-    )
+    authors: list[str] = Field(default_factory=list)
 
     year: int | None = None
 
@@ -22,25 +20,15 @@ class PaperMetadata(BaseModel):
 
     methodology: str | None = None
 
-    datasets: list[str] = Field(
-        default_factory=list
-    )
+    datasets: list[str] = Field(default_factory=list)
 
-    metrics: list[str] = Field(
-        default_factory=list
-    )
+    metrics: list[str] = Field(default_factory=list)
 
-    findings: list[str] = Field(
-        default_factory=list
-    )
+    findings: list[str] = Field(default_factory=list)
 
-    limitations: list[str] = Field(
-        default_factory=list
-    )
+    limitations: list[str] = Field(default_factory=list)
 
-    future_work: list[str] = Field(
-        default_factory=list
-    )
+    future_work: list[str] = Field(default_factory=list)
 
     source_path: Path | None = None
 
@@ -63,6 +51,7 @@ class PaperChunk(BaseModel):
     chunk_index: int
 
     character_count: int
+
 
 class SearchResult(BaseModel):
     """One result returned from semantic research search."""
@@ -99,25 +88,15 @@ class PaperComparison(BaseModel):
 
     paper_ids: list[str]
 
-    common_methods: list[str] = Field(
-        default_factory=list
-    )
+    common_methods: list[str] = Field(default_factory=list)
 
-    differences: list[str] = Field(
-        default_factory=list
-    )
+    differences: list[str] = Field(default_factory=list)
 
-    agreements: list[str] = Field(
-        default_factory=list
-    )
+    agreements: list[str] = Field(default_factory=list)
 
-    contradictions: list[str] = Field(
-        default_factory=list
-    )
+    contradictions: list[str] = Field(default_factory=list)
 
-    limitations: list[str] = Field(
-        default_factory=list
-    )
+    limitations: list[str] = Field(default_factory=list)
 
 
 class ExtractedPage(BaseModel):
@@ -139,9 +118,8 @@ class ExtractedPaper(BaseModel):
     extracted_pages: int
     empty_pages: int
 
-    pages: list[ExtractedPage] = Field(
-        default_factory=list
-    )
+    pages: list[ExtractedPage] = Field(default_factory=list)
+
 
 class SectionLocation(BaseModel):
     """Location of a recognized research-paper section."""
@@ -175,22 +153,14 @@ class PaperProfile(BaseModel):
 
     title: str = "Unknown Title"
 
-    authors: list[str] = Field(
-        default_factory=list
-    )
+    authors: list[str] = Field(default_factory=list)
 
     year: int | None = None
 
     abstract: str | None = None
 
-    sections: list[SectionLocation] = Field(
-        default_factory=list
-    )
+    sections: list[SectionLocation] = Field(default_factory=list)
 
-    research_questions: list[str] = Field(
-        default_factory=list
-    )
+    research_questions: list[str] = Field(default_factory=list)
 
-    research_signals: list[ResearchSignal] = Field(
-        default_factory=list
-    )
+    research_signals: list[ResearchSignal] = Field(default_factory=list)

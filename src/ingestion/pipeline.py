@@ -9,6 +9,7 @@ from src.ingestion.pdf_loader import (
 )
 from src.ingestion.statistics import total_characters
 
+
 @dataclass
 class IngestionSummary:
     discovered: int = 0
@@ -21,35 +22,23 @@ def run_ingestion() -> IngestionSummary:
     Run the complete Phase 2 ingestion pipeline.
     """
 
-    pdf_files = discover_pdfs(
-        settings.papers_dir
-    )
+    pdf_files = discover_pdfs(settings.papers_dir)
 
-    summary = IngestionSummary(
-        discovered=len(pdf_files)
-    )
+    summary = IngestionSummary(discovered=len(pdf_files))
 
     print()
-    print(
-        f"Found {len(pdf_files)} PDF file(s)."
-    )
+    print(f"Found {len(pdf_files)} PDF file(s).")
     print()
 
     if not pdf_files:
-        print(
-            "No PDFs found in "
-            f"{settings.papers_dir}"
-        )
+        print("No PDFs found in " f"{settings.papers_dir}")
         return summary
 
     for index, pdf_path in enumerate(
         pdf_files,
         start=1,
     ):
-        print(
-            f"[{index}/{len(pdf_files)}] "
-            f"Processing {pdf_path.name}"
-        )
+        print(f"[{index}/{len(pdf_files)}] " f"Processing {pdf_path.name}")
 
         try:
             paper = extract_pdf(pdf_path)
@@ -61,36 +50,19 @@ def run_ingestion() -> IngestionSummary:
 
             summary.successful += 1
 
-            print(
-                f"    Pages       : "
-                f"{paper.total_pages}"
-            )
+            print(f"    Pages       : " f"{paper.total_pages}")
 
-            print(
-                f"    Extracted   : "
-                f"{paper.extracted_pages}"
-            )
+            print(f"    Extracted   : " f"{paper.extracted_pages}")
 
-            print(
-                f"    Empty pages : "
-                f"{paper.empty_pages}"
-            )
-            print(
-                f"    Characters  : "
-                f"{total_characters(paper):,}"
-            )
+            print(f"    Empty pages : " f"{paper.empty_pages}")
+            print(f"    Characters  : " f"{total_characters(paper):,}")
 
-            print(
-                f"    Saved       : "
-                f"{output_path.name}"
-            )
+            print(f"    Saved       : " f"{output_path.name}")
 
         except PDFExtractionError as exc:
             summary.failed += 1
 
-            print(
-                f"    FAILED: {exc}"
-            )
+            print(f"    FAILED: {exc}")
 
         print()
 

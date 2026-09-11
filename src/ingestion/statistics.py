@@ -6,10 +6,7 @@ def total_characters(
 ) -> int:
     """Return total extracted characters."""
 
-    return sum(
-        page.character_count
-        for page in paper.pages
-    )
+    return sum(page.character_count for page in paper.pages)
 
 
 def average_characters_per_page(
@@ -20,7 +17,4 @@ def average_characters_per_page(
     if not paper.pages:
         return 0.0
 
-    return (
-        total_characters(paper)
-        / len(paper.pages)
-    )
+    return total_characters(paper) / len(paper.pages)

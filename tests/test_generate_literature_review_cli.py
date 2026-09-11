@@ -19,10 +19,7 @@ def test_parser_accepts_required_arguments():
         ]
     )
 
-    assert (
-        args.query
-        == "Review LLM testing."
-    )
+    assert args.query == "Review LLM testing."
 
     assert args.papers == [
         "03_mutap",
@@ -43,10 +40,7 @@ def test_parser_default_evidence_per_paper():
         ]
     )
 
-    assert (
-        args.evidence_per_paper
-        == 8
-    )
+    assert args.evidence_per_paper == 8
 
 
 def test_parser_accepts_custom_title():
@@ -64,10 +58,7 @@ def test_parser_accepts_custom_title():
         ]
     )
 
-    assert (
-        args.title
-        == "Custom Review"
-    )
+    assert args.title == "Custom Review"
 
 
 def test_parser_accepts_output_path():
@@ -85,23 +76,14 @@ def test_parser_accepts_output_path():
         ]
     )
 
-    assert (
-        args.output
-        == Path(
-            "reports/test.md"
-        )
-    )
+    assert args.output == Path("reports/test.md")
 
 
 def test_write_report_creates_file(
     tmp_path,
 ):
 
-    output = (
-        tmp_path
-        / "nested"
-        / "review.md"
-    )
+    output = tmp_path / "nested" / "review.md"
 
     result = write_report(
         "# Review\n",
@@ -110,9 +92,4 @@ def test_write_report_creates_file(
 
     assert result == output
 
-    assert (
-        output.read_text(
-            encoding="utf-8"
-        )
-        == "# Review\n"
-    )
+    assert output.read_text(encoding="utf-8") == "# Review\n"

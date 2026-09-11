@@ -17,19 +17,14 @@ def save_extracted_paper(
         exist_ok=True,
     )
 
-    output_path = (
-        output_directory
-        / f"{paper.paper_id}.json"
-    )
+    output_path = output_directory / f"{paper.paper_id}.json"
 
     with output_path.open(
         "w",
         encoding="utf-8",
     ) as file:
         json.dump(
-            paper.model_dump(
-                mode="json"
-            ),
+            paper.model_dump(mode="json"),
             file,
             ensure_ascii=False,
             indent=2,

@@ -3,7 +3,6 @@ from pathlib import Path
 from src.metadata.abstract_extractor import (
     extract_abstract,
 )
-
 from src.models import (
     ExtractedPage,
     ExtractedPaper,
@@ -17,9 +16,7 @@ def create_paper(
     return ExtractedPaper(
         paper_id="test",
         filename="test.pdf",
-        source_path=Path(
-            "test.pdf"
-        ),
+        source_path=Path("test.pdf"),
         total_pages=1,
         extracted_pages=1,
         empty_pages=0,
@@ -27,9 +24,7 @@ def create_paper(
             ExtractedPage(
                 page_number=1,
                 text=text,
-                character_count=len(
-                    text
-                ),
+                character_count=len(text),
             )
         ],
     )
@@ -50,17 +45,10 @@ def test_front_matter_abstract_fallback():
         "important software engineering activity."
     )
 
-    paper = create_paper(
-        text
-    )
+    paper = create_paper(text)
 
-    abstract = extract_abstract(
-        paper
-    )
+    abstract = extract_abstract(paper)
 
     assert abstract is not None
 
-    assert (
-        "software testing"
-        in abstract.lower()
-    )
+    assert "software testing" in abstract.lower()

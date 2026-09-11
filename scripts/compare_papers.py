@@ -8,10 +8,7 @@ from src.tools.compare_papers import (
 def main() -> None:
 
     parser = argparse.ArgumentParser(
-        description=(
-            "Compare research papers using "
-            "retrieved evidence"
-        )
+        description=("Compare research papers using " "retrieved evidence")
     )
 
     parser.add_argument(
@@ -24,20 +21,14 @@ def main() -> None:
         "--papers",
         nargs="+",
         required=True,
-        help=(
-            "Paper IDs to compare, for example "
-            "03_mutap 05_coverup"
-        ),
+        help=("Paper IDs to compare, for example " "03_mutap 05_coverup"),
     )
 
     parser.add_argument(
         "--evidence-per-paper",
         type=int,
         default=3,
-        help=(
-            "Maximum evidence chunks "
-            "per paper"
-        ),
+        help=("Maximum evidence chunks " "per paper"),
     )
 
     args = parser.parse_args()
@@ -47,9 +38,7 @@ def main() -> None:
     response = tool.compare(
         paper_ids=args.papers,
         query=args.query,
-        evidence_per_paper=(
-            args.evidence_per_paper
-        ),
+        evidence_per_paper=(args.evidence_per_paper),
     )
 
     print()
@@ -57,104 +46,55 @@ def main() -> None:
     print("PAPER COMPARISON")
     print("=" * 70)
 
-    print(
-        f"Query   : {response.query}"
-    )
+    print(f"Query   : {response.query}")
 
-    print(
-        "Papers  : "
-        + ", ".join(
-            response.requested_papers
-        )
-    )
+    print("Papers  : " + ", ".join(response.requested_papers))
 
     print(
         "Matched : "
-        + (
-            ", ".join(
-                response.matched_papers
-            )
-            if response.matched_papers
-            else "None"
-        )
+        + (", ".join(response.matched_papers) if response.matched_papers else "None")
     )
 
     if response.missing_papers:
 
-        print(
-            "Missing : "
-            + ", ".join(
-                response.missing_papers
-            )
-        )
+        print("Missing : " + ", ".join(response.missing_papers))
 
-    for comparison in (
-        response.comparisons
-    ):
+    for comparison in response.comparisons:
 
         print()
         print("=" * 70)
 
-        print(
-            f"PAPER: "
-            f"{comparison.paper_id}"
-        )
+        print(f"PAPER: " f"{comparison.paper_id}")
 
         print("=" * 70)
 
         if not comparison.evidence:
 
-            print(
-                "No relevant evidence found."
-            )
+            print("No relevant evidence found.")
 
             continue
 
-        for evidence in (
-            comparison.evidence
-        ):
+        for evidence in comparison.evidence:
 
             print()
 
-            print(
-                "-" * 70
-            )
+            print("-" * 70)
 
-            print(
-                f"Page          : "
-                f"{evidence.page_number}"
-            )
+            print(f"Page          : " f"{evidence.page_number}")
 
-            print(
-                f"Section       : "
-                f"{evidence.section}"
-            )
+            print(f"Section       : " f"{evidence.section}")
 
-            print(
-                f"Score         : "
-                f"{evidence.score:.4f}"
-            )
+            print(f"Score         : " f"{evidence.score:.4f}")
 
-            print(
-                f"Raw score     : "
-                f"{evidence.raw_score:.4f}"
-            )
+            print(f"Raw score     : " f"{evidence.raw_score:.4f}")
 
-            print(
-                f"Lexical score : "
-                f"{evidence.lexical_score:.4f}"
-            )
+            print(f"Lexical score : " f"{evidence.lexical_score:.4f}")
 
-            print(
-                f"Chunk         : "
-                f"{evidence.chunk_id}"
-            )
+            print(f"Chunk         : " f"{evidence.chunk_id}")
 
             print()
 
-            print(
-                evidence.text
-            )
+            print(evidence.text)
 
     print()
     print("=" * 70)

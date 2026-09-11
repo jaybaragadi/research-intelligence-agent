@@ -8,63 +8,42 @@ from src.tools.summarize_paper import (
 def main() -> None:
 
     parser = argparse.ArgumentParser(
-        description=(
-            "Create a structured evidence-backed "
-            "research paper summary"
-        )
+        description=("Create a structured evidence-backed " "research paper summary")
     )
 
     parser.add_argument(
         "paper_id",
         type=str,
-        help=(
-            "Paper identifier, for example "
-            "08_telpa"
-        ),
+        help=("Paper identifier, for example " "08_telpa"),
     )
 
     args = parser.parse_args()
 
     tool = SummarizePaperTool()
 
-    summary = tool.summarize(
-        args.paper_id
-    )
+    summary = tool.summarize(args.paper_id)
 
     print()
     print("=" * 70)
     print("STRUCTURED PAPER SUMMARY")
     print("=" * 70)
 
-    print(
-        f"Paper : {summary.paper_id}"
-    )
+    print(f"Paper : {summary.paper_id}")
 
-    print(
-        f"Title : {summary.title}"
-    )
+    print(f"Title : {summary.title}")
 
-    print(
-        f"Year  : {summary.year}"
-    )
+    print(f"Year  : {summary.year}")
 
     print(
         "Authors: "
-        + (
-            ", ".join(summary.authors)
-            if summary.authors
-            else "Not extracted"
-        )
+        + (", ".join(summary.authors) if summary.authors else "Not extracted")
     )
 
     print()
     print("ABSTRACT")
     print("-" * 70)
 
-    print(
-        summary.abstract
-        or "No abstract extracted."
-    )
+    print(summary.abstract or "No abstract extracted.")
 
     print()
     print("RESEARCH QUESTIONS")
@@ -77,16 +56,11 @@ def main() -> None:
             start=1,
         ):
 
-            print(
-                f"{index}. {question}"
-            )
+            print(f"{index}. {question}")
 
     else:
 
-        print(
-            "No explicit research questions "
-            "were extracted."
-        )
+        print("No explicit research questions " "were extracted.")
 
     print()
     print("SECTIONS")
@@ -96,38 +70,26 @@ def main() -> None:
 
         for section in summary.sections:
 
-            print(
-                f"- {section}"
-            )
+            print(f"- {section}")
 
     else:
 
-        print(
-            "No section structure extracted."
-        )
+        print("No section structure extracted.")
 
     print()
     print("RESEARCH EVIDENCE")
     print("=" * 70)
 
-    for category, evidence_items in (
-        summary.evidence.items()
-    ):
+    for category, evidence_items in summary.evidence.items():
 
         print()
-        print(
-            category.upper()
-        )
+        print(category.upper())
 
-        print(
-            "-" * 70
-        )
+        print("-" * 70)
 
         if not evidence_items:
 
-            print(
-                "No evidence extracted."
-            )
+            print("No evidence extracted.")
 
             continue
 
@@ -139,9 +101,7 @@ def main() -> None:
                 f"{evidence.matched_keyword}"
             )
 
-            print(
-                evidence.snippet
-            )
+            print(evidence.snippet)
 
             print()
 

@@ -43,10 +43,7 @@ CORPUS_PAPERS = [
     ),
     CorpusPaper(
         paper_id="05_coverup",
-        title=(
-            "CoverUp: Effective High Coverage Test Generation "
-            "for Python"
-        ),
+        title=("CoverUp: Effective High Coverage Test Generation " "for Python"),
         year=2025,
     ),
     CorpusPaper(
@@ -73,8 +70,7 @@ CORPUS_PAPERS = [
     CorpusPaper(
         paper_id="09_hits",
         title=(
-            "HITS: High-coverage LLM-based Unit Test Generation "
-            "via Method Slicing"
+            "HITS: High-coverage LLM-based Unit Test Generation " "via Method Slicing"
         ),
         year=2024,
     ),
@@ -90,10 +86,7 @@ CORPUS_PAPERS = [
 
 
 def get_paper_ids() -> list[str]:
-    return [
-        paper.paper_id
-        for paper in CORPUS_PAPERS
-    ]
+    return [paper.paper_id for paper in CORPUS_PAPERS]
 
 
 def get_paper_by_id(

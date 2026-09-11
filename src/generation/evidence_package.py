@@ -2,19 +2,15 @@ from src.generation.models import (
     EvidencePackage,
     GroundingEvidence,
 )
-
 from src.tools.citation_tool import (
     CitationTool,
 )
-
 from src.tools.compare_papers import (
     PaperComparisonResponse,
 )
-
 from src.tools.evidence_tool import (
     EvidenceTool,
 )
-
 from src.tools.search_papers import (
     PaperSearchResponse,
 )
@@ -39,19 +35,13 @@ class EvidencePackageBuilder:
     ) -> None:
 
         self.evidence_tool = (
-            evidence_tool
-            if evidence_tool is not None
-            else EvidenceTool()
+            evidence_tool if evidence_tool is not None else EvidenceTool()
         )
 
         self.citation_tool = (
             citation_tool
             if citation_tool is not None
-            else CitationTool(
-                evidence_tool=(
-                    self.evidence_tool
-                )
-            )
+            else CitationTool(evidence_tool=(self.evidence_tool))
         )
 
     def _build_item(
@@ -64,44 +54,18 @@ class EvidencePackageBuilder:
         attach its validated citation.
         """
 
-        evidence = (
-            self.evidence_tool.get(
-                evidence_id
-            )
-        )
+        evidence = self.evidence_tool.get(evidence_id)
 
-        citation = (
-            self.citation_tool.cite(
-                evidence_id
-            )
-        )
+        citation = self.citation_tool.cite(evidence_id)
 
         return GroundingEvidence(
-            evidence_id=(
-                evidence.evidence_id
-            ),
-
+            evidence_id=(evidence.evidence_id),
             label=label,
-
-            paper_id=(
-                evidence.paper_id
-            ),
-
-            page_number=(
-                evidence.page_number
-            ),
-
-            section=(
-                evidence.section
-            ),
-
-            text=(
-                evidence.text
-            ),
-
-            citation_text=(
-                citation.citation_text
-            ),
+            paper_id=(evidence.paper_id),
+            page_number=(evidence.page_number),
+            section=(evidence.section),
+            text=(evidence.text),
+            citation_text=(citation.citation_text),
         )
 
     def from_search(
@@ -113,45 +77,30 @@ class EvidencePackageBuilder:
         from search results.
         """
 
-        items: list[
-            GroundingEvidence
-        ] = []
+        items: list[GroundingEvidence] = []
 
         seen: set[str] = set()
 
-        for result in (
-            response.results
-        ):
+        for result in response.results:
 
-            evidence_id = (
-                result.chunk_id
-            )
+            evidence_id = result.chunk_id
 
             if evidence_id in seen:
                 continue
 
-            seen.add(
-                evidence_id
-            )
+            seen.add(evidence_id)
 
-            label = (
-                f"E{len(items) + 1}"
-            )
+            label = f"E{len(items) + 1}"
 
             items.append(
                 self._build_item(
-                    evidence_id=(
-                        evidence_id
-                    ),
+                    evidence_id=(evidence_id),
                     label=label,
                 )
             )
 
         return EvidencePackage(
-            query=(
-                response.query
-            ),
-
+            query=(response.query),
             evidence=items,
         )
 
@@ -167,48 +116,31 @@ class EvidencePackageBuilder:
         order are preserved.
         """
 
-        items: list[
-            GroundingEvidence
-        ] = []
+        items: list[GroundingEvidence] = []
 
         seen: set[str] = set()
 
-        for comparison in (
-            response.comparisons
-        ):
+        for comparison in response.comparisons:
 
-            for result in (
-                comparison.evidence
-            ):
+            for result in comparison.evidence:
 
-                evidence_id = (
-                    result.chunk_id
-                )
+                evidence_id = result.chunk_id
 
                 if evidence_id in seen:
                     continue
 
-                seen.add(
-                    evidence_id
-                )
+                seen.add(evidence_id)
 
-                label = (
-                    f"E{len(items) + 1}"
-                )
+                label = f"E{len(items) + 1}"
 
                 items.append(
                     self._build_item(
-                        evidence_id=(
-                            evidence_id
-                        ),
+                        evidence_id=(evidence_id),
                         label=label,
                     )
                 )
 
         return EvidencePackage(
-            query=(
-                response.query
-            ),
-
+            query=(response.query),
             evidence=items,
         )

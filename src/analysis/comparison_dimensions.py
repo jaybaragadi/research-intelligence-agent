@@ -21,10 +21,7 @@ class ComparisonDimension:
 COMPARISON_DIMENSIONS = (
     ComparisonDimension(
         name="generation_strategy",
-        description=(
-            "How the proposed approach generates or "
-            "constructs tests."
-        ),
+        description=("How the proposed approach generates or " "constructs tests."),
         keywords=(
             "prompt",
             "prompts",
@@ -36,7 +33,6 @@ COMPARISON_DIMENSIONS = (
             "surviving mutants",
         ),
     ),
-
     ComparisonDimension(
         name="feedback_signal",
         description=(
@@ -54,7 +50,6 @@ COMPARISON_DIMENSIONS = (
             "augmenting prompts",
         ),
     ),
-
     ComparisonDimension(
         name="iteration_strategy",
         description=(
@@ -74,12 +69,10 @@ COMPARISON_DIMENSIONS = (
             "subsequent",
         ),
     ),
-
     ComparisonDimension(
         name="quality_objective",
         description=(
-            "What notion of test quality the approach "
-            "attempts to improve."
+            "What notion of test quality the approach " "attempts to improve."
         ),
         keywords=(
             "coverage",
@@ -94,13 +87,9 @@ COMPARISON_DIMENSIONS = (
             "quality",
         ),
     ),
-
     ComparisonDimension(
         name="evaluation_method",
-        description=(
-            "How the paper evaluates the proposed "
-            "test-generation method."
-        ),
+        description=("How the paper evaluates the proposed " "test-generation method."),
         keywords=(
             "evaluate",
             "evaluation",
@@ -113,7 +102,6 @@ COMPARISON_DIMENSIONS = (
             "baseline",
         ),
     ),
-
     ComparisonDimension(
         name="limitations",
         description=(

@@ -113,6 +113,7 @@ class ComparisonEvaluationResult:
 
     structural_valid: bool
 
+
 @dataclass
 class GapBenchmarkCase:
     gap_id: str

@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 APP_PAGES = [
     "Home",
     "Research Q&A",
@@ -15,14 +14,9 @@ def render_sidebar() -> str:
 
     with st.sidebar:
 
-        st.title(
-            "Research Intelligence Agent"
-        )
+        st.title("Research Intelligence Agent")
 
-        st.caption(
-            "Evidence-grounded analysis "
-            "of software-testing research"
-        )
+        st.caption("Evidence-grounded analysis " "of software-testing research")
 
         st.divider()
 
@@ -34,17 +28,13 @@ def render_sidebar() -> str:
 
         st.divider()
 
-        st.markdown(
-            """
+        st.markdown("""
             **Research Domain**
 
             Large Language Models for
             Automated Software Test Generation
-            """
-        )
+            """)
 
-        st.caption(
-            "Current corpus: 10 research papers"
-        )
+        st.caption("Current corpus: 10 research papers")
 
     return page

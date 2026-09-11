@@ -3,7 +3,6 @@ import pytest
 from src.analysis.literature_review_generator import (
     DeterministicLiteratureReviewGenerator,
 )
-
 from src.analysis.literature_review_models import (
     LiteratureReviewEvidence,
     LiteratureReviewEvidenceAggregation,
@@ -26,10 +25,7 @@ def make_evidence(
         page_number=1,
         section="methodology",
         text="Evidence text.",
-        citation_text=(
-            citation_text
-            or f"{paper_id}, p. 1"
-        ),
+        citation_text=(citation_text or f"{paper_id}, p. 1"),
     )
 
 
@@ -39,25 +35,19 @@ def get_section(
 ):
 
     return next(
-        section
-        for section
-        in review.sections
-        if section.section_type
-        == section_type
+        section for section in review.sections if section.section_type == section_type
     )
 
 
 def test_generator_creates_all_taxonomy_sections():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review LLM test generation.",
-            paper_ids=[
-                "03_mutap",
-                "05_coverup",
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review LLM test generation.",
+        paper_ids=[
+            "03_mutap",
+            "05_coverup",
+        ],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -66,39 +56,20 @@ def test_generator_creates_all_taxonomy_sections():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
-    section_types = [
-        section.section_type
-        for section
-        in review.sections
-    ]
+    section_types = [section.section_type for section in review.sections]
 
-    assert (
-        LiteratureReviewSectionType.INTRODUCTION
-        in section_types
-    )
+    assert LiteratureReviewSectionType.INTRODUCTION in section_types
 
-    assert (
-        LiteratureReviewSectionType.GENERATION_STRATEGIES
-        in section_types
-    )
+    assert LiteratureReviewSectionType.GENERATION_STRATEGIES in section_types
 
-    assert (
-        LiteratureReviewSectionType.FUTURE_DIRECTIONS
-        in section_types
-    )
+    assert LiteratureReviewSectionType.FUTURE_DIRECTIONS in section_types
 
-    assert (
-        LiteratureReviewSectionType.CONCLUSION
-        in section_types
-    )
+    assert LiteratureReviewSectionType.CONCLUSION in section_types
 
 
 def test_finding_becomes_section_narrative():
@@ -108,24 +79,17 @@ def test_finding_becomes_section_narrative():
         "03_mutap",
     )
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review feedback.",
-            paper_ids=[
-                "03_mutap",
-            ],
-            bundles=[
-                LiteratureReviewEvidenceBundle(
-                    section_type=(
-                        LiteratureReviewSectionType
-                        .FEEDBACK_AND_ITERATION
-                    ),
-                    evidence=[
-                        evidence
-                    ],
-                )
-            ],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review feedback.",
+        paper_ids=[
+            "03_mutap",
+        ],
+        bundles=[
+            LiteratureReviewEvidenceBundle(
+                section_type=(LiteratureReviewSectionType.FEEDBACK_AND_ITERATION),
+                evidence=[evidence],
+            )
+        ],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -134,59 +98,42 @@ def test_finding_becomes_section_narrative():
         findings=[
             LiteratureReviewSynthesisFinding(
                 finding_id="SF1",
-                section_type=(
-                    LiteratureReviewSectionType
-                    .FEEDBACK_AND_ITERATION
-                ),
+                section_type=(LiteratureReviewSectionType.FEEDBACK_AND_ITERATION),
                 statement=(
-                    "The indexed study incorporates "
-                    "feedback into test generation."
+                    "The indexed study incorporates " "feedback into test generation."
                 ),
-                paper_ids=[
-                    "03_mutap"
-                ],
-                evidence_ids=[
-                    "E1"
-                ],
+                paper_ids=["03_mutap"],
+                evidence_ids=["E1"],
                 support_count=1,
                 is_cross_paper=False,
             )
         ],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
     section = get_section(
         review,
-        LiteratureReviewSectionType
-        .FEEDBACK_AND_ITERATION,
+        LiteratureReviewSectionType.FEEDBACK_AND_ITERATION,
     )
 
-    assert (
-        "incorporates feedback"
-        in section.narrative
-    )
+    assert "incorporates feedback" in section.narrative
 
     assert "[E1]" in section.narrative
 
 
 def test_multiple_evidence_ids_are_rendered():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review evaluation.",
-            paper_ids=[
-                "01_testpilot",
-                "05_coverup",
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review evaluation.",
+        paper_ids=[
+            "01_testpilot",
+            "05_coverup",
+        ],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -195,14 +142,8 @@ def test_multiple_evidence_ids_are_rendered():
         findings=[
             LiteratureReviewSynthesisFinding(
                 finding_id="SF1",
-                section_type=(
-                    LiteratureReviewSectionType
-                    .QUALITY_AND_EVALUATION
-                ),
-                statement=(
-                    "Multiple indexed studies "
-                    "evaluate generated tests."
-                ),
+                section_type=(LiteratureReviewSectionType.QUALITY_AND_EVALUATION),
+                statement=("Multiple indexed studies " "evaluate generated tests."),
                 paper_ids=[
                     "01_testpilot",
                     "05_coverup",
@@ -217,31 +158,22 @@ def test_multiple_evidence_ids_are_rendered():
         ],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
     section = get_section(
         review,
-        LiteratureReviewSectionType
-        .QUALITY_AND_EVALUATION,
+        LiteratureReviewSectionType.QUALITY_AND_EVALUATION,
     )
 
-    assert (
-        "[E1; E2]"
-        in section.narrative
-    )
+    assert "[E1; E2]" in section.narrative
 
 
 def test_duplicate_marker_ids_are_removed():
 
-    generator = (
-        DeterministicLiteratureReviewGenerator()
-    )
+    generator = DeterministicLiteratureReviewGenerator()
 
     marker = generator._evidence_marker(
         [
@@ -256,16 +188,14 @@ def test_duplicate_marker_ids_are_removed():
 
 def test_introduction_reports_indexed_paper_count():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review research.",
-            paper_ids=[
-                "01_testpilot",
-                "03_mutap",
-                "05_coverup",
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review research.",
+        paper_ids=[
+            "01_testpilot",
+            "03_mutap",
+            "05_coverup",
+        ],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -274,12 +204,9 @@ def test_introduction_reports_indexed_paper_count():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
     introduction = get_section(
@@ -287,27 +214,19 @@ def test_introduction_reports_indexed_paper_count():
         LiteratureReviewSectionType.INTRODUCTION,
     )
 
-    assert (
-        "3 papers"
-        in introduction.narrative
-    )
+    assert "3 papers" in introduction.narrative
 
-    assert (
-        "indexed corpus"
-        in introduction.narrative
-    )
+    assert "indexed corpus" in introduction.narrative
 
 
 def test_single_paper_uses_singular_wording():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review research.",
-            paper_ids=[
-                "03_mutap",
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review research.",
+        paper_ids=[
+            "03_mutap",
+        ],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -316,12 +235,9 @@ def test_single_paper_uses_singular_wording():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
     introduction = get_section(
@@ -329,22 +245,17 @@ def test_single_paper_uses_singular_wording():
         LiteratureReviewSectionType.INTRODUCTION,
     )
 
-    assert (
-        "1 paper "
-        in introduction.narrative
-    )
+    assert "1 paper " in introduction.narrative
 
 
 def test_empty_future_work_section_does_not_claim_no_research_exists():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review future work.",
-            paper_ids=[
-                "03_mutap",
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review future work.",
+        paper_ids=[
+            "03_mutap",
+        ],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -353,36 +264,23 @@ def test_empty_future_work_section_does_not_claim_no_research_exists():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
     section = get_section(
         review,
-        LiteratureReviewSectionType
-        .FUTURE_DIRECTIONS,
+        LiteratureReviewSectionType.FUTURE_DIRECTIONS,
     )
 
     text = section.narrative.lower()
 
-    assert (
-        "no qualifying"
-        in text
-    )
+    assert "no qualifying" in text
 
-    assert (
-        "current evidence aggregation"
-        in text
-    )
+    assert "current evidence aggregation" in text
 
-    assert (
-        "no researchers"
-        not in text
-    )
+    assert "no researchers" not in text
 
 
 def test_citations_are_deduplicated_across_sections():
@@ -390,38 +288,24 @@ def test_citations_are_deduplicated_across_sections():
     shared = make_evidence(
         "E1",
         "03_mutap",
-        citation_text=(
-            "MuTAP (2023), p. 5"
-        ),
+        citation_text=("MuTAP (2023), p. 5"),
     )
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review research.",
-            paper_ids=[
-                "03_mutap",
-            ],
-            bundles=[
-                LiteratureReviewEvidenceBundle(
-                    section_type=(
-                        LiteratureReviewSectionType
-                        .RESEARCH_LANDSCAPE
-                    ),
-                    evidence=[
-                        shared
-                    ],
-                ),
-                LiteratureReviewEvidenceBundle(
-                    section_type=(
-                        LiteratureReviewSectionType
-                        .GENERATION_STRATEGIES
-                    ),
-                    evidence=[
-                        shared
-                    ],
-                ),
-            ],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review research.",
+        paper_ids=[
+            "03_mutap",
+        ],
+        bundles=[
+            LiteratureReviewEvidenceBundle(
+                section_type=(LiteratureReviewSectionType.RESEARCH_LANDSCAPE),
+                evidence=[shared],
+            ),
+            LiteratureReviewEvidenceBundle(
+                section_type=(LiteratureReviewSectionType.GENERATION_STRATEGIES),
+                evidence=[shared],
+            ),
+        ],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -430,17 +314,12 @@ def test_citations_are_deduplicated_across_sections():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
-    assert review.citations == [
-        "MuTAP (2023), p. 5"
-    ]
+    assert review.citations == ["MuTAP (2023), p. 5"]
 
 
 def test_generator_preserves_evidence_in_section():
@@ -450,24 +329,17 @@ def test_generator_preserves_evidence_in_section():
         "05_coverup",
     )
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review strategies.",
-            paper_ids=[
-                "05_coverup",
-            ],
-            bundles=[
-                LiteratureReviewEvidenceBundle(
-                    section_type=(
-                        LiteratureReviewSectionType
-                        .GENERATION_STRATEGIES
-                    ),
-                    evidence=[
-                        evidence
-                    ],
-                )
-            ],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review strategies.",
+        paper_ids=[
+            "05_coverup",
+        ],
+        bundles=[
+            LiteratureReviewEvidenceBundle(
+                section_type=(LiteratureReviewSectionType.GENERATION_STRATEGIES),
+                evidence=[evidence],
+            )
+        ],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -476,44 +348,30 @@ def test_generator_preserves_evidence_in_section():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
     )
 
     section = get_section(
         review,
-        LiteratureReviewSectionType
-        .GENERATION_STRATEGIES,
+        LiteratureReviewSectionType.GENERATION_STRATEGIES,
     )
 
-    assert (
-        section.evidence[0]
-        .evidence_id
-        == "E1"
-    )
+    assert section.evidence[0].evidence_id == "E1"
 
 
 def test_mismatched_queries_are_rejected():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Query A",
-            paper_ids=[
-                "03_mutap"
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Query A",
+        paper_ids=["03_mutap"],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
         query="Query B",
-        paper_ids=[
-            "03_mutap"
-        ],
+        paper_ids=["03_mutap"],
         findings=[],
     )
 
@@ -522,8 +380,7 @@ def test_mismatched_queries_are_rejected():
         match="same query",
     ):
         (
-            DeterministicLiteratureReviewGenerator()
-            .generate(
+            DeterministicLiteratureReviewGenerator().generate(
                 aggregation,
                 synthesis,
             )
@@ -532,21 +389,15 @@ def test_mismatched_queries_are_rejected():
 
 def test_mismatched_paper_ids_are_rejected():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review research.",
-            paper_ids=[
-                "03_mutap"
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review research.",
+        paper_ids=["03_mutap"],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
         query="Review research.",
-        paper_ids=[
-            "05_coverup"
-        ],
+        paper_ids=["05_coverup"],
         findings=[],
     )
 
@@ -555,8 +406,7 @@ def test_mismatched_paper_ids_are_rejected():
         match="same paper_ids",
     ):
         (
-            DeterministicLiteratureReviewGenerator()
-            .generate(
+            DeterministicLiteratureReviewGenerator().generate(
                 aggregation,
                 synthesis,
             )
@@ -565,14 +415,10 @@ def test_mismatched_paper_ids_are_rejected():
 
 def test_blank_title_uses_default():
 
-    aggregation = (
-        LiteratureReviewEvidenceAggregation(
-            query="Review research.",
-            paper_ids=[
-                "03_mutap"
-            ],
-            bundles=[],
-        )
+    aggregation = LiteratureReviewEvidenceAggregation(
+        query="Review research.",
+        paper_ids=["03_mutap"],
+        bundles=[],
     )
 
     synthesis = LiteratureReviewSynthesis(
@@ -581,16 +427,10 @@ def test_blank_title_uses_default():
         findings=[],
     )
 
-    review = (
-        DeterministicLiteratureReviewGenerator()
-        .generate(
-            aggregation,
-            synthesis,
-            title="   ",
-        )
+    review = DeterministicLiteratureReviewGenerator().generate(
+        aggregation,
+        synthesis,
+        title="   ",
     )
 
-    assert (
-        review.title
-        == "Evidence-Grounded Literature Review"
-    )
+    assert review.title == "Evidence-Grounded Literature Review"

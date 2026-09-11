@@ -38,6 +38,7 @@ def load_end_to_end_benchmark(
         for item in raw_cases
     ]
 
+
 def load_literature_review_benchmark(
     path: str | Path,
 ) -> list[LiteratureReviewBenchmarkCase]:
@@ -92,6 +93,7 @@ def load_gap_benchmark(
         for item in raw_cases
     ]
 
+
 def load_comparison_benchmark(
     path: str | Path,
 ) -> list[ComparisonBenchmarkCase]:
@@ -117,6 +119,7 @@ def load_comparison_benchmark(
         )
         for item in raw_cases
     ]
+
 
 def load_grounding_benchmark(
     path: str | Path,

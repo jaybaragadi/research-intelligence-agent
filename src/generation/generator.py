@@ -27,5 +27,4 @@ class AnswerGenerator(
     def generate(
         self,
         package: EvidencePackage,
-    ) -> GeneratedDraft:
-        ...
+    ) -> GeneratedDraft: ...

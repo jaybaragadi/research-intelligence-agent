@@ -72,25 +72,11 @@ class FakeCitationTool:
 def build_tools() -> ResearchTools:
 
     return ResearchTools(
-        search_tool=(
-            FakeSearchTool()
-        ),
-
-        summarize_tool=(
-            FakeSummaryTool()
-        ),
-
-        compare_tool=(
-            FakeCompareTool()
-        ),
-
-        evidence_tool=(
-            FakeEvidenceTool()
-        ),
-
-        citation_tool=(
-            FakeCitationTool()
-        ),
+        search_tool=(FakeSearchTool()),
+        summarize_tool=(FakeSummaryTool()),
+        compare_tool=(FakeCompareTool()),
+        evidence_tool=(FakeEvidenceTool()),
+        citation_tool=(FakeCitationTool()),
     )
 
 
@@ -114,9 +100,7 @@ def test_summarize_routes_to_summary_tool():
 
     tools = build_tools()
 
-    result = tools.summarize(
-        "03_mutap"
-    )
+    result = tools.summarize("03_mutap")
 
     assert result == (
         "summary",
@@ -133,11 +117,7 @@ def test_compare_routes_to_compare_tool():
             "03_mutap",
             "05_coverup",
         ],
-
-        query=(
-            "Compare approaches"
-        ),
-
+        query=("Compare approaches"),
         evidence_per_paper=2,
     )
 
@@ -156,9 +136,7 @@ def test_evidence_routes_to_evidence_tool():
 
     tools = build_tools()
 
-    result = tools.evidence(
-        "03_mutap_chunk_0001"
-    )
+    result = tools.evidence("03_mutap_chunk_0001")
 
     assert result == (
         "evidence",
@@ -170,9 +148,7 @@ def test_citation_routes_to_citation_tool():
 
     tools = build_tools()
 
-    result = tools.citation(
-        "03_mutap_chunk_0001"
-    )
+    result = tools.citation("03_mutap_chunk_0001")
 
     assert result == (
         "citation",

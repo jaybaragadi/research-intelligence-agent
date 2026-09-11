@@ -3,7 +3,6 @@ from collections import defaultdict
 from src.analysis.comparison_models import (
     DimensionEvidence,
 )
-
 from src.analysis.gap_models import (
     DimensionCoverage,
 )
@@ -37,53 +36,27 @@ class CorpusCoverageAnalyzer:
         ] = defaultdict(list)
 
         for item in evidence:
-            grouped[item.dimension].append(
-                item
-            )
+            grouped[item.dimension].append(item)
 
-        results: list[
-            DimensionCoverage
-        ] = []
+        results: list[DimensionCoverage] = []
 
-        for dimension in sorted(
-            grouped
-        ):
+        for dimension in sorted(grouped):
 
-            items = grouped[
-                dimension
-            ]
+            items = grouped[dimension]
 
-            paper_ids = (
-                self._unique_preserving_order(
-                    item.paper_id
-                    for item in items
-                )
-            )
+            paper_ids = self._unique_preserving_order(item.paper_id for item in items)
 
-            evidence_ids = (
-                self._unique_preserving_order(
-                    item.evidence_id
-                    for item in items
-                )
+            evidence_ids = self._unique_preserving_order(
+                item.evidence_id for item in items
             )
 
             results.append(
                 DimensionCoverage(
                     dimension=dimension,
-
-                    paper_count=len(
-                        paper_ids
-                    ),
-
-                    evidence_count=len(
-                        evidence_ids
-                    ),
-
+                    paper_count=len(paper_ids),
+                    evidence_count=len(evidence_ids),
                     paper_ids=paper_ids,
-
-                    evidence_ids=(
-                        evidence_ids
-                    ),
+                    evidence_ids=(evidence_ids),
                 )
             )
 
@@ -104,13 +77,8 @@ class CorpusCoverageAnalyzer:
         candidate-gap logic evaluates corpus coverage.
         """
 
-        cleaned_dimensions = (
-            self._unique_preserving_order(
-                dimension.strip()
-                for dimension
-                in dimensions
-                if dimension.strip()
-            )
+        cleaned_dimensions = self._unique_preserving_order(
+            dimension.strip() for dimension in dimensions if dimension.strip()
         )
 
         grouped: dict[
@@ -118,68 +86,37 @@ class CorpusCoverageAnalyzer:
             list[DimensionEvidence],
         ] = defaultdict(list)
 
-        requested = set(
-            cleaned_dimensions
-        )
+        requested = set(cleaned_dimensions)
 
         for item in evidence:
 
-            if (
-                item.dimension
-                not in requested
-            ):
+            if item.dimension not in requested:
                 continue
 
-            grouped[
-                item.dimension
-            ].append(
-                item
-            )
+            grouped[item.dimension].append(item)
 
-        results: list[
-            DimensionCoverage
-        ] = []
+        results: list[DimensionCoverage] = []
 
-        for dimension in (
-            cleaned_dimensions
-        ):
+        for dimension in cleaned_dimensions:
 
             items = grouped.get(
                 dimension,
                 [],
             )
 
-            paper_ids = (
-                self._unique_preserving_order(
-                    item.paper_id
-                    for item in items
-                )
-            )
+            paper_ids = self._unique_preserving_order(item.paper_id for item in items)
 
-            evidence_ids = (
-                self._unique_preserving_order(
-                    item.evidence_id
-                    for item in items
-                )
+            evidence_ids = self._unique_preserving_order(
+                item.evidence_id for item in items
             )
 
             results.append(
                 DimensionCoverage(
                     dimension=dimension,
-
-                    paper_count=len(
-                        paper_ids
-                    ),
-
-                    evidence_count=len(
-                        evidence_ids
-                    ),
-
+                    paper_count=len(paper_ids),
+                    evidence_count=len(evidence_ids),
                     paper_ids=paper_ids,
-
-                    evidence_ids=(
-                        evidence_ids
-                    ),
+                    evidence_ids=(evidence_ids),
                 )
             )
 
@@ -202,12 +139,8 @@ class CorpusCoverageAnalyzer:
             if value in seen:
                 continue
 
-            seen.add(
-                value
-            )
+            seen.add(value)
 
-            results.append(
-                value
-            )
+            results.append(value)
 
         return results

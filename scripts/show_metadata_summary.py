@@ -5,11 +5,7 @@ from src.config import settings
 
 def main() -> None:
 
-    files = sorted(
-        settings.metadata_dir.glob(
-            "*.json"
-        )
-    )
+    files = sorted(settings.metadata_dir.glob("*.json"))
 
     print(
         f"{'Paper':30}"
@@ -24,11 +20,7 @@ def main() -> None:
 
     for path in files:
 
-        data = json.loads(
-            path.read_text(
-                encoding="utf-8"
-            )
-        )
+        data = json.loads(path.read_text(encoding="utf-8"))
 
         print(
             f"{data['paper_id'][:29]:30}"

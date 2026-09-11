@@ -7,47 +7,36 @@ from pathlib import Path
 from src.analysis.literature_review_renderer import (
     LiteratureReviewMarkdownRenderer,
 )
-
 from src.analysis.literature_review_service import (
     LiteratureReviewService,
 )
 
-
-DEFAULT_REPORTS_DIR = Path(
-    "reports"
-)
+DEFAULT_REPORTS_DIR = Path("reports")
 
 
 def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Generate an evidence-grounded "
-            "literature review from indexed papers."
+            "Generate an evidence-grounded " "literature review from indexed papers."
         )
     )
 
     parser.add_argument(
         "query",
-        help=(
-            "Research question or literature-review topic."
-        ),
+        help=("Research question or literature-review topic."),
     )
 
     parser.add_argument(
         "--papers",
         nargs="+",
         required=True,
-        help=(
-            "Paper IDs to include in the review."
-        ),
+        help=("Paper IDs to include in the review."),
     )
 
     parser.add_argument(
         "--title",
-        default=(
-            "Evidence-Grounded Literature Review"
-        ),
+        default=("Evidence-Grounded Literature Review"),
         help="Title for the generated review.",
     )
 
@@ -55,10 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--evidence-per-paper",
         type=int,
         default=8,
-        help=(
-            "Maximum comparative evidence "
-            "requested per paper."
-        ),
+        help=("Maximum comparative evidence " "requested per paper."),
     )
 
     parser.add_argument(
@@ -77,17 +63,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 def default_output_path() -> Path:
 
-    timestamp = datetime.now().strftime(
-        "%Y%m%d_%H%M%S"
-    )
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    return (
-        DEFAULT_REPORTS_DIR
-        / (
-            "literature_review_"
-            f"{timestamp}.md"
-        )
-    )
+    return DEFAULT_REPORTS_DIR / ("literature_review_" f"{timestamp}.md")
 
 
 def write_report(
@@ -114,32 +92,20 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    service = (
-        LiteratureReviewService()
-    )
+    service = LiteratureReviewService()
 
     review = service.generate(
         query=args.query,
         paper_ids=args.papers,
         title=args.title,
-        evidence_per_paper=(
-            args.evidence_per_paper
-        ),
+        evidence_per_paper=(args.evidence_per_paper),
     )
 
-    renderer = (
-        LiteratureReviewMarkdownRenderer()
-    )
+    renderer = LiteratureReviewMarkdownRenderer()
 
-    markdown = renderer.render(
-        review
-    )
+    markdown = renderer.render(review)
 
-    output_path = (
-        args.output
-        if args.output is not None
-        else default_output_path()
-    )
+    output_path = args.output if args.output is not None else default_output_path()
 
     saved_path = write_report(
         content=markdown,
@@ -147,31 +113,21 @@ def main() -> None:
     )
 
     print("=" * 70)
-    print(
-        "Evidence-Grounded Literature Review"
-    )
+    print("Evidence-Grounded Literature Review")
     print("=" * 70)
 
-    print(
-        f"Query: {review.query}"
-    )
+    print(f"Query: {review.query}")
 
-    print(
-        f"Papers: {len(review.paper_ids)}"
-    )
+    print(f"Papers: {len(review.paper_ids)}")
 
     print(
         "Grounding valid: "
         f"{review.validation.valid if review.validation else 'Not run'}"
     )
 
-    print(
-        f"Sections: {len(review.sections)}"
-    )
+    print(f"Sections: {len(review.sections)}")
 
-    print(
-        f"Report: {saved_path}"
-    )
+    print(f"Report: {saved_path}")
 
     print("=" * 70)
 

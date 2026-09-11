@@ -7,15 +7,12 @@ from src.analysis.comparison_models import (
     PaperAnalysisProfile,
     PaperDimensionAnalysis,
 )
-
 from src.evaluation.comparison_evaluator import (
     ComparisonEvaluator,
 )
-
 from src.evaluation.comparison_metrics import (
     calculate_comparison_metrics,
 )
-
 from src.evaluation.models import (
     ComparisonBenchmarkCase,
 )
@@ -58,9 +55,7 @@ class FakeComparisonService:
                 dimensions=[
                     PaperDimensionAnalysis(
                         dimension="feedback_signal",
-                        evidence=[
-                            evidence_one
-                        ],
+                        evidence=[evidence_one],
                     )
                 ],
             ),
@@ -69,9 +64,7 @@ class FakeComparisonService:
                 dimensions=[
                     PaperDimensionAnalysis(
                         dimension="feedback_signal",
-                        evidence=[
-                            evidence_two
-                        ],
+                        evidence=[evidence_two],
                     )
                 ],
             ),
@@ -85,17 +78,13 @@ class FakeComparisonService:
                         paper_id="03_mutap",
                         dimension="feedback_signal",
                         summary="Mutation feedback.",
-                        evidence_ids=[
-                            "E1"
-                        ],
+                        evidence_ids=["E1"],
                     ),
                     ComparisonCell(
                         paper_id="05_coverup",
                         dimension="feedback_signal",
                         summary="Coverage feedback.",
-                        evidence_ids=[
-                            "E2"
-                        ],
+                        evidence_ids=["E2"],
                     ),
                 ],
             )
@@ -105,10 +94,7 @@ class FakeComparisonService:
             ComparativeFinding(
                 finding_id="F1",
                 finding_type="shared_dimension",
-                text=(
-                    "Both papers contain "
-                    "feedback-related evidence."
-                ),
+                text=("Both papers contain " "feedback-related evidence."),
                 paper_ids=[
                     "03_mutap",
                     "05_coverup",
@@ -140,55 +126,25 @@ def test_comparison_evaluator_valid_case():
         ],
     )
 
-    evaluator = ComparisonEvaluator(
-        comparison_service=(
-            FakeComparisonService()
-        )
-    )
+    evaluator = ComparisonEvaluator(comparison_service=(FakeComparisonService()))
 
-    result = evaluator.evaluate_case(
-        case
-    )
+    result = evaluator.evaluate_case(case)
 
-    assert (
-        result.profile_paper_coverage
-        == 1.0
-    )
+    assert result.profile_paper_coverage == 1.0
 
-    assert (
-        result.matrix_paper_coverage
-        == 1.0
-    )
+    assert result.matrix_paper_coverage == 1.0
 
-    assert (
-        result.matrix_population_rate
-        == 1.0
-    )
+    assert result.matrix_population_rate == 1.0
 
-    assert (
-        result.cell_evidence_reference_integrity
-        == 1.0
-    )
+    assert result.cell_evidence_reference_integrity == 1.0
 
-    assert (
-        result.finding_evidence_reference_integrity
-        == 1.0
-    )
+    assert result.finding_evidence_reference_integrity == 1.0
 
-    assert (
-        result.missing_profile_papers
-        == []
-    )
+    assert result.missing_profile_papers == []
 
-    assert (
-        result.missing_matrix_papers
-        == []
-    )
+    assert result.missing_matrix_papers == []
 
-    assert (
-        result.invalid_finding_paper_references
-        == []
-    )
+    assert result.invalid_finding_paper_references == []
 
     assert result.structural_valid is True
 
@@ -205,12 +161,8 @@ def test_comparison_metrics():
     )
 
     result = ComparisonEvaluator(
-        comparison_service=(
-            FakeComparisonService()
-        )
-    ).evaluate_case(
-        case
-    )
+        comparison_service=(FakeComparisonService())
+    ).evaluate_case(case)
 
     metrics = calculate_comparison_metrics(
         [
@@ -220,32 +172,14 @@ def test_comparison_metrics():
 
     assert metrics.case_count == 1
 
-    assert (
-        metrics.structural_pass_rate
-        == 1.0
-    )
+    assert metrics.structural_pass_rate == 1.0
 
-    assert (
-        metrics.mean_profile_paper_coverage
-        == 1.0
-    )
+    assert metrics.mean_profile_paper_coverage == 1.0
 
-    assert (
-        metrics.mean_matrix_paper_coverage
-        == 1.0
-    )
+    assert metrics.mean_matrix_paper_coverage == 1.0
 
-    assert (
-        metrics.mean_matrix_population_rate
-        == 1.0
-    )
+    assert metrics.mean_matrix_population_rate == 1.0
 
-    assert (
-        metrics.cell_evidence_reference_integrity
-        == 1.0
-    )
+    assert metrics.cell_evidence_reference_integrity == 1.0
 
-    assert (
-        metrics.finding_evidence_reference_integrity
-        == 1.0
-    )
+    assert metrics.finding_evidence_reference_integrity == 1.0

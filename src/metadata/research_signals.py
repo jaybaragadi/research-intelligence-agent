@@ -5,11 +5,8 @@ from src.models import (
     ResearchSignal,
 )
 
-
 RESEARCH_QUESTION_PATTERN = re.compile(
-    r"\bRQ\s*([0-9]+)"
-    r"\s*[:.\-–—]\s*"
-    r"(.{15,400}?[?])",
+    r"\bRQ\s*([0-9]+)" r"\s*[:.\-–—]\s*" r"(.{15,400}?[?])",
     flags=re.IGNORECASE,
 )
 
@@ -37,7 +34,6 @@ SIGNAL_KEYWORDS: dict[
         "technique",
         "pipeline",
     ],
-
     "datasets": [
         "dataset",
         "datasets",
@@ -47,7 +43,6 @@ SIGNAL_KEYWORDS: dict[
         "projects",
         "subject programs",
     ],
-
     "metrics": [
         "statement coverage",
         "branch coverage",
@@ -58,7 +53,6 @@ SIGNAL_KEYWORDS: dict[
         "pass rate",
         "success rate",
     ],
-
     "findings": [
         "our results show",
         "results show",
@@ -68,14 +62,12 @@ SIGNAL_KEYWORDS: dict[
         "improves",
         "improvement",
     ],
-
     "limitations": [
         "limitation",
         "limitations",
         "threat to validity",
         "threats to validity",
     ],
-
     "future_work": [
         "future work",
         "future research",
@@ -101,12 +93,8 @@ def extract_research_questions(
     # Pass 1: strong matches ending in ?
     for page in paper.pages:
 
-        for match in RESEARCH_QUESTION_PATTERN.finditer(
-            page.text
-        ):
-            number = int(
-                match.group(1)
-            )
+        for match in RESEARCH_QUESTION_PATTERN.finditer(page.text):
+            number = int(match.group(1))
 
             if number in questions_by_number:
                 continue
@@ -117,20 +105,13 @@ def extract_research_questions(
                 match.group(2),
             ).strip()
 
-            questions_by_number[number] = (
-                f"RQ{number}: "
-                f"{question_text}"
-            )
+            questions_by_number[number] = f"RQ{number}: " f"{question_text}"
 
     # Pass 2: labelled RQs without question marks.
     for page in paper.pages:
 
-        for match in RQ_LABEL_PATTERN.finditer(
-            page.text
-        ):
-            number = int(
-                match.group(1)
-            )
+        for match in RQ_LABEL_PATTERN.finditer(page.text):
+            number = int(match.group(1))
 
             if number in questions_by_number:
                 continue
@@ -141,24 +122,13 @@ def extract_research_questions(
                 match.group(2),
             ).strip()
 
-            if not (
-                15
-                <= len(question_text)
-                <= 220
-            ):
+            if not (15 <= len(question_text) <= 220):
                 continue
 
-            questions_by_number[number] = (
-                f"RQ{number}: "
-                f"{question_text}"
-            )
+            questions_by_number[number] = f"RQ{number}: " f"{question_text}"
 
-    return [
-        questions_by_number[number]
-        for number in sorted(
-            questions_by_number
-        )
-    ]
+    return [questions_by_number[number] for number in sorted(questions_by_number)]
+
 
 def split_sentences(
     text: str,
@@ -188,16 +158,11 @@ def extract_research_signals(
 
     signals: list[ResearchSignal] = []
 
-    category_counts = {
-        category: 0
-        for category in SIGNAL_KEYWORDS
-    }
+    category_counts = {category: 0 for category in SIGNAL_KEYWORDS}
 
     for page in paper.pages:
 
-        sentences = split_sentences(
-            page.text
-        )
+        sentences = split_sentences(page.text)
 
         for sentence in sentences:
 
@@ -205,18 +170,11 @@ def extract_research_signals(
 
             for category, keywords in SIGNAL_KEYWORDS.items():
 
-                if (
-                    category_counts[category]
-                    >= max_per_category
-                ):
+                if category_counts[category] >= max_per_category:
                     continue
 
                 matched_keyword = next(
-                    (
-                        keyword
-                        for keyword in keywords
-                        if keyword in normalized
-                    ),
+                    (keyword for keyword in keywords if keyword in normalized),
                     None,
                 )
 
@@ -233,10 +191,7 @@ def extract_research_signals(
                     continue
 
                 if len(snippet) > 700:
-                    snippet = (
-                        snippet[:700]
-                        .rsplit(" ", 1)[0]
-                    )
+                    snippet = snippet[:700].rsplit(" ", 1)[0]
 
                 signals.append(
                     ResearchSignal(
@@ -247,8 +202,6 @@ def extract_research_signals(
                     )
                 )
 
-                category_counts[
-                    category
-                ] += 1
+                category_counts[category] += 1
 
     return signals

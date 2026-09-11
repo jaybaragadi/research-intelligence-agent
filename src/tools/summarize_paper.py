@@ -5,7 +5,6 @@ from pathlib import Path
 from src.config import settings
 from src.models import PaperProfile
 
-
 SUMMARY_CATEGORIES = (
     "methodology",
     "findings",
@@ -54,9 +53,7 @@ class PaperSummary:
     evidence: dict[
         str,
         list[SummaryEvidence],
-    ] = field(
-        default_factory=dict
-    )
+    ] = field(default_factory=dict)
 
 
 class SummarizePaperTool:
@@ -83,7 +80,6 @@ class SummarizePaperTool:
             else settings.metadata_dir
         )
 
-
     def _metadata_path(
         self,
         paper_id: str,
@@ -92,11 +88,7 @@ class SummarizePaperTool:
         Return the metadata JSON path for a paper.
         """
 
-        return (
-            self.metadata_directory
-            / f"{paper_id}.json"
-        )
-
+        return self.metadata_directory / f"{paper_id}.json"
 
     def _load_profile(
         self,
@@ -108,31 +100,17 @@ class SummarizePaperTool:
 
         if not paper_id.strip():
 
-            raise ValueError(
-                "paper_id cannot be empty"
-            )
+            raise ValueError("paper_id cannot be empty")
 
-        path = self._metadata_path(
-            paper_id
-        )
+        path = self._metadata_path(paper_id)
 
         if not path.exists():
 
-            raise FileNotFoundError(
-                "Paper metadata not found: "
-                f"{paper_id}"
-            )
+            raise FileNotFoundError("Paper metadata not found: " f"{paper_id}")
 
-        data = json.loads(
-            path.read_text(
-                encoding="utf-8"
-            )
-        )
+        data = json.loads(path.read_text(encoding="utf-8"))
 
-        return PaperProfile.model_validate(
-            data
-        )
-
+        return PaperProfile.model_validate(data)
 
     def _group_evidence(
         self,
@@ -149,43 +127,23 @@ class SummarizePaperTool:
         grouped: dict[
             str,
             list[SummaryEvidence],
-        ] = {
-            category: []
-            for category
-            in SUMMARY_CATEGORIES
-        }
+        ] = {category: [] for category in SUMMARY_CATEGORIES}
 
-        for signal in (
-            profile.research_signals
-        ):
+        for signal in profile.research_signals:
 
-            if (
-                signal.category
-                not in grouped
-            ):
+            if signal.category not in grouped:
                 continue
 
-            grouped[
-                signal.category
-            ].append(
+            grouped[signal.category].append(
                 SummaryEvidence(
-                    category=(
-                        signal.category
-                    ),
-                    page_number=(
-                        signal.page_number
-                    ),
-                    snippet=(
-                        signal.snippet
-                    ),
-                    matched_keyword=(
-                        signal.matched_keyword
-                    ),
+                    category=(signal.category),
+                    page_number=(signal.page_number),
+                    snippet=(signal.snippet),
+                    matched_keyword=(signal.matched_keyword),
                 )
             )
 
         return grouped
-
 
     def summarize(
         self,
@@ -195,42 +153,21 @@ class SummarizePaperTool:
         Build the structured summary.
         """
 
-        profile = (
-            self._load_profile(
-                paper_id
-            )
-        )
+        profile = self._load_profile(paper_id)
 
-        section_names = [
-            section.canonical_name
-            for section
-            in profile.sections
-        ]
+        section_names = [section.canonical_name for section in profile.sections]
 
-        evidence = (
-            self._group_evidence(
-                profile
-            )
-        )
+        evidence = self._group_evidence(profile)
 
         return PaperSummary(
             paper_id=profile.paper_id,
             filename=profile.filename,
-
             title=profile.title,
             year=profile.year,
-            authors=list(
-                profile.authors
-            ),
-
+            authors=list(profile.authors),
             abstract=profile.abstract,
-
-            research_questions=list(
-                profile.research_questions
-            ),
-
+            research_questions=list(profile.research_questions),
             sections=section_names,
-
             evidence=evidence,
         )
 
@@ -245,6 +182,4 @@ def summarize_paper(
 
     tool = SummarizePaperTool()
 
-    return tool.summarize(
-        paper_id
-    )
+    return tool.summarize(paper_id)

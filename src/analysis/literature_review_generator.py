@@ -4,14 +4,12 @@ from collections import defaultdict
 
 from src.analysis.literature_review_models import (
     LiteratureReview,
-    LiteratureReviewEvidence,
     LiteratureReviewEvidenceAggregation,
     LiteratureReviewFinding,
     LiteratureReviewSection,
     LiteratureReviewSectionType,
     LiteratureReviewSynthesis,
 )
-
 from src.analysis.literature_review_taxonomy import (
     LITERATURE_REVIEW_SECTIONS,
 )
@@ -43,28 +41,19 @@ class DeterministicLiteratureReviewGenerator:
         )
 
         evidence_by_section = {
-            bundle.section_type: list(bundle.evidence)
-            for bundle in aggregation.bundles
+            bundle.section_type: list(bundle.evidence) for bundle in aggregation.bundles
         }
 
         findings_by_section = defaultdict(list)
 
         for finding in synthesis.findings:
-            findings_by_section[
-                finding.section_type
-            ].append(
-                finding
-            )
+            findings_by_section[finding.section_type].append(finding)
 
-        sections: list[
-            LiteratureReviewSection
-        ] = []
+        sections: list[LiteratureReviewSection] = []
 
         for definition in LITERATURE_REVIEW_SECTIONS:
 
-            section_type = (
-                definition.section_type
-            )
+            section_type = definition.section_type
 
             section_evidence = list(
                 evidence_by_section.get(
@@ -73,11 +62,9 @@ class DeterministicLiteratureReviewGenerator:
                 )
             )
 
-            synthesis_findings = (
-                findings_by_section.get(
-                    section_type,
-                    [],
-                )
+            synthesis_findings = findings_by_section.get(
+                section_type,
+                [],
             )
 
             final_findings = [
@@ -85,25 +72,16 @@ class DeterministicLiteratureReviewGenerator:
                     finding_id=item.finding_id,
                     section_type=item.section_type,
                     statement=item.statement,
-                    paper_ids=list(
-                        item.paper_ids
-                    ),
-                    evidence_ids=list(
-                        item.evidence_ids
-                    ),
+                    paper_ids=list(item.paper_ids),
+                    evidence_ids=list(item.evidence_ids),
                 )
-                for item
-                in synthesis_findings
+                for item in synthesis_findings
             ]
 
-            narrative = (
-                self._build_narrative(
-                    section_type=section_type,
-                    findings=final_findings,
-                    paper_count=len(
-                        aggregation.paper_ids
-                    ),
-                )
+            narrative = self._build_narrative(
+                section_type=section_type,
+                findings=final_findings,
+                paper_count=len(aggregation.paper_ids),
             )
 
             sections.append(
@@ -117,19 +95,12 @@ class DeterministicLiteratureReviewGenerator:
                 )
             )
 
-        citations = (
-            self._collect_citations(
-                aggregation
-            )
-        )
+        citations = self._collect_citations(aggregation)
 
         return LiteratureReview(
             query=aggregation.query,
-            paper_ids=list(
-                aggregation.paper_ids
-            ),
-            title=title.strip()
-            or "Evidence-Grounded Literature Review",
+            paper_ids=list(aggregation.paper_ids),
+            title=title.strip() or "Evidence-Grounded Literature Review",
             sections=sections,
             citations=citations,
         )
@@ -140,86 +111,46 @@ class DeterministicLiteratureReviewGenerator:
         synthesis: LiteratureReviewSynthesis,
     ) -> None:
 
-        if (
-            aggregation.query
-            != synthesis.query
-        ):
-            raise ValueError(
-                "aggregation and synthesis "
-                "must use the same query"
-            )
+        if aggregation.query != synthesis.query:
+            raise ValueError("aggregation and synthesis " "must use the same query")
 
-        if (
-            aggregation.paper_ids
-            != synthesis.paper_ids
-        ):
-            raise ValueError(
-                "aggregation and synthesis "
-                "must use the same paper_ids"
-            )
+        if aggregation.paper_ids != synthesis.paper_ids:
+            raise ValueError("aggregation and synthesis " "must use the same paper_ids")
 
     def _build_narrative(
         self,
         section_type: LiteratureReviewSectionType,
-        findings: list[
-            LiteratureReviewFinding
-        ],
+        findings: list[LiteratureReviewFinding],
         paper_count: int,
     ) -> str:
 
-        if (
-            section_type
-            == LiteratureReviewSectionType.INTRODUCTION
-        ):
-            return self._build_introduction(
-                paper_count=paper_count
-            )
+        if section_type == LiteratureReviewSectionType.INTRODUCTION:
+            return self._build_introduction(paper_count=paper_count)
 
-        if (
-            section_type
-            == LiteratureReviewSectionType.CONCLUSION
-        ):
+        if section_type == LiteratureReviewSectionType.CONCLUSION:
             return self._build_conclusion(
                 findings=findings,
                 paper_count=paper_count,
             )
 
         if not findings:
-            return self._empty_section_statement(
-                section_type
-            )
+            return self._empty_section_statement(section_type)
 
         sentences = []
 
         for finding in findings:
 
-            citation_marker = (
-                self._evidence_marker(
-                    finding.evidence_ids
-                )
-            )
+            citation_marker = self._evidence_marker(finding.evidence_ids)
 
-            sentence = (
-                finding.statement.strip()
-            )
+            sentence = finding.statement.strip()
 
-            if (
-                citation_marker
-                and sentence
-            ):
-                sentence = (
-                    f"{sentence} "
-                    f"{citation_marker}"
-                )
+            if citation_marker and sentence:
+                sentence = f"{sentence} " f"{citation_marker}"
 
             if sentence:
-                sentences.append(
-                    sentence
-                )
+                sentences.append(sentence)
 
-        return " ".join(
-            sentences
-        )
+        return " ".join(sentences)
 
     def _build_introduction(
         self,
@@ -240,9 +171,7 @@ class DeterministicLiteratureReviewGenerator:
 
     def _build_conclusion(
         self,
-        findings: list[
-            LiteratureReviewFinding
-        ],
+        findings: list[LiteratureReviewFinding],
         paper_count: int,
     ) -> str:
 
@@ -251,28 +180,16 @@ class DeterministicLiteratureReviewGenerator:
 
             for finding in findings:
 
-                marker = (
-                    self._evidence_marker(
-                        finding.evidence_ids
-                    )
-                )
+                marker = self._evidence_marker(finding.evidence_ids)
 
-                text = (
-                    finding.statement.strip()
-                )
+                text = finding.statement.strip()
 
                 if marker:
-                    text = (
-                        f"{text} {marker}"
-                    )
+                    text = f"{text} {marker}"
 
-                sentences.append(
-                    text
-                )
+                sentences.append(text)
 
-            return " ".join(
-                sentences
-            )
+            return " ".join(sentences)
 
         return (
             f"Across the {paper_count} indexed "
@@ -295,31 +212,26 @@ class DeterministicLiteratureReviewGenerator:
                 "for this section in the current "
                 "evidence aggregation."
             ),
-
             LiteratureReviewSectionType.GENERATION_STRATEGIES: (
                 "No qualifying generation-strategy "
                 "evidence was available in the current "
                 "evidence aggregation."
             ),
-
             LiteratureReviewSectionType.FEEDBACK_AND_ITERATION: (
                 "No qualifying feedback or iterative-"
                 "refinement evidence was available in "
                 "the current evidence aggregation."
             ),
-
             LiteratureReviewSectionType.QUALITY_AND_EVALUATION: (
                 "No qualifying quality or evaluation "
                 "evidence was available in the current "
                 "evidence aggregation."
             ),
-
             LiteratureReviewSectionType.LIMITATIONS_AND_GAPS: (
                 "No qualifying limitation or unresolved-"
                 "problem evidence was available in the "
                 "current evidence aggregation."
             ),
-
             LiteratureReviewSectionType.FUTURE_DIRECTIONS: (
                 "No qualifying explicit future-work "
                 "evidence was available in the current "
@@ -329,10 +241,7 @@ class DeterministicLiteratureReviewGenerator:
 
         return labels.get(
             section_type,
-            (
-                "No qualifying evidence was available "
-                "for this section."
-            ),
+            ("No qualifying evidence was available " "for this section."),
         )
 
     def _evidence_marker(
@@ -353,22 +262,14 @@ class DeterministicLiteratureReviewGenerator:
             if value in seen:
                 continue
 
-            seen.add(
-                value
-            )
+            seen.add(value)
 
-            cleaned.append(
-                value
-            )
+            cleaned.append(value)
 
         if not cleaned:
             return ""
 
-        return (
-            "["
-            + "; ".join(cleaned)
-            + "]"
-        )
+        return "[" + "; ".join(cleaned) + "]"
 
     def _collect_citations(
         self,
@@ -382,9 +283,7 @@ class DeterministicLiteratureReviewGenerator:
 
             for evidence in bundle.evidence:
 
-                citation = (
-                    evidence.citation_text.strip()
-                )
+                citation = evidence.citation_text.strip()
 
                 if not citation:
                     continue
@@ -392,12 +291,8 @@ class DeterministicLiteratureReviewGenerator:
                 if citation in seen:
                     continue
 
-                seen.add(
-                    citation
-                )
+                seen.add(citation)
 
-                citations.append(
-                    citation
-                )
+                citations.append(citation)
 
         return citations

@@ -3,42 +3,29 @@ import re
 from src.agents.intents import (
     ResearchIntent,
 )
-
 from src.agents.models import (
     ResearchAgentRequest,
     RoutedResearchRequest,
 )
 
-
 PAPER_ALIASES = {
     "testpilot": "01_testpilot",
-
     "chattester": "02_chattester",
     "chat tester": "02_chattester",
-
     "mutap": "03_mutap",
     "mu tap": "03_mutap",
-
     "symprompt": "04_symprompt",
     "sym prompt": "04_symprompt",
-
     "coverup": "05_coverup",
     "cover up": "05_coverup",
-
     "chatunitest": "06_chatunitest",
     "chat unitest": "06_chatunitest",
     "chat unit test": "06_chatunitest",
-
     "codamosa": "07_codamosa",
     "coda mosa": "07_codamosa",
-
     "telpa": "08_telpa",
-
     "hits": "09_hits",
-
-    "coding before testing": (
-        "10_coding_before_testing"
-    ),
+    "coding before testing": ("10_coding_before_testing"),
 }
 
 
@@ -89,8 +76,7 @@ PAPER_ID_PATTERN = re.compile(
 
 
 EVIDENCE_ID_PATTERN = re.compile(
-    r"\b\d{2}_[a-z0-9_]+"
-    r"_chunk_\d{4}\b",
+    r"\b\d{2}_[a-z0-9_]+" r"_chunk_\d{4}\b",
     flags=re.IGNORECASE,
 )
 
@@ -138,20 +124,9 @@ class ResearchIntentRouter:
         08_telpa
         """
 
-        matches = (
-            PAPER_ID_PATTERN.findall(
-                text
-            )
-        )
+        matches = PAPER_ID_PATTERN.findall(text)
 
-        return list(
-            dict.fromkeys(
-                match.lower()
-                for match in matches
-            )
-        )
-
-    
+        return list(dict.fromkeys(match.lower() for match in matches))
 
     def _extract_alias_paper_ids(
         self,
@@ -169,15 +144,9 @@ class ResearchIntentRouter:
         that their aliases appear in the query.
         """
 
-        normalized = (
-            self._normalize(
-                text
-            )
-        )
+        normalized = self._normalize(text)
 
-        matches: list[
-            tuple[int, str]
-        ] = []
+        matches: list[tuple[int, str]] = []
 
         # Long aliases are still checked first so
         # overlapping aliases such as
@@ -185,23 +154,13 @@ class ResearchIntentRouter:
         # are handled safely.
         sorted_aliases = sorted(
             PAPER_ALIASES.items(),
-            key=lambda item: len(
-                item[0]
-            ),
+            key=lambda item: len(item[0]),
             reverse=True,
         )
 
-        for alias, paper_id in (
-            sorted_aliases
-        ):
+        for alias, paper_id in sorted_aliases:
 
-            pattern = (
-                r"(?<![a-z0-9])"
-                + re.escape(
-                    alias
-                )
-                + r"(?![a-z0-9])"
-            )
+            pattern = r"(?<![a-z0-9])" + re.escape(alias) + r"(?![a-z0-9])"
 
             match = re.search(
                 pattern,
@@ -218,22 +177,11 @@ class ResearchIntentRouter:
 
         # Restore the order used in the user's
         # actual query.
-        matches.sort(
-            key=lambda item: item[0]
-        )
+        matches.sort(key=lambda item: item[0])
 
-        ordered_ids = [
-            paper_id
-            for _, paper_id
-            in matches
-        ]
+        ordered_ids = [paper_id for _, paper_id in matches]
 
-        return list(
-            dict.fromkeys(
-                ordered_ids
-            )
-        )
-
+        return list(dict.fromkeys(ordered_ids))
 
     def _extract_paper_ids(
         self,
@@ -247,32 +195,15 @@ class ResearchIntentRouter:
 
         supplied = [
             paper_id.strip().lower()
-
-            for paper_id
-            in request.paper_ids
-
+            for paper_id in request.paper_ids
             if paper_id.strip()
         ]
 
-        explicit = (
-            self._extract_explicit_paper_ids(
-                request.query
-            )
-        )
+        explicit = self._extract_explicit_paper_ids(request.query)
 
-        aliases = (
-            self._extract_alias_paper_ids(
-                request.query
-            )
-        )
+        aliases = self._extract_alias_paper_ids(request.query)
 
-        return list(
-            dict.fromkeys(
-                supplied
-                + explicit
-                + aliases
-            )
-        )
+        return list(dict.fromkeys(supplied + explicit + aliases))
 
     def _extract_evidence_id(
         self,
@@ -284,29 +215,15 @@ class ResearchIntentRouter:
         language query.
         """
 
-        if (
-            request.evidence_id
-            and request.evidence_id.strip()
-        ):
-            return (
-                request.evidence_id
-                .strip()
-                .lower()
-            )
+        if request.evidence_id and request.evidence_id.strip():
+            return request.evidence_id.strip().lower()
 
-        match = (
-            EVIDENCE_ID_PATTERN.search(
-                request.query
-            )
-        )
+        match = EVIDENCE_ID_PATTERN.search(request.query)
 
         if match is None:
             return None
 
-        return (
-            match.group(0)
-            .lower()
-        )
+        return match.group(0).lower()
 
     def _contains_any(
         self,
@@ -318,19 +235,9 @@ class ResearchIntentRouter:
         present.
         """
 
-        normalized = (
-            self._normalize(
-                text
-            )
-        )
+        normalized = self._normalize(text)
 
-        return any(
-            term.strip()
-            in normalized
-
-            for term
-            in terms
-        )
+        return any(term.strip() in normalized for term in terms)
 
     def route(
         self,
@@ -341,45 +248,22 @@ class ResearchIntentRouter:
         structured routing decision.
         """
 
-        query = (
-            request.query.strip()
-        )
+        query = request.query.strip()
 
         if not query:
 
             return RoutedResearchRequest(
-                original_query=(
-                    request.query
-                ),
-
-                intent=(
-                    ResearchIntent.UNKNOWN
-                ),
-
+                original_query=(request.query),
+                intent=(ResearchIntent.UNKNOWN),
                 confidence=0.0,
-
-                reason=(
-                    "The research query is empty."
-                ),
-
+                reason=("The research query is empty."),
                 needs_clarification=True,
-
-                missing_fields=[
-                    "query"
-                ],
+                missing_fields=["query"],
             )
 
-        paper_ids = (
-            self._extract_paper_ids(
-                request
-            )
-        )
+        paper_ids = self._extract_paper_ids(request)
 
-        evidence_id = (
-            self._extract_evidence_id(
-                request
-            )
-        )
+        evidence_id = self._extract_evidence_id(request)
 
         # -------------------------------------------------
         # Citation intent
@@ -394,47 +278,25 @@ class ResearchIntentRouter:
 
                 return RoutedResearchRequest(
                     original_query=query,
-
-                    intent=(
-                        ResearchIntent.CITATION
-                    ),
-
+                    intent=(ResearchIntent.CITATION),
                     paper_ids=paper_ids,
-
                     confidence=0.95,
-
                     reason=(
                         "Citation language was "
                         "detected, but no evidence "
                         "ID was supplied."
                     ),
-
                     needs_clarification=True,
-
-                    missing_fields=[
-                        "evidence_id"
-                    ],
+                    missing_fields=["evidence_id"],
                 )
 
             return RoutedResearchRequest(
                 original_query=query,
-
-                intent=(
-                    ResearchIntent.CITATION
-                ),
-
+                intent=(ResearchIntent.CITATION),
                 paper_ids=paper_ids,
-
-                evidence_id=(
-                    evidence_id
-                ),
-
+                evidence_id=(evidence_id),
                 confidence=0.99,
-
-                reason=(
-                    "Citation language and an "
-                    "evidence ID were detected."
-                ),
+                reason=("Citation language and an " "evidence ID were detected."),
             )
 
         # -------------------------------------------------
@@ -450,47 +312,25 @@ class ResearchIntentRouter:
 
                 return RoutedResearchRequest(
                     original_query=query,
-
-                    intent=(
-                        ResearchIntent.EVIDENCE
-                    ),
-
+                    intent=(ResearchIntent.EVIDENCE),
                     paper_ids=paper_ids,
-
                     confidence=0.95,
-
                     reason=(
                         "Evidence language was "
                         "detected, but no evidence "
                         "ID was supplied."
                     ),
-
                     needs_clarification=True,
-
-                    missing_fields=[
-                        "evidence_id"
-                    ],
+                    missing_fields=["evidence_id"],
                 )
 
             return RoutedResearchRequest(
                 original_query=query,
-
-                intent=(
-                    ResearchIntent.EVIDENCE
-                ),
-
+                intent=(ResearchIntent.EVIDENCE),
                 paper_ids=paper_ids,
-
-                evidence_id=(
-                    evidence_id
-                ),
-
+                evidence_id=(evidence_id),
                 confidence=0.99,
-
-                reason=(
-                    "Evidence language and an "
-                    "evidence ID were detected."
-                ),
+                reason=("Evidence language and an " "evidence ID were detected."),
             )
 
         # -------------------------------------------------
@@ -502,43 +342,21 @@ class ResearchIntentRouter:
             COMPARE_TERMS,
         ):
 
-            missing_fields: list[
-                str
-            ] = []
+            missing_fields: list[str] = []
 
             if len(paper_ids) < 2:
 
-                missing_fields.append(
-                    "at_least_two_paper_ids"
-                )
+                missing_fields.append("at_least_two_paper_ids")
 
             return RoutedResearchRequest(
                 original_query=query,
-
-                intent=(
-                    ResearchIntent.COMPARE
-                ),
-
+                intent=(ResearchIntent.COMPARE),
                 paper_ids=paper_ids,
-
-                evidence_id=(
-                    evidence_id
-                ),
-
+                evidence_id=(evidence_id),
                 confidence=0.98,
-
-                reason=(
-                    "Comparison language was "
-                    "detected."
-                ),
-
-                needs_clarification=bool(
-                    missing_fields
-                ),
-
-                missing_fields=(
-                    missing_fields
-                ),
+                reason=("Comparison language was " "detected."),
+                needs_clarification=bool(missing_fields),
+                missing_fields=(missing_fields),
             )
 
         # -------------------------------------------------
@@ -554,37 +372,17 @@ class ResearchIntentRouter:
 
             if not paper_ids:
 
-                missing_fields.append(
-                    "paper_id"
-                )
+                missing_fields.append("paper_id")
 
             return RoutedResearchRequest(
                 original_query=query,
-
-                intent=(
-                    ResearchIntent.SUMMARIZE
-                ),
-
+                intent=(ResearchIntent.SUMMARIZE),
                 paper_ids=paper_ids,
-
-                evidence_id=(
-                    evidence_id
-                ),
-
+                evidence_id=(evidence_id),
                 confidence=0.98,
-
-                reason=(
-                    "Summary language was "
-                    "detected."
-                ),
-
-                needs_clarification=bool(
-                    missing_fields
-                ),
-
-                missing_fields=(
-                    missing_fields
-                ),
+                reason=("Summary language was " "detected."),
+                needs_clarification=bool(missing_fields),
+                missing_fields=(missing_fields),
             )
 
         # -------------------------------------------------
@@ -595,19 +393,10 @@ class ResearchIntentRouter:
 
             return RoutedResearchRequest(
                 original_query=query,
-
-                intent=(
-                    ResearchIntent.EVIDENCE
-                ),
-
+                intent=(ResearchIntent.EVIDENCE),
                 paper_ids=paper_ids,
-
-                evidence_id=(
-                    evidence_id
-                ),
-
+                evidence_id=(evidence_id),
                 confidence=0.90,
-
                 reason=(
                     "An evidence ID was detected "
                     "without another explicit "
@@ -621,15 +410,9 @@ class ResearchIntentRouter:
 
         return RoutedResearchRequest(
             original_query=query,
-
-            intent=(
-                ResearchIntent.SEARCH
-            ),
-
+            intent=(ResearchIntent.SEARCH),
             paper_ids=paper_ids,
-
             confidence=0.80,
-
             reason=(
                 "No specialized command was "
                 "detected, so the request is "
@@ -645,16 +428,8 @@ def route_research_request(
     Convenience wrapper for simple callers.
     """
 
-    router = (
-        ResearchIntentRouter()
-    )
+    router = ResearchIntentRouter()
 
-    request = (
-        ResearchAgentRequest(
-            query=query
-        )
-    )
+    request = ResearchAgentRequest(query=query)
 
-    return router.route(
-        request
-    )
+    return router.route(request)

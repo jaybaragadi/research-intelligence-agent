@@ -2,10 +2,8 @@ import re
 
 from src.models import ExtractedPaper
 
-
 ABSTRACT_START_PATTERN = re.compile(
-    r"\babstract\b"
-    r"\s*[:.\-—–]?\s*",
+    r"\babstract\b" r"\s*[:.\-—–]?\s*",
     flags=re.IGNORECASE,
 )
 
@@ -15,32 +13,26 @@ ABSTRACT_END_PATTERNS = [
         r"\b(?:1|I)[.\s]+introduction\b",
         flags=re.IGNORECASE,
     ),
-
     re.compile(
         r"\bintroduction\b",
         flags=re.IGNORECASE,
     ),
-
     re.compile(
         r"\bkeywords?\b",
         flags=re.IGNORECASE,
     ),
-
     re.compile(
         r"\bindex\s+terms?\b",
         flags=re.IGNORECASE,
     ),
-
     re.compile(
         r"\bCCS\s+concepts?\b",
         flags=re.IGNORECASE,
     ),
-
     re.compile(
         r"\bACM\s+reference\s+format\b",
         flags=re.IGNORECASE,
     ),
-
     re.compile(
         r"\bcategories\s+and\s+subject\s+descriptors\b",
         flags=re.IGNORECASE,
@@ -67,51 +59,33 @@ def extract_from_abstract_heading(
     Extract text beginning after an explicit Abstract heading.
     """
 
-    start_match = (
-        ABSTRACT_START_PATTERN.search(
-            text
-        )
-    )
+    start_match = ABSTRACT_START_PATTERN.search(text)
 
     if not start_match:
         return None
 
-    remaining = text[
-        start_match.end():
-    ]
+    remaining = text[start_match.end() :]
 
     end_positions: list[int] = []
 
     for pattern in ABSTRACT_END_PATTERNS:
 
-        match = pattern.search(
-            remaining
-        )
+        match = pattern.search(remaining)
 
         if match:
-            end_positions.append(
-                match.start()
-            )
+            end_positions.append(match.start())
 
     if end_positions:
 
-        candidate = remaining[
-            :min(end_positions)
-        ]
+        candidate = remaining[: min(end_positions)]
 
     else:
 
-        candidate = remaining[
-            :3500
-        ]
+        candidate = remaining[:3500]
 
-    candidate = normalize_abstract(
-        candidate
-    )
+    candidate = normalize_abstract(candidate)
 
-    if not (
-        80 <= len(candidate) <= 3500
-    ):
+    if not (80 <= len(candidate) <= 3500):
         return None
 
     return candidate
@@ -146,22 +120,16 @@ def extract_front_matter_fallback(
 
     for pattern in introduction_patterns:
 
-        match = pattern.search(
-            text
-        )
+        match = pattern.search(text)
 
         if match:
-            intro_position = (
-                match.start()
-            )
+            intro_position = match.start()
             break
 
     if intro_position is None:
         return None
 
-    front_matter = text[
-        :intro_position
-    ]
+    front_matter = text[:intro_position]
 
     # We cannot safely determine the exact abstract boundary
     # without an Abstract label, so only use the final substantial
@@ -175,9 +143,7 @@ def extract_front_matter_fallback(
 
     character_count = 0
 
-    for sentence in reversed(
-        sentences
-    ):
+    for sentence in reversed(sentences):
 
         sentence = sentence.strip()
 
@@ -189,20 +155,14 @@ def extract_front_matter_fallback(
             sentence,
         )
 
-        character_count += len(
-            sentence
-        )
+        character_count += len(sentence)
 
         if character_count >= 500:
             break
 
-    candidate = normalize_abstract(
-        " ".join(substantial)
-    )
+    candidate = normalize_abstract(" ".join(substantial))
 
-    if not (
-        150 <= len(candidate) <= 2000
-    ):
+    if not (150 <= len(candidate) <= 2000):
         return None
 
     return candidate
@@ -215,29 +175,16 @@ def extract_abstract(
     Extract a paper abstract from its opening pages.
     """
 
-    opening_pages = (
-        paper.pages[:4]
-    )
+    opening_pages = paper.pages[:4]
 
     if not opening_pages:
         return None
 
-    text = "\n".join(
-        page.text
-        for page in opening_pages
-    )
+    text = "\n".join(page.text for page in opening_pages)
 
-    abstract = (
-        extract_from_abstract_heading(
-            text
-        )
-    )
+    abstract = extract_from_abstract_heading(text)
 
     if abstract:
         return abstract
 
-    return (
-        extract_front_matter_fallback(
-            text
-        )
-    )
+    return extract_front_matter_fallback(text)

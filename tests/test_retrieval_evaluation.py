@@ -1,15 +1,12 @@
 from src.evaluation.models import (
     RetrievalBenchmarkCase,
 )
-
 from src.evaluation.retrieval_evaluator import (
     RetrievalEvaluator,
 )
-
 from src.evaluation.retrieval_metrics import (
     calculate_retrieval_metrics,
 )
-
 from src.tools.search_papers import (
     PaperSearchResponse,
     PaperSearchResult,
@@ -47,9 +44,7 @@ class FakeSearchTool:
                     score=1.0,
                     raw_score=1.0,
                     lexical_score=0.0,
-                    chunk_id=(
-                        f"{paper_id}_chunk"
-                    ),
+                    chunk_id=(f"{paper_id}_chunk"),
                     text="Evidence",
                 )
             )
@@ -80,22 +75,17 @@ def test_retrieval_evaluator_hit_at_1():
         )
     )
 
-    result = evaluator.evaluate_case(
-        case
-    )
+    result = evaluator.evaluate_case(case)
 
     assert result.hit_at_1 is True
     assert result.hit_at_3 is True
     assert result.hit_at_5 is True
     assert result.reciprocal_rank == 1.0
 
-    assert (
-        result.unique_retrieved_papers
-        == [
-            "03_mutap",
-            "05_coverup",
-        ]
-    )
+    assert result.unique_retrieved_papers == [
+        "03_mutap",
+        "05_coverup",
+    ]
 
     assert result.recall_at_3 == 1.0
     assert result.recall_at_5 == 1.0
@@ -121,9 +111,7 @@ def test_retrieval_evaluator_rank_two():
         )
     )
 
-    result = evaluator.evaluate_case(
-        case
-    )
+    result = evaluator.evaluate_case(case)
 
     assert result.hit_at_1 is False
     assert result.hit_at_3 is True
@@ -148,9 +136,7 @@ def test_retrieval_metrics():
                 "03_mutap",
             ]
         )
-    ).evaluate_case(
-        case
-    )
+    ).evaluate_case(case)
 
     result_two = RetrievalEvaluator(
         search_tool=FakeSearchTool(
@@ -159,9 +145,7 @@ def test_retrieval_metrics():
                 "03_mutap",
             ]
         )
-    ).evaluate_case(
-        case
-    )
+    ).evaluate_case(case)
 
     metrics = calculate_retrieval_metrics(
         [
@@ -176,20 +160,11 @@ def test_retrieval_metrics():
     assert metrics.hit_at_5 == 1.0
     assert metrics.mean_reciprocal_rank == 0.75
 
-    assert (
-        metrics.mean_recall_at_3
-        == 1.0
-    )
+    assert metrics.mean_recall_at_3 == 1.0
 
-    assert (
-        metrics.mean_recall_at_5
-        == 1.0
-    )
+    assert metrics.mean_recall_at_5 == 1.0
 
-    assert (
-        metrics.mean_recall_at_10
-        == 1.0
-    )
+    assert metrics.mean_recall_at_10 == 1.0
 
 
 def test_recall_tracks_multiple_expected_papers():
@@ -223,24 +198,12 @@ def test_recall_tracks_multiple_expected_papers():
 
     assert result.hit_at_1 is True
 
-    assert (
-        result.recall_at_3
-        == 1 / 3
-    )
+    assert result.recall_at_3 == 1 / 3
 
-    assert (
-        result.recall_at_5
-        == 2 / 3
-    )
+    assert result.recall_at_5 == 2 / 3
 
-    assert (
-        result.recall_at_10
-        == 2 / 3
-    )
+    assert result.recall_at_10 == 2 / 3
 
-    assert (
-        result.missing_expected_papers
-        == [
-            "05_coverup",
-        ]
-    )
+    assert result.missing_expected_papers == [
+        "05_coverup",
+    ]

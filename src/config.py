@@ -1,9 +1,8 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-
 
 # Project root:
 # research-intelligence-agent/
@@ -26,9 +25,7 @@ class Settings(BaseModel):
         "development",
     )
 
-    openai_api_key: str | None = os.getenv(
-        "OPENAI_API_KEY"
-    )
+    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
     papers_dir: Path = PROJECT_ROOT / os.getenv(
         "PAPERS_DIR",
@@ -41,13 +38,13 @@ class Settings(BaseModel):
     )
 
     metadata_dir: Path = PROJECT_ROOT / os.getenv(
-    "METADATA_DIR",
-    "data/metadata",
+        "METADATA_DIR",
+        "data/metadata",
     )
 
     chunks_dir: Path = PROJECT_ROOT / os.getenv(
-    "CHUNKS_DIR",
-    "data/chunks",
+        "CHUNKS_DIR",
+        "data/chunks",
     )
 
     vector_store_dir: Path = PROJECT_ROOT / os.getenv(
@@ -93,12 +90,12 @@ def ensure_directories() -> None:
     """Create runtime directories if they do not already exist."""
 
     directories = [
-    settings.papers_dir,
-    settings.processed_dir,
-    settings.metadata_dir,
-    settings.chunks_dir,
-    settings.vector_store_dir,
-    settings.reports_dir,
+        settings.papers_dir,
+        settings.processed_dir,
+        settings.metadata_dir,
+        settings.chunks_dir,
+        settings.vector_store_dir,
+        settings.reports_dir,
     ]
 
     for directory in directories:

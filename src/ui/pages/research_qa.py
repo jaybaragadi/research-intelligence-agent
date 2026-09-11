@@ -5,11 +5,9 @@ from src.ui.presentation import (
     evidence_title,
     grounding_status,
 )
-
 from src.ui.services import (
     get_grounded_answer_service,
 )
-
 
 DEFAULT_QUESTION = (
     "How are Large Language Models being used "
@@ -26,9 +24,7 @@ def _render_grounding_status(answer) -> None:
     with col1:
         st.metric(
             "Grounding Valid",
-            grounding_status(
-                validation.is_valid
-            ),
+            grounding_status(validation.is_valid),
         )
 
     with col2:
@@ -46,61 +42,40 @@ def _render_grounding_status(answer) -> None:
 
 def _render_claims(answer) -> None:
 
-    st.subheader(
-        "Grounded Claims"
-    )
+    st.subheader("Grounded Claims")
 
     if not answer.claims:
 
-        st.info(
-            "No grounded claims were generated."
-        )
+        st.info("No grounded claims were generated.")
 
         return
 
     for claim in answer.claims:
 
-        with st.container(
-            border=True
-        ):
+        with st.container(border=True):
 
-            st.markdown(
-                f"**{claim.claim_id}**"
-            )
+            st.markdown(f"**{claim.claim_id}**")
 
-            st.write(
-                claim.text
-            )
+            st.write(claim.text)
 
             if claim.evidence_ids:
 
-                st.caption(
-                    "Evidence: "
-                    + ", ".join(
-                        claim.evidence_ids
-                    )
-                )
+                st.caption("Evidence: " + ", ".join(claim.evidence_ids))
 
 
 def _render_evidence(answer) -> None:
 
-    st.subheader(
-        "Supporting Evidence"
-    )
+    st.subheader("Supporting Evidence")
 
     if not answer.evidence:
 
-        st.info(
-            "No supporting evidence was retrieved."
-        )
+        st.info("No supporting evidence was retrieved.")
 
         return
 
     for evidence in answer.evidence:
 
-        section = evidence_section(
-            evidence.section
-        )
+        section = evidence_section(evidence.section)
 
         title = evidence_title(
             evidence_id=evidence.evidence_id,
@@ -108,21 +83,13 @@ def _render_evidence(answer) -> None:
             page_number=evidence.page_number,
         )
 
-        with st.expander(
-            title
-        ):
+        with st.expander(title):
 
-            st.markdown(
-                f"**Section:** {section}"
-            )
+            st.markdown(f"**Section:** {section}")
 
-            st.write(
-                evidence.text
-            )
+            st.write(evidence.text)
 
-            st.caption(
-                evidence.citation_text
-            )
+            st.caption(evidence.citation_text)
 
 
 def _render_validation_issues(
@@ -134,40 +101,29 @@ def _render_validation_issues(
     if not validation.issues:
         return
 
-    st.subheader(
-        "Grounding Validation Issues"
-    )
+    st.subheader("Grounding Validation Issues")
 
     for issue in validation.issues:
 
-        st.warning(
-            f"{issue.issue_type}: "
-            f"{issue.message}"
-        )
+        st.warning(f"{issue.issue_type}: " f"{issue.message}")
 
 
 def render_research_qa_page() -> None:
 
-    st.title(
-        "Research Q&A"
-    )
+    st.title("Research Q&A")
 
-    st.write(
-        """
+    st.write("""
         Ask a research question about the indexed
         software-testing literature. Answers are
         generated only from retrieved evidence in
         the current corpus.
-        """
-    )
+        """)
 
-    st.info(
-        """
+    st.info("""
         Evidence grounding is preserved from the
         backend. Each answer can be traced to the
         supporting paper, page, section, and chunk.
-        """
-    )
+        """)
 
     query = st.text_area(
         "Research Question",
@@ -190,82 +146,54 @@ def render_research_qa_page() -> None:
     if not ask:
         return
 
-    cleaned_query = (
-        query.strip()
-    )
+    cleaned_query = query.strip()
 
     if not cleaned_query:
 
-        st.warning(
-            "Enter a research question."
-        )
+        st.warning("Enter a research question.")
 
         return
 
     try:
 
-        with st.spinner(
-            "Retrieving and validating evidence..."
-        ):
+        with st.spinner("Retrieving and validating evidence..."):
 
-            service = (
-                get_grounded_answer_service()
-            )
+            service = get_grounded_answer_service()
 
-            answer = (
-                service.answer_search(
-                    query=cleaned_query,
-                    top_k=top_k,
-                )
+            answer = service.answer_search(
+                query=cleaned_query,
+                top_k=top_k,
             )
 
     except Exception as exc:
 
-        st.error(
-            "The research question could not be processed."
-        )
+        st.error("The research question could not be processed.")
 
-        st.exception(
-            exc
-        )
+        st.exception(exc)
 
         return
 
     st.divider()
 
-    st.subheader(
-        "Evidence-Grounded Answer"
-    )
+    st.subheader("Evidence-Grounded Answer")
 
-    st.write(
-        answer.answer_text
-    )
+    st.write(answer.answer_text)
 
-    _render_grounding_status(
-        answer
-    )
+    _render_grounding_status(answer)
 
     st.divider()
 
-    _render_claims(
-        answer
-    )
+    _render_claims(answer)
 
     st.divider()
 
-    _render_evidence(
-        answer
-    )
+    _render_evidence(answer)
 
-    _render_validation_issues(
-        answer
-    )
+    _render_validation_issues(answer)
 
-    st.caption(
-        """
+    st.caption("""
         Scope: Results describe evidence available
         in the indexed corpus. Missing evidence
         should not be interpreted as proof that
         research does not exist elsewhere.
-        """
-    )
+        """)

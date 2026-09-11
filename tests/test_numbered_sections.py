@@ -3,7 +3,6 @@ from pathlib import Path
 from src.metadata.section_parser import (
     discover_sections,
 )
-
 from src.models import (
     ExtractedPage,
     ExtractedPaper,
@@ -17,9 +16,7 @@ def create_paper(
     return ExtractedPaper(
         paper_id="test",
         filename="test.pdf",
-        source_path=Path(
-            "test.pdf"
-        ),
+        source_path=Path("test.pdf"),
         total_pages=1,
         extracted_pages=1,
         empty_pages=0,
@@ -27,9 +24,7 @@ def create_paper(
             ExtractedPage(
                 page_number=1,
                 text=text,
-                character_count=len(
-                    text
-                ),
+                character_count=len(text),
             )
         ],
     )
@@ -47,18 +42,11 @@ def test_numbered_sections_after_flattening():
         "6. Conclusion We conclude the study."
     )
 
-    paper = create_paper(
-        text
-    )
+    paper = create_paper(text)
 
-    sections = discover_sections(
-        paper
-    )
+    sections = discover_sections(paper)
 
-    names = {
-        section.canonical_name
-        for section in sections
-    }
+    names = {section.canonical_name for section in sections}
 
     assert "introduction" in names
     assert "related_work" in names
@@ -78,18 +66,11 @@ def test_roman_numeral_sections():
         "V. CONCLUSION Final text."
     )
 
-    paper = create_paper(
-        text
-    )
+    paper = create_paper(text)
 
-    sections = discover_sections(
-        paper
-    )
+    sections = discover_sections(paper)
 
-    names = {
-        section.canonical_name
-        for section in sections
-    }
+    names = {section.canonical_name for section in sections}
 
     assert "introduction" in names
     assert "background" in names

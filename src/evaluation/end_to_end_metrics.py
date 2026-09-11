@@ -32,9 +32,7 @@ class EndToEndAggregateMetrics:
 
 
 def calculate_end_to_end_metrics(
-    results: list[
-        EndToEndEvaluationResult
-    ],
+    results: list[EndToEndEvaluationResult],
 ) -> EndToEndAggregateMetrics:
 
     if not results:
@@ -59,15 +57,10 @@ def calculate_end_to_end_metrics(
             total_shared_evidence_ids=0,
         )
 
-    count = len(
-        results
-    )
+    count = len(results)
 
     answer_successes = sum(
-        (
-            result.answer_generated
-            and result.answer_validation_valid
-        )
+        (result.answer_generated and result.answer_validation_valid)
         for result in results
     )
 
@@ -102,80 +95,36 @@ def calculate_end_to_end_metrics(
 
     return EndToEndAggregateMetrics(
         case_count=count,
-
-        structural_pass_rate=sum(
-            result.structural_valid
-            for result in results
-        ) / count,
-
-        mean_stage_success_rate=sum(
-            result.stage_success_rate
-            for result in results
-        ) / count,
-
-        answer_success_rate=(
-            answer_successes / count
-        ),
-
-        comparison_success_rate=(
-            comparison_successes / count
-        ),
-
-        gap_analysis_success_rate=(
-            gap_successes / count
-        ),
-
-        literature_review_success_rate=(
-            review_successes / count
-        ),
-
+        structural_pass_rate=sum(result.structural_valid for result in results) / count,
+        mean_stage_success_rate=sum(result.stage_success_rate for result in results)
+        / count,
+        answer_success_rate=(answer_successes / count),
+        comparison_success_rate=(comparison_successes / count),
+        gap_analysis_success_rate=(gap_successes / count),
+        literature_review_success_rate=(review_successes / count),
         mean_comparison_paper_coverage=sum(
-            result.comparison_paper_coverage
-            for result in results
-        ) / count,
-
-        mean_gap_paper_coverage=sum(
-            result.gap_paper_coverage
-            for result in results
-        ) / count,
-
+            result.comparison_paper_coverage for result in results
+        )
+        / count,
+        mean_gap_paper_coverage=sum(result.gap_paper_coverage for result in results)
+        / count,
         mean_literature_review_paper_coverage=sum(
-            result.literature_review_paper_coverage
-            for result in results
-        ) / count,
-
-        total_answer_claims=sum(
-            result.answer_claim_count
-            for result in results
-        ),
-
-        total_answer_evidence=sum(
-            result.answer_evidence_count
-            for result in results
-        ),
-
+            result.literature_review_paper_coverage for result in results
+        )
+        / count,
+        total_answer_claims=sum(result.answer_claim_count for result in results),
+        total_answer_evidence=sum(result.answer_evidence_count for result in results),
         total_comparison_findings=sum(
-            result.comparison_finding_count
-            for result in results
+            result.comparison_finding_count for result in results
         ),
-
-        total_gap_candidates=sum(
-            result.gap_candidate_count
-            for result in results
-        ),
-
+        total_gap_candidates=sum(result.gap_candidate_count for result in results),
         total_review_findings=sum(
-            result.literature_review_finding_count
-            for result in results
+            result.literature_review_finding_count for result in results
         ),
-
         total_review_citations=sum(
-            result.literature_review_citation_count
-            for result in results
+            result.literature_review_citation_count for result in results
         ),
-
         total_shared_evidence_ids=sum(
-            result.shared_evidence_id_count
-            for result in results
+            result.shared_evidence_id_count for result in results
         ),
     )

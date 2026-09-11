@@ -1,6 +1,5 @@
 import re
 
-
 COMPARE_PREFIXES = (
     "compare",
     "comparison",
@@ -75,10 +74,7 @@ def build_comparison_focus_query(
     # Remove command/connective language that
     # contributes little to evidence retrieval.
     focused = re.sub(
-        r"\b("
-        r"how|do|does|did|and|versus|vs|"
-        r"between|for|the|a|an"
-        r")\b",
+        r"\b(" r"how|do|does|did|and|versus|vs|" r"between|for|the|a|an" r")\b",
         " ",
         focused,
     )
@@ -90,8 +86,4 @@ def build_comparison_focus_query(
     ).strip()
 
     # Never accidentally issue an empty search.
-    return (
-        focused
-        if focused
-        else query.strip()
-    )
+    return focused if focused else query.strip()

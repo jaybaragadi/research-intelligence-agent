@@ -1,36 +1,29 @@
 from collections import defaultdict
 
-from src.analysis.comparison_dimensions import (
-    COMPARISON_DIMENSIONS,
-)
-
 from src.analysis.comparative_service import (
     ComparativeAnalysisService,
 )
-
+from src.analysis.comparison_dimensions import (
+    COMPARISON_DIMENSIONS,
+)
 from src.analysis.corpus_coverage import (
     CorpusCoverageAnalyzer,
 )
-
 from src.analysis.explicit_gap_retriever import (
     ExplicitGapEvidenceRetriever,
 )
-
 from src.analysis.gap_candidate_detector import (
     GapCandidateDetector,
 )
-
 from src.analysis.gap_models import (
     GapCandidate,
     GapEvidence,
     PaperGapSignals,
     ResearchGapAnalysis,
 )
-
 from src.analysis.gap_signal_extractor import (
     ExplicitGapSignalExtractor,
 )
-
 from src.analysis.gap_validator import (
     GapValidator,
 )
@@ -52,61 +45,27 @@ class ResearchGapAnalysisService:
 
     def __init__(
         self,
-        comparative_service: (
-            ComparativeAnalysisService
-            | None
-        ) = None,
-        explicit_gap_retriever: (
-            ExplicitGapEvidenceRetriever
-            | None
-        ) = None,
-        signal_extractor: (
-            ExplicitGapSignalExtractor
-            | None
-        ) = None,
-        coverage_analyzer: (
-            CorpusCoverageAnalyzer
-            | None
-        ) = None,
-        candidate_detector: (
-            GapCandidateDetector
-            | None
-        ) = None,
-        validator: (
-            GapValidator
-            | None
-        ) = None,
+        comparative_service: ComparativeAnalysisService | None = None,
+        explicit_gap_retriever: ExplicitGapEvidenceRetriever | None = None,
+        signal_extractor: ExplicitGapSignalExtractor | None = None,
+        coverage_analyzer: CorpusCoverageAnalyzer | None = None,
+        candidate_detector: GapCandidateDetector | None = None,
+        validator: GapValidator | None = None,
     ):
 
-        self.comparative_service = (
-            comparative_service
-            or ComparativeAnalysisService()
-        )
+        self.comparative_service = comparative_service or ComparativeAnalysisService()
 
         self.explicit_gap_retriever = (
-            explicit_gap_retriever
-            or ExplicitGapEvidenceRetriever()
+            explicit_gap_retriever or ExplicitGapEvidenceRetriever()
         )
 
-        self.signal_extractor = (
-            signal_extractor
-            or ExplicitGapSignalExtractor()
-        )
+        self.signal_extractor = signal_extractor or ExplicitGapSignalExtractor()
 
-        self.coverage_analyzer = (
-            coverage_analyzer
-            or CorpusCoverageAnalyzer()
-        )
+        self.coverage_analyzer = coverage_analyzer or CorpusCoverageAnalyzer()
 
-        self.candidate_detector = (
-            candidate_detector
-            or GapCandidateDetector()
-        )
+        self.candidate_detector = candidate_detector or GapCandidateDetector()
 
-        self.validator = (
-            validator
-            or GapValidator()
-        )
+        self.validator = validator or GapValidator()
 
     def analyze(
         self,
@@ -129,157 +88,88 @@ class ResearchGapAnalysisService:
         8. validate candidate provenance.
         """
 
-        cleaned_papers = (
-            self._clean_paper_ids(
-                paper_ids
-            )
-        )
+        cleaned_papers = self._clean_paper_ids(paper_ids)
 
         cleaned_query = query.strip()
 
         if not cleaned_query:
-            raise ValueError(
-                "query cannot be empty"
-            )
+            raise ValueError("query cannot be empty")
 
         if len(cleaned_papers) < 2:
-            raise ValueError(
-                "gap analysis requires at least "
-                "two unique papers"
-            )
+            raise ValueError("gap analysis requires at least " "two unique papers")
 
         if evidence_per_paper <= 0:
-            raise ValueError(
-                "evidence_per_paper must be positive"
-            )
+            raise ValueError("evidence_per_paper must be positive")
 
-        comparative = (
-            self.comparative_service
-            .analyze(
-                paper_ids=cleaned_papers,
-                query=cleaned_query,
-                evidence_per_paper=(
-                    evidence_per_paper
-                ),
-            )
+        comparative = self.comparative_service.analyze(
+            paper_ids=cleaned_papers,
+            query=cleaned_query,
+            evidence_per_paper=(evidence_per_paper),
         )
 
         dimension_evidence = [
             evidence
-            for profile
-            in comparative.profiles
-            for dimension
-            in profile.dimensions
-            for evidence
-            in dimension.evidence
+            for profile in comparative.profiles
+            for dimension in profile.dimensions
+            for evidence in dimension.evidence
         ]
 
-        explicit_evidence = (
-            self.explicit_gap_retriever
-            .retrieve(
-                paper_ids=cleaned_papers,
-                evidence_per_query=4,
-            )
+        explicit_evidence = self.explicit_gap_retriever.retrieve(
+            paper_ids=cleaned_papers,
+            evidence_per_query=4,
         )
 
-        explicit_evidence = (
-            self._dedupe_explicit_evidence(
-                explicit_evidence
-            )
+        explicit_evidence = self._dedupe_explicit_evidence(explicit_evidence)
+
+        explicit_signals = self.signal_extractor.extract_many(explicit_evidence)
+
+        paper_signals = self._group_paper_signals(
+            cleaned_papers,
+            explicit_signals,
         )
 
-        explicit_signals = (
-            self.signal_extractor
-            .extract_many(
-                explicit_evidence
-            )
+        dimensions = [definition.name for definition in COMPARISON_DIMENSIONS]
+
+        dimension_coverage = self.coverage_analyzer.analyze_for_dimensions(
+            evidence=dimension_evidence,
+            dimensions=dimensions,
         )
 
-        paper_signals = (
-            self._group_paper_signals(
-                cleaned_papers,
-                explicit_signals,
-            )
+        explicit_candidates = self.candidate_detector.build_explicit_candidates(
+            explicit_signals
         )
 
-        dimensions = [
-            definition.name
-            for definition
-            in COMPARISON_DIMENSIONS
-        ]
-
-        dimension_coverage = (
-            self.coverage_analyzer
-            .analyze_for_dimensions(
-                evidence=dimension_evidence,
-                dimensions=dimensions,
-            )
+        imbalance_candidates = self.candidate_detector.build_imbalance_candidates(
+            coverage=dimension_coverage,
+            corpus_size=len(cleaned_papers),
         )
 
-        explicit_candidates = (
-            self.candidate_detector
-            .build_explicit_candidates(
-                explicit_signals
-            )
-        )
-
-        imbalance_candidates = (
-            self.candidate_detector
-            .build_imbalance_candidates(
-                coverage=dimension_coverage,
-                corpus_size=len(
-                    cleaned_papers
-                ),
-            )
-        )
-
-        candidates = (
-            self._renumber_candidates(
-                [
-                    *explicit_candidates,
-                    *imbalance_candidates,
-                ]
-            )
+        candidates = self._renumber_candidates(
+            [
+                *explicit_candidates,
+                *imbalance_candidates,
+            ]
         )
 
         available_evidence_ids = {
-            evidence.evidence_id
-            for evidence
-            in dimension_evidence
+            evidence.evidence_id for evidence in dimension_evidence
         }
 
         available_evidence_ids.update(
-            evidence.evidence_id
-            for evidence
-            in explicit_evidence
+            evidence.evidence_id for evidence in explicit_evidence
         )
 
-        validation = (
-            self.validator.validate(
-                candidates=candidates,
-                available_evidence_ids=(
-                    available_evidence_ids
-                ),
-            )
+        validation = self.validator.validate(
+            candidates=candidates,
+            available_evidence_ids=(available_evidence_ids),
         )
 
         return ResearchGapAnalysis(
             query=cleaned_query,
-
-            corpus_papers=(
-                cleaned_papers
-            ),
-
-            paper_signals=(
-                paper_signals
-            ),
-
-            dimension_coverage=(
-                dimension_coverage
-            ),
-
+            corpus_papers=(cleaned_papers),
+            paper_signals=(paper_signals),
+            dimension_coverage=(dimension_coverage),
             candidates=candidates,
-
             validation=validation,
         )
 
@@ -307,13 +197,9 @@ class ResearchGapAnalysisService:
             if item.evidence_id in seen:
                 continue
 
-            seen.add(
-                item.evidence_id
-            )
+            seen.add(item.evidence_id)
 
-            results.append(
-                item
-            )
+            results.append(item)
 
         return results
 
@@ -335,11 +221,7 @@ class ResearchGapAnalysisService:
         ] = defaultdict(list)
 
         for signal in signals:
-            grouped[
-                signal.paper_id
-            ].append(
-                signal
-            )
+            grouped[signal.paper_id].append(signal)
 
         return [
             PaperGapSignals(
@@ -354,9 +236,7 @@ class ResearchGapAnalysisService:
 
     def _renumber_candidates(
         self,
-        candidates: list[
-            GapCandidate
-        ],
+        candidates: list[GapCandidate],
     ) -> list[GapCandidate]:
         """
         Give the final combined candidate collection
@@ -372,9 +252,7 @@ class ResearchGapAnalysisService:
             start=1,
         ):
 
-            candidate.gap_id = (
-                f"G{index}"
-            )
+            candidate.gap_id = f"G{index}"
 
         return candidates
 
@@ -393,22 +271,13 @@ class ResearchGapAnalysisService:
 
         for paper_id in paper_ids:
 
-            cleaned = (
-                paper_id.strip()
-            )
+            cleaned = paper_id.strip()
 
-            if (
-                not cleaned
-                or cleaned in seen
-            ):
+            if not cleaned or cleaned in seen:
                 continue
 
-            seen.add(
-                cleaned
-            )
+            seen.add(cleaned)
 
-            results.append(
-                cleaned
-            )
+            results.append(cleaned)
 
         return results

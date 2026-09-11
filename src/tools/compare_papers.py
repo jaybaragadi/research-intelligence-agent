@@ -46,11 +46,7 @@ class PaperComparisonEntry:
 
     paper_id: str
 
-    evidence: list[
-        ComparisonEvidence
-    ] = field(
-        default_factory=list
-    )
+    evidence: list[ComparisonEvidence] = field(default_factory=list)
 
 
 @dataclass
@@ -73,9 +69,7 @@ class PaperComparisonResponse:
 
     missing_papers: list[str]
 
-    comparisons: list[
-        PaperComparisonEntry
-    ]
+    comparisons: list[PaperComparisonEntry]
 
 
 class ComparePapersTool:
@@ -94,17 +88,10 @@ class ComparePapersTool:
 
     def __init__(
         self,
-        retriever: (
-            SemanticRetriever
-            | None
-        ) = None,
+        retriever: SemanticRetriever | None = None,
     ) -> None:
 
-        self.retriever = (
-            retriever
-            if retriever is not None
-            else SemanticRetriever()
-        )
+        self.retriever = retriever if retriever is not None else SemanticRetriever()
 
     def compare(
         self,
@@ -136,56 +123,29 @@ class ComparePapersTool:
         """
 
         cleaned_papers = [
-            paper_id.strip()
-            for paper_id in paper_ids
-            if paper_id.strip()
+            paper_id.strip() for paper_id in paper_ids if paper_id.strip()
         ]
 
-        if (
-            len(cleaned_papers)
-            < 2
-        ):
-            raise ValueError(
-                "At least two paper IDs are required"
-            )
+        if len(cleaned_papers) < 2:
+            raise ValueError("At least two paper IDs are required")
 
         if not query.strip():
-            raise ValueError(
-                "Query cannot be empty"
-            )
+            raise ValueError("Query cannot be empty")
 
-        if (
-            evidence_per_paper
-            <= 0
-        ):
-            raise ValueError(
-                "evidence_per_paper must be positive"
-            )
+        if evidence_per_paper <= 0:
+            raise ValueError("evidence_per_paper must be positive")
 
         # Preserve caller order while removing
         # duplicate paper identifiers.
-        requested_papers = list(
-            dict.fromkeys(
-                cleaned_papers
-            )
-        )
+        requested_papers = list(dict.fromkeys(cleaned_papers))
 
-        if (
-            len(requested_papers)
-            < 2
-        ):
-            raise ValueError(
-                "At least two unique paper IDs are required"
-            )
+        if len(requested_papers) < 2:
+            raise ValueError("At least two unique paper IDs are required")
 
         evidence_by_paper: dict[
             str,
             list[ComparisonEvidence],
-        ] = {
-            paper_id: []
-            for paper_id
-            in requested_papers
-        }
+        ] = {paper_id: [] for paper_id in requested_papers}
 
         # Important Phase 6.3 correction:
         #
@@ -194,125 +154,52 @@ class ComparePapersTool:
         # and filtering afterward.
         for paper_id in requested_papers:
 
-            retrieved = (
-                self.retriever.search(
-                    query=query,
-
-                    top_k=(
-                        evidence_per_paper
-                    ),
-
-                    candidate_multiplier=6,
-
-                    max_per_paper=(
-                        evidence_per_paper
-                    ),
-
-                    allowed_paper_ids={
-                        paper_id
-                    },
-                )
+            retrieved = self.retriever.search(
+                query=query,
+                top_k=(evidence_per_paper),
+                candidate_multiplier=6,
+                max_per_paper=(evidence_per_paper),
+                allowed_paper_ids={paper_id},
             )
 
             for result in retrieved:
 
-                evidence_by_paper[
-                    paper_id
-                ].append(
+                evidence_by_paper[paper_id].append(
                     ComparisonEvidence(
-                        rank=(
-                            result.rank
-                        ),
-
-                        paper_id=(
-                            result.paper_id
-                        ),
-
-                        page_number=(
-                            result.page_number
-                        ),
-
-                        section=(
-                            result.section
-                        ),
-
-                        score=(
-                            result.score
-                        ),
-
-                        raw_score=(
-                            result.raw_score
-                        ),
-
-                        lexical_score=(
-                            result.lexical_score
-                        ),
-
-                        chunk_id=(
-                            result.chunk_id
-                        ),
-
-                        text=(
-                            result.text
-                        ),
+                        rank=(result.rank),
+                        paper_id=(result.paper_id),
+                        page_number=(result.page_number),
+                        section=(result.section),
+                        score=(result.score),
+                        raw_score=(result.raw_score),
+                        lexical_score=(result.lexical_score),
+                        chunk_id=(result.chunk_id),
+                        text=(result.text),
                     )
                 )
 
         matched_papers = [
-            paper_id
-
-            for paper_id
-            in requested_papers
-
-            if evidence_by_paper[
-                paper_id
-            ]
+            paper_id for paper_id in requested_papers if evidence_by_paper[paper_id]
         ]
 
         missing_papers = [
-            paper_id
-
-            for paper_id
-            in requested_papers
-
-            if not evidence_by_paper[
-                paper_id
-            ]
+            paper_id for paper_id in requested_papers if not evidence_by_paper[paper_id]
         ]
 
         comparisons = [
             PaperComparisonEntry(
                 paper_id=paper_id,
-
-                evidence=(
-                    evidence_by_paper[
-                        paper_id
-                    ]
-                ),
+                evidence=(evidence_by_paper[paper_id]),
             )
-
-            for paper_id
-            in requested_papers
+            for paper_id in requested_papers
         ]
 
         return PaperComparisonResponse(
             query=query,
-
-            requested_papers=(
-                requested_papers
-            ),
-
-            matched_papers=(
-                matched_papers
-            ),
-
-            missing_papers=(
-                missing_papers
-            ),
-
-            comparisons=(
-                comparisons
-            ),
+            requested_papers=(requested_papers),
+            matched_papers=(matched_papers),
+            missing_papers=(missing_papers),
+            comparisons=(comparisons),
         )
 
 
@@ -327,14 +214,10 @@ def compare_papers(
     instance directly.
     """
 
-    tool = (
-        ComparePapersTool()
-    )
+    tool = ComparePapersTool()
 
     return tool.compare(
         paper_ids=paper_ids,
         query=query,
-        evidence_per_paper=(
-            evidence_per_paper
-        ),
+        evidence_per_paper=(evidence_per_paper),
     )

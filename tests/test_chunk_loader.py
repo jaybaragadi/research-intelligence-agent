@@ -9,15 +9,9 @@ from src.retrieval.chunk_loader import (
 def test_discover_chunk_files(
     tmp_path,
 ):
-    first = (
-        tmp_path
-        / "paper_a.json"
-    )
+    first = tmp_path / "paper_a.json"
 
-    second = (
-        tmp_path
-        / "paper_b.json"
-    )
+    second = tmp_path / "paper_b.json"
 
     first.write_text(
         "{}",
@@ -29,11 +23,7 @@ def test_discover_chunk_files(
         encoding="utf-8",
     )
 
-    files = (
-        discover_chunk_files(
-            tmp_path
-        )
-    )
+    files = discover_chunk_files(tmp_path)
 
     assert len(files) == 2
 
@@ -41,75 +31,37 @@ def test_discover_chunk_files(
 def test_load_chunks_from_file(
     tmp_path,
 ):
-    text = (
-        "Mutation testing evaluates "
-        "generated unit tests."
-    )
+    text = "Mutation testing evaluates " "generated unit tests."
 
     payload = {
         "paper_id": "paper_a",
-
         "chunk_count": 1,
-
         "chunks": [
             {
-                "chunk_id": (
-                    "paper_a_chunk_0000"
-                ),
-
-                "paper_id": (
-                    "paper_a"
-                ),
-
+                "chunk_id": ("paper_a_chunk_0000"),
+                "paper_id": ("paper_a"),
                 "text": text,
-
                 "page_number": 3,
-
-                "section": (
-                    "methodology"
-                ),
-
+                "section": ("methodology"),
                 "chunk_index": 0,
-
-                "character_count": (
-                    len(text)
-                ),
+                "character_count": (len(text)),
             }
         ],
     }
 
-    path = (
-        tmp_path
-        / "paper_a.json"
-    )
+    path = tmp_path / "paper_a.json"
 
     path.write_text(
-        json.dumps(
-            payload
-        ),
-
+        json.dumps(payload),
         encoding="utf-8",
     )
 
-    chunks = (
-        load_chunks_from_file(
-            path
-        )
-    )
+    chunks = load_chunks_from_file(path)
 
     assert len(chunks) == 1
 
-    assert (
-        chunks[0].paper_id
-        == "paper_a"
-    )
+    assert chunks[0].paper_id == "paper_a"
 
-    assert (
-        chunks[0].page_number
-        == 3
-    )
+    assert chunks[0].page_number == 3
 
-    assert (
-        chunks[0].section
-        == "methodology"
-    )
+    assert chunks[0].section == "methodology"

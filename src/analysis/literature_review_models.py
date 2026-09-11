@@ -40,13 +40,9 @@ class LiteratureReviewFinding:
 
     statement: str
 
-    paper_ids: list[str] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
-    evidence_ids: list[str] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -57,13 +53,9 @@ class LiteratureReviewSynthesisFinding:
 
     statement: str
 
-    paper_ids: list[str] = field(
-        default_factory=list
-    )
+    paper_ids: list[str] = field(default_factory=list)
 
-    evidence_ids: list[str] = field(
-        default_factory=list
-    )
+    evidence_ids: list[str] = field(default_factory=list)
 
     support_count: int = 0
 
@@ -76,11 +68,7 @@ class LiteratureReviewSynthesis:
 
     paper_ids: list[str]
 
-    findings: list[
-        LiteratureReviewSynthesisFinding
-    ] = field(
-        default_factory=list
-    )
+    findings: list[LiteratureReviewSynthesisFinding] = field(default_factory=list)
 
 
 @dataclass
@@ -91,13 +79,9 @@ class LiteratureReviewSection:
 
     objective: str
 
-    findings: list[LiteratureReviewFinding] = field(
-        default_factory=list
-    )
+    findings: list[LiteratureReviewFinding] = field(default_factory=list)
 
-    evidence: list[LiteratureReviewEvidence] = field(
-        default_factory=list
-    )
+    evidence: list[LiteratureReviewEvidence] = field(default_factory=list)
 
     narrative: str = ""
 
@@ -106,9 +90,7 @@ class LiteratureReviewSection:
 class LiteratureReviewEvidenceBundle:
     section_type: LiteratureReviewSectionType
 
-    evidence: list[LiteratureReviewEvidence] = field(
-        default_factory=list
-    )
+    evidence: list[LiteratureReviewEvidence] = field(default_factory=list)
 
 
 @dataclass
@@ -117,11 +99,7 @@ class LiteratureReviewEvidenceAggregation:
 
     paper_ids: list[str]
 
-    bundles: list[
-        LiteratureReviewEvidenceBundle
-    ] = field(
-        default_factory=list
-    )
+    bundles: list[LiteratureReviewEvidenceBundle] = field(default_factory=list)
 
 
 @dataclass
@@ -130,47 +108,27 @@ class LiteratureReviewPlan:
 
     paper_ids: list[str]
 
-    sections: list[LiteratureReviewSection] = field(
-        default_factory=list
-    )
+    sections: list[LiteratureReviewSection] = field(default_factory=list)
 
 
 class LiteratureReviewValidationIssueCode(str, Enum):
-    DUPLICATE_FINDING_ID = (
-        "duplicate_finding_id"
-    )
+    DUPLICATE_FINDING_ID = "duplicate_finding_id"
 
-    UNKNOWN_EVIDENCE_ID = (
-        "unknown_evidence_id"
-    )
+    UNKNOWN_EVIDENCE_ID = "unknown_evidence_id"
 
-    EVIDENCE_OUTSIDE_CORPUS = (
-        "evidence_outside_corpus"
-    )
+    EVIDENCE_OUTSIDE_CORPUS = "evidence_outside_corpus"
 
-    PAPER_SUPPORT_MISMATCH = (
-        "paper_support_mismatch"
-    )
+    PAPER_SUPPORT_MISMATCH = "paper_support_mismatch"
 
-    SUPPORT_COUNT_MISMATCH = (
-        "support_count_mismatch"
-    )
+    SUPPORT_COUNT_MISMATCH = "support_count_mismatch"
 
-    CROSS_PAPER_SUPPORT_TOO_LOW = (
-        "cross_paper_support_too_low"
-    )
+    CROSS_PAPER_SUPPORT_TOO_LOW = "cross_paper_support_too_low"
 
-    SINGLE_PAPER_FLAG_MISMATCH = (
-        "single_paper_flag_mismatch"
-    )
+    SINGLE_PAPER_FLAG_MISMATCH = "single_paper_flag_mismatch"
 
-    EMPTY_FINDING_STATEMENT = (
-        "empty_finding_statement"
-    )
+    EMPTY_FINDING_STATEMENT = "empty_finding_statement"
 
-    FINDING_WITHOUT_EVIDENCE = (
-        "finding_without_evidence"
-    )
+    FINDING_WITHOUT_EVIDENCE = "finding_without_evidence"
 
 
 @dataclass
@@ -179,10 +137,7 @@ class LiteratureReviewValidationIssue:
 
     message: str
 
-    section_type: (
-        LiteratureReviewSectionType
-        | None
-    ) = None
+    section_type: LiteratureReviewSectionType | None = None
 
     finding_id: str | None = None
 
@@ -191,11 +146,7 @@ class LiteratureReviewValidationIssue:
 class LiteratureReviewValidationResult:
     valid: bool
 
-    issues: list[
-        LiteratureReviewValidationIssue
-    ] = field(
-        default_factory=list
-    )
+    issues: list[LiteratureReviewValidationIssue] = field(default_factory=list)
 
 
 @dataclass
@@ -208,14 +159,9 @@ class LiteratureReview:
 
     sections: list[LiteratureReviewSection]
 
-    citations: list[str] = field(
-        default_factory=list
-    )
+    citations: list[str] = field(default_factory=list)
 
-    validation: (
-        LiteratureReviewValidationResult
-        | None
-    ) = None
+    validation: LiteratureReviewValidationResult | None = None
 
     corpus_scope_note: str = (
         "This review summarizes evidence from the "

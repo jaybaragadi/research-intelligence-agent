@@ -18,22 +18,12 @@ def save_chunks(
         exist_ok=True,
     )
 
-    output_path = (
-        output_directory
-        / f"{paper_id}.json"
-    )
+    output_path = output_directory / f"{paper_id}.json"
 
     payload = {
         "paper_id": paper_id,
-        "chunk_count": len(
-            chunks
-        ),
-        "chunks": [
-            chunk.model_dump(
-                mode="json"
-            )
-            for chunk in chunks
-        ],
+        "chunk_count": len(chunks),
+        "chunks": [chunk.model_dump(mode="json") for chunk in chunks],
     }
 
     output_path.write_text(

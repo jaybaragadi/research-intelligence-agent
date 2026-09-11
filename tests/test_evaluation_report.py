@@ -18,7 +18,6 @@ def build_test_data():
                 "mean_recall_at_10": 0.8222,
             }
         },
-
         "grounding": {
             "metrics": {
                 "case_count": 5,
@@ -29,7 +28,6 @@ def build_test_data():
                 "mean_expected_paper_recall": 0.7556,
             }
         },
-
         "comparison": {
             "metrics": {
                 "case_count": 3,
@@ -41,7 +39,6 @@ def build_test_data():
                 "finding_evidence_reference_integrity": 1.0,
             }
         },
-
         "gaps": {
             "metrics": {
                 "case_count": 3,
@@ -56,7 +53,6 @@ def build_test_data():
                 "total_insufficient_evidence_candidates": 0,
             }
         },
-
         "literature_review": {
             "metrics": {
                 "case_count": 3,
@@ -73,7 +69,6 @@ def build_test_data():
                 "total_citations": 159,
             }
         },
-
         "end_to_end": {
             "metrics": {
                 "case_count": 3,
@@ -100,9 +95,7 @@ def build_test_data():
 
 def test_report_contains_key_metrics():
 
-    report = build_report(
-        build_test_data()
-    )
+    report = build_report(build_test_data())
 
     assert "40.00%" in report
     assert "60.00%" in report
@@ -115,61 +108,29 @@ def test_report_contains_key_metrics():
 
 def test_report_contains_limitations():
 
-    report = build_report(
-        build_test_data()
-    )
+    report = build_report(build_test_data())
 
     assert "## 10. Known Limitations" in report
 
-    assert (
-        "Structural grounding"
-        in report
-    )
+    assert "Structural grounding" in report
 
-    assert (
-        "Missing evidence is not "
-        "treated as proof"
-        in report
-    )
+    assert "Missing evidence is not " "treated as proof" in report
 
-    assert (
-        "retrieval ranking"
-        in report.lower()
-    )
+    assert "retrieval ranking" in report.lower()
 
 
 def test_report_contains_all_evaluation_sections():
 
-    report = build_report(
-        build_test_data()
-    )
+    report = build_report(build_test_data())
 
-    assert (
-        "## 3. Retrieval Evaluation"
-        in report
-    )
+    assert "## 3. Retrieval Evaluation" in report
 
-    assert (
-        "## 4. Grounding Evaluation"
-        in report
-    )
+    assert "## 4. Grounding Evaluation" in report
 
-    assert (
-        "## 5. Comparative-Analysis Evaluation"
-        in report
-    )
+    assert "## 5. Comparative-Analysis Evaluation" in report
 
-    assert (
-        "## 6. Research-Gap Evaluation"
-        in report
-    )
+    assert "## 6. Research-Gap Evaluation" in report
 
-    assert (
-        "## 7. Literature-Review Evaluation"
-        in report
-    )
+    assert "## 7. Literature-Review Evaluation" in report
 
-    assert (
-        "## 8. End-to-End Evaluation"
-        in report
-    )
+    assert "## 8. End-to-End Evaluation" in report
