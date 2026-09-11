@@ -29,9 +29,11 @@ Thumbs.db
 data/processed/*
 data/vector_store/*
 
-# Keep directories in Git
+# Keep required deployment artifacts in Git
 !data/processed/.gitkeep
 !data/vector_store/.gitkeep
+!data/vector_store/research_chunks.faiss
+!data/vector_store/research_chunks_metadata.json
 data/metadata/*
 !data/metadata/.gitkeep
 data/chunks/*
