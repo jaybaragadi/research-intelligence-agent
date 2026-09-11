@@ -1,0 +1,235 @@
+{
+  "configuration": {
+    "retriever": "fused_cross_encoder_reranker",
+    "candidate_k": 30,
+    "cross_encoder_weight": 0.5
+  },
+  "metrics": {
+    "case_count": 5,
+    "hit_at_1": 0.4,
+    "hit_at_3": 0.6,
+    "hit_at_5": 0.8,
+    "mean_reciprocal_rank": 0.5288888888888889,
+    "mean_recall_at_3": 0.4444444444444445,
+    "mean_recall_at_5": 0.5555555555555556,
+    "mean_recall_at_10": 0.888888888888889
+  },
+  "results": [
+    {
+      "question_id": "R1",
+      "query": "How does mutation testing improve LLM-based unit test generation?",
+      "expected_papers": [
+        "03_mutap"
+      ],
+      "retrieved_papers": [
+        "10_coding_before_testing",
+        "05_coverup",
+        "10_coding_before_testing",
+        "09_hits",
+        "09_hits",
+        "04_symprompt",
+        "06_chatunitest",
+        "07_codamosa",
+        "03_mutap",
+        "08_telpa"
+      ],
+      "unique_retrieved_papers": [
+        "10_coding_before_testing",
+        "05_coverup",
+        "09_hits",
+        "04_symprompt",
+        "06_chatunitest",
+        "07_codamosa",
+        "03_mutap",
+        "08_telpa"
+      ],
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": false,
+      "reciprocal_rank": 0.1111111111111111,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0,
+      "recall_at_10": 1.0,
+      "matched_papers": [
+        "03_mutap"
+      ],
+      "missing_expected_papers": []
+    },
+    {
+      "question_id": "R2",
+      "query": "How does coverage-guided feedback improve generated tests?",
+      "expected_papers": [
+        "05_coverup"
+      ],
+      "retrieved_papers": [
+        "04_symprompt",
+        "04_symprompt",
+        "05_coverup",
+        "05_coverup",
+        "09_hits",
+        "08_telpa",
+        "08_telpa",
+        "01_testpilot",
+        "01_testpilot",
+        "10_coding_before_testing"
+      ],
+      "unique_retrieved_papers": [
+        "04_symprompt",
+        "05_coverup",
+        "09_hits",
+        "08_telpa",
+        "01_testpilot",
+        "10_coding_before_testing"
+      ],
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "matched_papers": [
+        "05_coverup"
+      ],
+      "missing_expected_papers": []
+    },
+    {
+      "question_id": "R3",
+      "query": "How are symbolic execution or symbolic information used to improve generated tests?",
+      "expected_papers": [
+        "04_symprompt"
+      ],
+      "retrieved_papers": [
+        "04_symprompt",
+        "01_testpilot",
+        "02_chattester",
+        "08_telpa",
+        "03_mutap",
+        "01_testpilot",
+        "04_symprompt",
+        "10_coding_before_testing",
+        "10_coding_before_testing",
+        "08_telpa"
+      ],
+      "unique_retrieved_papers": [
+        "04_symprompt",
+        "01_testpilot",
+        "02_chattester",
+        "08_telpa",
+        "03_mutap",
+        "10_coding_before_testing"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "matched_papers": [
+        "04_symprompt"
+      ],
+      "missing_expected_papers": []
+    },
+    {
+      "question_id": "R4",
+      "query": "How can LLM-generated tests be improved through iterative feedback?",
+      "expected_papers": [
+        "03_mutap",
+        "05_coverup",
+        "06_chatunitest"
+      ],
+      "retrieved_papers": [
+        "08_telpa",
+        "01_testpilot",
+        "10_coding_before_testing",
+        "10_coding_before_testing",
+        "03_mutap",
+        "08_telpa",
+        "09_hits",
+        "06_chatunitest",
+        "09_hits",
+        "01_testpilot"
+      ],
+      "unique_retrieved_papers": [
+        "08_telpa",
+        "01_testpilot",
+        "10_coding_before_testing",
+        "03_mutap",
+        "09_hits",
+        "06_chatunitest"
+      ],
+      "hit_at_1": false,
+      "hit_at_3": false,
+      "hit_at_5": true,
+      "reciprocal_rank": 0.2,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 0.6666666666666666,
+      "matched_papers": [
+        "03_mutap",
+        "06_chatunitest"
+      ],
+      "missing_expected_papers": [
+        "05_coverup"
+      ]
+    },
+    {
+      "question_id": "R5",
+      "query": "What approaches use large language models to automatically generate software tests?",
+      "expected_papers": [
+        "01_testpilot",
+        "02_chattester",
+        "03_mutap",
+        "04_symprompt",
+        "05_coverup",
+        "06_chatunitest",
+        "07_codamosa",
+        "08_telpa",
+        "09_hits"
+      ],
+      "retrieved_papers": [
+        "01_testpilot",
+        "10_coding_before_testing",
+        "03_mutap",
+        "07_codamosa",
+        "08_telpa",
+        "05_coverup",
+        "04_symprompt",
+        "06_chatunitest",
+        "08_telpa",
+        "04_symprompt"
+      ],
+      "unique_retrieved_papers": [
+        "01_testpilot",
+        "10_coding_before_testing",
+        "03_mutap",
+        "07_codamosa",
+        "08_telpa",
+        "05_coverup",
+        "04_symprompt",
+        "06_chatunitest"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 1.0,
+      "recall_at_3": 0.2222222222222222,
+      "recall_at_5": 0.4444444444444444,
+      "recall_at_10": 0.7777777777777778,
+      "matched_papers": [
+        "01_testpilot",
+        "03_mutap",
+        "07_codamosa",
+        "08_telpa",
+        "05_coverup",
+        "04_symprompt",
+        "06_chatunitest"
+      ],
+      "missing_expected_papers": [
+        "02_chattester",
+        "09_hits"
+      ]
+    }
+  ]
+}
