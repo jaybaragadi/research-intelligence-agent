@@ -1,5 +1,7 @@
 # Research Intelligence Agent
 
+[![CI](https://github.com/jaybaragadi/research-intelligence-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/jaybaragadi/research-intelligence-agent/actions/workflows/ci.yml)
+
 An evidence-grounded AI research system for analyzing academic literature, retrieving relevant research evidence, comparing methodologies, identifying research gaps, and generating traceable literature reviews.
 
 The project currently focuses on:
