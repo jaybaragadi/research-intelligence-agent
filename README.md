@@ -10,6 +10,30 @@ The project currently focuses on:
 
 It is designed as a research-intelligence pipeline rather than a simple document chatbot. The system preserves paper, page, section, chunk, and citation provenance throughout retrieval and downstream analysis.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://research-intelligence-agent-z6eq5bn8vfnznwmpfgmtw5.streamlit.app/)
+
+🚀 **[Launch the Live Research Intelligence Agent](https://research-intelligence-agent-z6eq5bn8vfnznwmpfgmtw5.streamlit.app/)**
+
+---
+
+## Live Application
+
+The project is deployed on Streamlit Community Cloud and can be explored without installing the repository locally.
+
+**Live Demo:** [Research Intelligence Agent](https://research-intelligence-agent-z6eq5bn8vfnznwmpfgmtw5.streamlit.app/)
+
+### Research Intelligence Dashboard
+
+![Research Intelligence Agent Home](docs/screenshots/research-intelligence-home.png)
+
+### Evidence-Grounded Research Q&A
+
+The Q&A workflow retrieves evidence from the indexed research corpus and preserves traceability to the supporting paper, page, section, and evidence chunk.
+
+![Evidence-Grounded Research Q&A](docs/screenshots/research-qa-evidence.png)
+
+---
+
 ---
 
 ## Project Overview
@@ -523,6 +547,24 @@ The most important observation is that retrieval performs considerably better at
 This means relevant papers are often found within the top 10 results, but they are not consistently placed among the first few results.
 
 The retriever was intentionally preserved as a baseline rather than tuned directly against these evaluation questions.
+
+#### Cross-Encoder Reranking Experiment
+
+After establishing the frozen retrieval baseline, two cross-encoder reranking strategies were evaluated without modifying the baseline retriever.
+
+| Configuration | Hit@1 | Hit@3 | Hit@5 | MRR | Recall@3 | Recall@5 | Recall@10 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Frozen Baseline | 40% | 40% | 60% | 0.5119 | 24.44% | 48.89% | 82.22% |
+| Pure Cross-Encoder | 0% | 60% | 60% | 0.2841 | 31.11% | 42.22% | 88.89% |
+| 50/50 Fused Reranker | 40% | 60% | 80% | 0.5289 | 44.44% | 55.56% | 88.89% |
+
+The pure cross-encoder improved some broader-recall metrics but substantially degraded early ranking.
+
+A fixed 50/50 fusion of the frozen baseline score and cross-encoder score produced the strongest aggregate experimental result, including an improvement in Hit@5 from 60% to 80% and Mean Recall@10 from 82.22% to 88.89%.
+
+The fusion weight was intentionally not tuned against the five-question evaluation benchmark to avoid optimizing directly on the test cases.
+
+Because this experiment uses a small benchmark, these results should be interpreted as project-level experimental evidence rather than a general claim about cross-encoder reranking.
 
 ---
 
