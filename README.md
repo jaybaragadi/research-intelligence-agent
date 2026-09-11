@@ -1859,3 +1859,17 @@ Evaluation benchmarks and saved evaluation results are available under:
 
 - `evaluation/benchmarks/`
 - `evaluation/results/`
+
+## Docker
+
+The application can also be run in a containerized environment using Docker.
+
+### Build the image
+
+```bash
+docker build -t research-intelligence-agent:local .
+
+
+docker run --rm -p 8501:8501 \
+  --name research-intelligence-agent \
+  research-intelligence-agent:local
