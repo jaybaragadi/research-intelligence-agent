@@ -67,35 +67,26 @@ def test_irrelevant_evidence_returns_no_dimensions():
 
 
 def test_relevance_score_is_preserved():
-    evidence = make_evidence(
-        "Mutation testing uses surviving mutants as feedback."
-    )
+    evidence = make_evidence("Mutation testing uses surviving mutants as feedback.")
 
     results = EvidenceDimensionClassifier().classify(evidence)
 
     feedback = next(
-        result
-        for result in results
-        if result.dimension == "feedback_signal"
+        result for result in results if result.dimension == "feedback_signal"
     )
 
     assert feedback.relevance_score > 0
 
 
 def test_failure_alone_is_not_limitation():
-    dimensions = get_dimensions(
-        "The generated test failed during execution."
-    )
+    dimensions = get_dimensions("The generated test failed during execution.")
 
     assert "limitations" not in dimensions
 
 
 def test_limitation_language_is_classified():
     dimensions = get_dimensions(
-        (
-            "A limitation of the approach "
-            "is its dependence on execution feedback."
-        )
+        ("A limitation of the approach " "is its dependence on execution feedback.")
     )
 
     assert "limitations" in dimensions
@@ -142,9 +133,7 @@ def test_test_case_limitation_is_not_method_limitation_via_dimensions():
 
 
 def test_coverage_alone_is_not_feedback_signal_with_evidence_object():
-    evidence = make_evidence(
-        "Code coverage is weakly correlated with bug detection."
-    )
+    evidence = make_evidence("Code coverage is weakly correlated with bug detection.")
 
     results = EvidenceDimensionClassifier().classify(evidence)
 
